@@ -23,6 +23,7 @@ export type AdminStackScreenProps<T extends keyof AdminStackParamList> = {
 
 export type AdminBottomTabParamList = {
   Dashboard: undefined;
+  Create: undefined;
 }
 
 
