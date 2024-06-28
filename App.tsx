@@ -6,26 +6,18 @@ import BottomTabs from './src/tabs/BottomTabs';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import ApolloProviders from './src/components/providers/ApolloProviders';
 import { RootStackParamList } from './src/types/navigator.type';
-import { AuthContextProvider } from './src/contexts/AuthContext';
+import { AuthContextProvider, useAuthContext } from './src/contexts/AuthContext';
+import AdminBottomTabs from './src/tabs/AdminBottomTabs';
+import Navigators from './src/components/Navigators';
 
-const Stack = createStackNavigator<RootStackParamList>();
 const App = () => {
+
   return (
     <AuthContextProvider>
       <ApolloProviders>
         <GestureHandlerRootView>
           <NavigationContainer>
-            <Stack.Navigator
-              initialRouteName='BottomTab'
-              screenOptions={{
-                headerShown: false
-              }}
-            >
-              <Stack.Screen
-                name='BottomTab'
-                component={BottomTabs}
-              />
-            </Stack.Navigator>
+            <Navigators />
           </NavigationContainer>
         </GestureHandlerRootView>
       </ApolloProviders>

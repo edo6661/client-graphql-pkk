@@ -6,4 +6,4 @@ export interface User {
   profilePhoto: string;
 }
 
-type Role = 'ADMIN' | 'MAHASISWA';
+type Role = 'ADMIN' | 'MAHASISWA' | 'DOSEN';

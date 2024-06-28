@@ -3,13 +3,15 @@ import { RouteProp } from "@react-navigation/native";
 
 export type RootStackParamList = {
   BottomTab: undefined;
+  AdminStack: undefined;
 }
 export type BottomTabParamList ={
   Home: undefined;
   Auth: undefined;
   Bau: {
     id: string;
-  }
+}
+  Dashboard: undefined;
 }
 export type HomeScreenProps ={
   navigation: NativeStackNavigationProp<BottomTabParamList, 'Home'>;

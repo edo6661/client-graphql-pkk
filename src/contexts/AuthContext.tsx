@@ -18,23 +18,25 @@ export const AuthContextProvider = ({ children }: PropsWithChildren<{}>) => {
     if (currentUser) {
       setUser(currentUser);
     }
+    console.log("called initializeUser")
   };
 
   const storeUser = async (user: User) => {
     setUser(user);
     await asyncStoreUser(user);
+    console.log("called storeUser")
   };
 
   const logout = async () => {
     setUser(null);
     await asyncLogout();
+    console.log("called logout")
   };
 
   useEffect(() => {
     initializeUser();
   }, []);
 
-  console.log("user", user);
 
   return (
     <AuthContext.Provider value={{ user, storeUser, logout }}>

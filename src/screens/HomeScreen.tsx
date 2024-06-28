@@ -4,7 +4,7 @@ import { useMutation, useQuery } from '@apollo/client';
 import { getBau, getBaus } from '../api/query/baus.query';
 import TemporaryLoading from '../components/state/TemporaryLoading';
 import TemporaryError from '../components/state/TemporaryError';
-import { SIGN_OUT } from '../api/mutation/auth.mutation';
+import { signOut } from '../api/mutation/auth.mutation';
 import { getUser, removeUser } from '../lib/async-storage';
 import { useAuthContext } from '../contexts/AuthContext';
 import { HomeScreenProps } from '../types/navigator.type';
@@ -16,13 +16,8 @@ const HomeScreen = (
   const { data, error, loading, refetch } = useQuery(getBaus, {
     skip: !user
   });
-  const { data: bau } = useQuery(getBau, {
-    variables: {
-      bauId: "52c75e3c-4374-4dce-b856-30213cccbd87"
-    }
-  })
 
-  console.log(bau)
+
 
 
   return (

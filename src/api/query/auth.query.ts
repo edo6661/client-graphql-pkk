@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client";
 
-export const GET_AUTH_USER = gql`
+export const getCurrentUser = gql`
   query GetAuthUser {
     authUser {
       id
