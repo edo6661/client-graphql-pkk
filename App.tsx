@@ -2,29 +2,34 @@ import { Alert, StyleSheet, Text, View } from 'react-native';
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import HomeScreen from './src/screens/HomeScreen';
-import FormScreen from './src/screens/FormScreen';
-import BottomTabs from './src/screens/BottomTabs';
+import BottomTabs from './src/tabs/BottomTabs';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import ApolloProviders from './src/components/providers/ApolloProviders';
+import { RootStackParamList } from './src/types/navigator.type';
+import { AuthContextProvider } from './src/contexts/AuthContext';
 
-const Stack = createStackNavigator();
+const Stack = createStackNavigator<RootStackParamList>();
 const App = () => {
   return (
-    <GestureHandlerRootView>
-      <NavigationContainer>
-        <Stack.Navigator
-          initialRouteName='BottomTabs'
-          screenOptions={{
-            headerShown: false
-          }}
-        >
-          <Stack.Screen
-            name='BottomTabs'
-            component={BottomTabs}
-          />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </GestureHandlerRootView>
+    <AuthContextProvider>
+      <ApolloProviders>
+        <GestureHandlerRootView>
+          <NavigationContainer>
+            <Stack.Navigator
+              initialRouteName='BottomTab'
+              screenOptions={{
+                headerShown: false
+              }}
+            >
+              <Stack.Screen
+                name='BottomTab'
+                component={BottomTabs}
+              />
+            </Stack.Navigator>
+          </NavigationContainer>
+        </GestureHandlerRootView>
+      </ApolloProviders>
+    </AuthContextProvider>
   );
 };
 

@@ -1,8 +1,9 @@
 import { StyleSheet } from "react-native";
 
 export const baseStyles = StyleSheet.create({
-  separator: {
-    textAlign: 'center',
-    marginVertical: 8,
-  },
+  stateText: {
+      textAlign: 'center',
+      marginVertical: 12,
+      fontSize: 16,
+  }
 });

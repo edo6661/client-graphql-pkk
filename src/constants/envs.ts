@@ -1,13 +1,12 @@
-import { ALLOWED_ENV_VAR, BLOCKED_ENV_VAR, PRODUCTION_ALLOWED_ENV_VAR, PRODUCTION_BLOCKED_ENV_VAR, PRODUCTION_TEST_ENV_VAR, STAGING_ALLOWED_ENV_VAR, STAGING_BLOCKED_ENV_VAR, STAGING_TEST_ENV_VAR, TEST_ENV_VAR } from "@env"
-
-export const logEnvs = () => {
-  console.log("ALLOWED ENV: ", ALLOWED_ENV_VAR)
-  console.log("TEST ENV: ", TEST_ENV_VAR)
-  // console.log("BLOCKED ENV: ", BLOCKED_ENV_VAR)
-  console.log("STAGING_ALLOWED_ENV_VAR: ", STAGING_ALLOWED_ENV_VAR)
-  // console.log("STAGING_BLOCKED_ENV_VAR: ", STAGING_BLOCKED_ENV_VAR)
-  console.log("STAGING_TEST_ENV_VAR: ", STAGING_TEST_ENV_VAR)
-  console.log("PRODUCTION_ALLOWED_ENV_VAR: ", PRODUCTION_ALLOWED_ENV_VAR)
-  // console.log("PRODUCTION_BLOCKED_ENV_VAR: ", PRODUCTION_BLOCKED_ENV_VAR)
-  console.log("PRODUCTION_TEST_ENV_VAR: ", PRODUCTION_TEST_ENV_VAR)
+declare module '@env' {
+  export const BLOCKED_ENV_VAR: string
+  export const ALLOWED_ENV_VAR: string
+  export const TEST_ENV_VAR: string
+  export const PRODUCTION_BLOCKED_ENV_VAR: string
+  export const PRODUCTION_ALLOWED_ENV_VAR: string
+  export const PRODUCTION_TEST_ENV_VAR: string
+  export const STAGING_BLOCKED_ENV_VAR: string
+  export const STAGING_ALLOWED_ENV_VAR: string
+  export const STAGING_TEST_ENV_VAR: string
+  
 }
