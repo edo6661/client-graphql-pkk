@@ -13,13 +13,31 @@ interface Mahasiswa {
 }
 
 export const getMahasiswas = gql`
-  query{
-  mahasiswas {
-    id
-    fullname
-    user {
-      username
-    }
+  query {
+    mahasiswas {
+      id
+      nim
+      fullname
+      semester
+      prodi {
+        name
+      }
+      konsentrasi {
+        name
+      }
+      proyek{
+        name
+      }
+      persyaratan {
+        keteranganSehat
+        keteranganPembayaran
+        keteranganOrangTua
+        keteranganKelakuanBaik
+      }
+      pendaftaran {
+        tanggalPendaftaran
+        buktiPembayaran
+      }
   }
 }
 `; 

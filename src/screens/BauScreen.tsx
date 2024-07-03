@@ -1,47 +1,80 @@
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { BauScreenProps } from '../types/navigator.type'
-import { useMutation, useQuery } from '@apollo/client'
+import { gql, useMutation, useQuery } from '@apollo/client'
 import { getBau } from '../api/query/baus.query'
+import { useApolloClient } from '@apollo/client'
+import { Bau } from '../__generated__/graphql'
 import { updateBau } from '../api/mutation/bau.mutation'
+
 
 const BauScreen = (
   { navigation, route }: BauScreenProps
 ) => {
-  const { data, loading, error } = useQuery(getBau, {
-    variables: {
-      bauId: route.params.id
-    }
+  const client = useApolloClient()
+  const data = client.readFragment<Bau>({
+    id: `Bau:${route.params.id}`,
+    fragment: gql`
+      fragment BauDetail on Bau {
+        ...BauFields
+      }
+    `,
   })
   const [update, {
     data: updateData,
     loading: updateLoading,
     error: updateError
-  }] = useMutation(updateBau)
-  const [name, setName] = useState(data.bau.name)
-  const onEdit = async () => {
-    try {
-      console.log("data", route.params.id, name)
-      const res = await update({
-        variables: {
-          updateBauId: route.params.id,
-          name
+  }] = useMutation(updateBau, {
+    update(cache, { data }) {
+      if (!data || !data.updateBau) return console.error('Data updateBau not found')
+      cache.modify({
+        fields: {
+          baus(existingBaus = [], { readField }) {
+            return existingBaus.map((bau: Bau) => {
+              if (readField('id', bau) === data.updateBau.id) {
+                return {
+                  ...bau,
+                  ...data.updateBau
+                }
+              } else {
+                return bau
+              }
+            })
+          }
         }
       })
-      console.log("res", res.data)
 
-      navigation.navigate('Home')
-    } catch (err) {
-      console.error(err)
+
     }
+  })
+  const [name, setName] = useState(data?.name)
+  const onEdit = () => {
+    console.log("data", route.params.id, name)
+    const res = update({
+      variables: {
+        updateBauId: route.params.id,
+        name
+      },
+      optimisticResponse: {
+        updateBau: {
+          __typename: 'Bau',
+          id: route.params.id,
+          name: name
+        }
+      }
+    })
+
+    navigation.navigate('Home')
   }
+  useEffect(() => {
+    setName(data?.name)
+
+  }, [data?.name])
   return (
     <View>
       <Text>BauScreen
         {route.params.id}
       </Text>
-      {loading && <Text>loading...</Text>}
-      {error && <Text>{error.message}</Text>}
       {updateLoading && <Text>update loading...</Text>}
       {updateError && <Text>update error: {updateError.message}</Text>}
       <TextInput

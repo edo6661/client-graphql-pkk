@@ -1,9 +1,10 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { baseStyles } from '../../styles';
 import CreateForm from '../../components/admin/CreateForm';
-import { AdminFields, adminFields } from '../../constants/create';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { AdminFields, adminFields } from '../../types/admin.type';
 
 const CreateScreen = () => {
   const [selectedValue, setSelectedValue] = useState<AdminFields>("Admin");
@@ -13,7 +14,22 @@ const CreateScreen = () => {
   }, [selectedValue]);
 
   return (
-    <View style={baseStyles.container}>
+    <KeyboardAwareScrollView
+      style={[
+        baseStyles.container,
+        baseStyles.border, {
+          borderColor: 'red'
+        }
+      ]}
+      resetScrollToCoords={{ x: 0, y: 0 }}
+      contentContainerStyle={[
+        baseStyles.border, {
+          borderColor: 'blue'
+        }
+      ]}
+      scrollEnabled={true}
+
+    >
       <Picker
         selectedValue={selectedValue}
         style={styles.picker}
@@ -26,7 +42,7 @@ const CreateScreen = () => {
       <CreateForm
         selectedValue={value}
       />
-    </View>
+    </KeyboardAwareScrollView>
   );
 };
 

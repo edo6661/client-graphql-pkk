@@ -8,3 +8,19 @@ export const updateBau = gql`
     }
   }
 `
+export const createBau = gql`
+  mutation createBau($name: String!) {
+    createBau(name: $name) {
+      id
+      name
+  }
+  }
+`
+export const deleteBau = gql`
+  mutation deleteBau($id: ID!) {
+    deleteBau(id: $id) {
+      id
+      name
+    }
+  }
+`

@@ -13,12 +13,19 @@ export type AdminStackParamList = {
   Admin: undefined;
   Proyek: undefined;
   AdminBottomTab: undefined;
+  Create: undefined;
 }
 
 export type AdminStackScreenProps<T extends keyof AdminStackParamList> = {
   navigation: NativeStackNavigationProp<AdminStackParamList, T>;
   route: RouteProp<AdminStackParamList, T>;
 }
+export type AdminStackChildProps<T extends keyof AdminStackParamList> = {
+  navigate: NativeStackNavigationProp<AdminStackParamList, T>;
+  route: RouteProp<AdminStackParamList, T>;
+  
+}
+
 
 
 export type AdminBottomTabParamList = {

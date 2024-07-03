@@ -9,6 +9,7 @@ import BauScreen from '../screens/BauScreen'
 import { useAuthContext } from '../contexts/AuthContext'
 import HomeAdminScreen from '../screens/HomeAdminScreen'
 import DashboardScreen from '../screens/admin/DashboardScreen'
+import CreateBau from '../screens/CreateBau'
 
 
 const Tab = createBottomTabNavigator<BottomTabParamList>()
@@ -36,6 +37,13 @@ const BottomTabs = () => {
       <Tab.Screen
         name='Bau'
         component={BauScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Tab.Screen
+        name="CreateBau"
+        component={CreateBau}
         options={{
           headerShown: false,
         }}

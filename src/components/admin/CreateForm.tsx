@@ -1,14 +1,30 @@
 import { Alert, Button, StyleSheet, Text, TextInput, View } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import { AdminFields, adminItemFields } from '../../constants/create'
+import React, { Fragment, useEffect, useState } from 'react'
 import { baseStyles } from '../../styles'
+import { useMutation } from '@apollo/client'
+import { createAdmin } from '../../api/mutation/admin.mutation'
+import { MutationCreateAdminArgs, MutationSignUpArgs, SignUpInput } from '../../__generated__/graphql'
+import { signUp } from '../../api/mutation/user.mutation'
+import { useNavigation } from '@react-navigation/native'
+import { AdminStackChildProps, AdminStackParamList, AdminStackScreenProps } from '../../types/adminNavigator.type'
+import { NativeStackNavigationProp } from 'react-native-screens/lib/typescript/native-stack/types'
+import Toast from 'react-native-toast-message'
+import TemporaryLoading from '../state/TemporaryLoading'
+import { AdminFields, adminItemFields } from '../../types/admin.type'
+import { adminCreateFnBasedOnFields } from '../../constants/create'
+import { createDosen } from '../../api/mutation/dosen.mutation'
 interface CreateFormProps {
   selectedValue: AdminFields
 }
 const CreateForm = (
   { selectedValue }: CreateFormProps
 ) => {
+  const navigation = useNavigation<NativeStackNavigationProp<AdminStackParamList, 'Create'>>();
   const [formData, setFormData] = useState<{ [key: string]: string }>({})
+
+  const [createAdminMutation, { data: _admin, loading: loadingAdmin, error: errAdmin }] = useMutation<MutationCreateAdminArgs>(createAdmin)
+  const [createUser, { data: _createdUser, loading: loadingUser, error: errUser }] = useMutation<MutationSignUpArgs>(signUp)
+  const [createDosenMutation, { data: _dosen, loading: loadingDosen, error: errDosen }] = useMutation<MutationCreateAdminArgs>(createDosen)
 
   useEffect(() => {
     const initialFormData = adminItemFields[selectedValue].reduce((acc, field) => {
@@ -25,8 +41,38 @@ const CreateForm = (
     }))
   }
 
-  const onSubmit = () => {
-    Alert.alert('Data', JSON.stringify(formData))
+  const createFieldBasedOnSelectedValue = {
+    Admin: createAdminMutation,
+    Dosen: createDosenMutation
+
+  } as const
+  const onSubmit = async () => {
+    try {
+      const mutationFn = createFieldBasedOnSelectedValue[selectedValue as keyof typeof createFieldBasedOnSelectedValue]
+      const res = await adminCreateFnBasedOnFields[selectedValue](
+        // @ts-ignore
+        formData,
+        mutationFn,
+        errAdmin,
+        createUser
+      )
+      if (typeof res === 'undefined') return Toast.show({
+        type: "error",
+        text1: "Laporkan ke admin",
+        text2: "Terjadi kesalahan",
+        swipeable: true
+      })
+      Toast.show({
+        swipeable: true,
+        type: 'success',
+        text1: res.message,
+        text2: 'Test text 2'
+      })
+      navigation.navigate(selectedValue as keyof AdminStackParamList)
+    } catch (err) {
+      console.error(err)
+    }
+
   }
 
 
@@ -35,13 +81,17 @@ const CreateForm = (
       style={baseStyles.container}
     >
       {adminItemFields[selectedValue].map((field) => (
-        <TextInput
-          key={field}
-          placeholder={field}
-          value={formData[field]}
-          onChangeText={(text) => handleInputChange(field, text)}
-        />
+        <Fragment key={field}>
+          {field !== 'userId' && (
+            <TextInput
+              placeholder={field}
+              value={formData[field]}
+              onChangeText={(text) => handleInputChange(field, text)}
+            />
+          )}
+        </Fragment>
       ))}
+      {loadingAdmin || loadingUser && <TemporaryLoading />}
       <Button
         title="Submit"
         onPress={onSubmit}
@@ -52,4 +102,7 @@ const CreateForm = (
 
 export default CreateForm
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+  container: {
+  }
+})

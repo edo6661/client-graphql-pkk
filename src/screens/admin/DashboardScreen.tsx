@@ -3,13 +3,18 @@ import React from 'react'
 import { useAuthContext } from '../../contexts/AuthContext'
 import { baseStyles } from '../../styles'
 import { listRouteDashboard } from '../../constants/dashboard'
-import { useNavigation } from '@react-navigation/native'
 import { AdminStackParamList, AdminStackScreenProps } from '../../types/adminNavigator.type'
+import { useQuery } from '@apollo/client'
+import { getCurrentUser } from '../../api/query/auth.query'
 
 const DashboardScreen = (
   { navigation }: AdminStackScreenProps<'Dashboard'>
 ) => {
+
   const { logout, user } = useAuthContext()
+  const { data, error } = useQuery(getCurrentUser)
+  console.log(data)
+  console.log(error)
   const renderItem = ({ item }: { item: string }) => (
     <TouchableOpacity
       onPress={() => {
@@ -20,11 +25,13 @@ const DashboardScreen = (
     </TouchableOpacity>
   );
 
+
   return (
     <View
       style={baseStyles.container}
     >
       <Text>DashboardScreen</Text>
+
 
       <TouchableOpacity onPress={logout}>
         <Text>Logout</Text>

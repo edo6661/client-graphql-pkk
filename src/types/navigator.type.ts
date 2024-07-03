@@ -10,7 +10,8 @@ export type BottomTabParamList ={
   Auth: undefined;
   Bau: {
     id: string;
-}
+  }
+  CreateBau: undefined;
   Dashboard: undefined;
 }
 export type HomeScreenProps ={
