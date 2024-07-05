@@ -12,6 +12,7 @@ import AdminScreen from './AdminScreen'
 import ProyekScreen from './ProyekScreen'
 import AdminBottomTabs from '../../tabs/AdminBottomTabs'
 import { AdminStackParamList } from '../../types/adminNavigator.type'
+import AdminNavigator from '../../navigators/AdminNavigator'
 
 
 
@@ -21,11 +22,11 @@ const AdminStackScreen = () => {
   return (
     <AdminStack.Navigator
       initialRouteName="AdminBottomTab"
+      screenOptions={{
+        headerShown: false,
+      }}
     >
       <AdminStack.Screen name="AdminBottomTab" component={AdminBottomTabs}
-        options={{
-          headerShown: false,
-        }}
       />
       <AdminStack.Screen name="Dosen" component={DosenScreen} />
       <AdminStack.Screen name="Mahasiswa" component={MahasiswaScreen} />
@@ -34,7 +35,7 @@ const AdminStackScreen = () => {
       <AdminStack.Screen name="ProgramStudi" component={ProgramStudiScreen} />
       <AdminStack.Screen name="Pendaftaran" component={PendaftaranScreen} />
       <AdminStack.Screen name="Persyaratan" component={PersyaratanScreen} />
-      <AdminStack.Screen name="Admin" component={AdminScreen} />
+      <AdminStack.Screen name="Admin" component={AdminNavigator} />
       <AdminStack.Screen name="Proyek" component={ProyekScreen} />
     </AdminStack.Navigator>
   )

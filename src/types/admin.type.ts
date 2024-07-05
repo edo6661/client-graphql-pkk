@@ -32,7 +32,7 @@ export const adminItemFields = {
   Fakultas: ["name"],
   Konsentrasi: ["name", "programStudiId"],
   Mahasiswa: ["fullname", "userId", "nim", "semester", "prodiId", "konsentrasiId", "proyekId"],
-  Pendaftaran: ["mahasiswaId", "tanggalPendaftaran", "buktiPembayaran"],
+Pendaftaran: ["mahasiswaId", "tanggalPendaftaran", "buktiPembayaran"],
   Persyaratan: ["mahasiswaId", "keteranganSehat", "keteranganPembayaran", "keteranganOrangTua", "keteranganKelakuanBaik"],
   ProgramStudi: ["name", "fakultasId"],
   Proyek: ["name", "photo", "bolehDimulai", "telahSelesai", "description", "batasOrang", "pembimbing"]

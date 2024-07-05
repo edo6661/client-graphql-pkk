@@ -18,7 +18,7 @@ const DashboardScreen = (
   const renderItem = ({ item }: { item: string }) => (
     <TouchableOpacity
       onPress={() => {
-        navigation.navigate(item as keyof AdminStackParamList);
+        navigation.navigate(item as any);
       }}
     >
       <Text>{item}</Text>

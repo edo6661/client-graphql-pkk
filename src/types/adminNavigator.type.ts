@@ -1,6 +1,7 @@
 import { NativeStackNavigationProp } from "react-native-screens/lib/typescript/native-stack/types";
 import { RouteProp } from "@react-navigation/native";
 
+// ! AdminStack
 export type AdminStackParamList = {
   Dashboard: undefined;
   Dosen: undefined;
@@ -10,7 +11,10 @@ export type AdminStackParamList = {
   ProgramStudi: undefined;
   Pendaftaran: undefined;
   Persyaratan: undefined;
-  Admin: undefined;
+  Admin: {
+    screen: keyof AdminBottomTabParamList;
+    params: AdminBottomTabParamList[keyof AdminBottomTabParamList];
+  }
   Proyek: undefined;
   AdminBottomTab: undefined;
   Create: undefined;
@@ -25,12 +29,24 @@ export type AdminStackChildProps<T extends keyof AdminStackParamList> = {
   route: RouteProp<AdminStackParamList, T>;
   
 }
-
-
+// ! AdminBottomTab
 
 export type AdminBottomTabParamList = {
   Dashboard: undefined;
   Create: undefined;
+}
+
+// ! AdminNavigator
+export type AdminNavigatorParamList = {
+  Admins: undefined;
+  DetailsAdmin: {
+    id: string;
+  }
+}
+
+export type AdminNavigatorScreenProps<T extends keyof AdminNavigatorParamList> = {
+  navigation: NativeStackNavigationProp<AdminNavigatorParamList, T>;
+  route: RouteProp<AdminNavigatorParamList, T>;
 }
 
 

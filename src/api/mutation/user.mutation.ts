@@ -12,3 +12,11 @@ export const signUp = gql`
     }
   }
 `
+export const deleteUser = gql`
+  mutation deleteUser($id: ID!) {
+    deleteUser(id: $id) {
+      id
+      username
+    }
+  }
+`

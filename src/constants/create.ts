@@ -41,15 +41,17 @@ export const adminCreateFnBasedOnFields: AdminCreateFnBasedOnFields<AdminFields>
             username: data.fullname,
             role: Role.Admin,
             password: data.fullname,        
-          }
+          },
+          
           }
         })
         if(!createdUser?.data.signUp.id) throw new Error("UserId not found")
-         await createAdmin({
+          await createAdmin({
           variables: {
             fullname: data.fullname,
             userId: createdUser?.data.signUp.id,
-          }
+          },
+          
         })
         return {
           message: `Admin ${data.fullname} berhasil dibuat`

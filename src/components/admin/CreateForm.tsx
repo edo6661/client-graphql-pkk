@@ -1,7 +1,7 @@
 import { Alert, Button, StyleSheet, Text, TextInput, View } from 'react-native'
 import React, { Fragment, useEffect, useState } from 'react'
 import { baseStyles } from '../../styles'
-import { useMutation } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import { createAdmin } from '../../api/mutation/admin.mutation'
 import { MutationCreateAdminArgs, MutationSignUpArgs, SignUpInput } from '../../__generated__/graphql'
 import { signUp } from '../../api/mutation/user.mutation'
@@ -13,6 +13,7 @@ import TemporaryLoading from '../state/TemporaryLoading'
 import { AdminFields, adminItemFields } from '../../types/admin.type'
 import { adminCreateFnBasedOnFields } from '../../constants/create'
 import { createDosen } from '../../api/mutation/dosen.mutation'
+import { adminFragments } from '../../fragments'
 interface CreateFormProps {
   selectedValue: AdminFields
 }
@@ -22,7 +23,22 @@ const CreateForm = (
   const navigation = useNavigation<NativeStackNavigationProp<AdminStackParamList, 'Create'>>();
   const [formData, setFormData] = useState<{ [key: string]: string }>({})
 
-  const [createAdminMutation, { data: _admin, loading: loadingAdmin, error: errAdmin }] = useMutation<MutationCreateAdminArgs>(createAdmin)
+  const [createAdminMutation, { data: _admin, loading: loadingAdmin, error: errAdmin }] = useMutation<any, MutationCreateAdminArgs>(createAdmin, {
+    update(cache, { data }) {
+      cache.modify({
+        fields: {
+          admins(existingAdmins = []) {
+            const newAdmin = cache.writeFragment({
+              data: data.createAdmin,
+              fragment: gql`${adminFragments}`,
+            })
+            if (!newAdmin) return console.error('New Admin not found')
+            return [...existingAdmins, newAdmin]
+          }
+        }
+      })
+    }
+  })
   const [createUser, { data: _createdUser, loading: loadingUser, error: errUser }] = useMutation<MutationSignUpArgs>(signUp)
   const [createDosenMutation, { data: _dosen, loading: loadingDosen, error: errDosen }] = useMutation<MutationCreateAdminArgs>(createDosen)
 
@@ -68,7 +84,7 @@ const CreateForm = (
         text1: res.message,
         text2: 'Test text 2'
       })
-      navigation.navigate(selectedValue as keyof AdminStackParamList)
+      navigation.navigate(selectedValue as any)
     } catch (err) {
       console.error(err)
     }
@@ -91,7 +107,7 @@ const CreateForm = (
           )}
         </Fragment>
       ))}
-      {loadingAdmin || loadingUser && <TemporaryLoading />}
+      {loadingUser && <TemporaryLoading />}
       <Button
         title="Submit"
         onPress={onSubmit}
