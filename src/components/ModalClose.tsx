@@ -3,12 +3,12 @@ import React, { useEffect, useState } from 'react'
 
 
 interface ModalCloseProps<T> {
-  action: (item: T) => Promise<void>;
+  action: (item: T) => Promise<void> | void;
   trigger: string;
   item: T;
 }
 
-const ModalClose = <T extends {}>(
+const ModalClose = <T extends Record<string, any>>(
   { trigger, action, item }: ModalCloseProps<T>
 ) => {
 
@@ -54,7 +54,7 @@ const ModalClose = <T extends {}>(
             gap: 10
           }}>
             <Text>
-              Modal is open
+              Are you sure?
             </Text>
             <View style={{
               flexDirection: 'row',

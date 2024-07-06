@@ -20,3 +20,10 @@ export const deleteUser = gql`
     }
   }
 `
+export const updateUser = gql`
+  mutation updateUser($id: ID!, $data: UpdateUserInput!) {
+    updateUser(id: $id, data: $data) {
+      id
+    }
+  }
+`

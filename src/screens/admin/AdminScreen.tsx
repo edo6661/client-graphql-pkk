@@ -77,7 +77,7 @@ const AdminScreen = (
             justifyContent: 'space-between'
           }}>
             <TouchableOpacity
-              onPress={() => navigation.navigate('DetailsAdmin', { id: item.id })}
+              onPress={() => navigation.navigate('DetailsAdmins', { id: item.id })}
             >
               <Text>{
                 item.fullname

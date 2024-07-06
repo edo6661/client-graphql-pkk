@@ -9,7 +9,6 @@ interface ArgsAdminCreateFnBasedOnFields<T> {
   (
     data: T,
     createMutation: MutationFn<T>,
-    error:ApolloError | undefined,
     createUser?: MutationFn<{
       data: {
         signUp: User
@@ -33,7 +32,7 @@ export interface AdminCreateFnBasedOnFields<T> {
 
 
 export const adminCreateFnBasedOnFields: AdminCreateFnBasedOnFields<AdminFields> = {
-  Admin: async (data,createAdmin,error,createUser) => {
+  Admin: async (data,createAdmin,createUser) => {
     try {
       const createdUser = await createUser?.({
         variables: {
@@ -63,8 +62,7 @@ export const adminCreateFnBasedOnFields: AdminCreateFnBasedOnFields<AdminFields>
       }
     }
   },
-  Dosen: async (data,createDosen,error,createUser) => {
-    console.log(data)
+  Dosen: async (data,createDosen,createUser) => {
     try {
       const createdUser = await createUser?.({
         variables: {
@@ -73,27 +71,36 @@ export const adminCreateFnBasedOnFields: AdminCreateFnBasedOnFields<AdminFields>
             role: Role.Dosen,
             password: data.fullname,        
           }
-          }
-        })
-        if(!createdUser?.data.signUp.id) throw new Error("UserId not found")
-          await createDosen({
-            variables: {
-              fullname: data.fullname,
-              nidn: data.nidn,
-              userId: createdUser?.data.signUp.id,
-            }
-          })
-          return {
-            message: `Dosen ${data.fullname} berhasil dibuat`
-          }
-      
-      
-    } catch (err) {
-      console.log(err)
-      return {
-        message: `Dosen ${data.fullname} gagal dibuat hubungi adminx`
+        }
+      });
+  
+  
+      if (!createdUser?.data.signUp.id) {
+        throw new Error("UserId not found");
       }
+  
+      const userId = createdUser?.data.signUp.id;
+  
+  
+      const createdDosen = await createDosen({
+        variables: {
+          fullname: data.fullname,
+          nidn: data.nidn,
+          userId: userId,
+        }
+      });
+  
+  
+      return {
+        message: `Dosen ${data.fullname} berhasil dibuat`,
+      };
+    } catch (err) {
+      console.error("Error occurred:", err);
+      return {
+        message: `Dosen ${data.fullname} gagal dibuat hubungi admin`,
+      };
     }
+  
 
   },
   Fakultas: (data,error) => {},

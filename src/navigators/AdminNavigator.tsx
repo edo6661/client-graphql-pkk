@@ -16,7 +16,7 @@ const AdminNavigator = () => {
         component={AdminScreen}
       />
       <AdminStack.Screen
-        name='DetailsAdmin'
+        name='DetailsAdmins'
         component={DetailsAdminScreen}
       />
     </AdminStack.Navigator>
