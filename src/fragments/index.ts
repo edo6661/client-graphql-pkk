@@ -76,13 +76,7 @@ export const dosenFragments = gql`
     }
     fullname
     nidn
-    proyek {
-      id
-      name
-      description
-      createdAt
-      updatedAt
-    }
+    userId
     createdAt
     updatedAt
   }
@@ -92,15 +86,6 @@ export const dosenFragments = gql`
 export const mahasiswaFragments = gql`
   fragment MahasiswaFields on Mahasiswa {
     id
-    user {
-      id
-      username
-      email
-      profilePhoto
-      role
-      createdAt
-      updatedAt
-    }
     userId
     nim
     fullname
@@ -326,7 +311,7 @@ export const biayaOperasionalFragments = gql`
     tanggalBiaya
     mahasiswa {
       id
-      fullnamef
+      fullname
       createdAt
       updatedAt
     }

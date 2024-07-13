@@ -22,7 +22,12 @@ export interface AdminCreateFnBasedOnFields<T> {
   Dosen: ArgsAdminCreateFnBasedOnFields<Dosen>,
   Fakultas: ArgsAdminCreateFnBasedOnFields<Fakultas>,
   Konsentrasi: ArgsAdminCreateFnBasedOnFields<Konsentrasi>,
-  Mahasiswa: ArgsAdminCreateFnBasedOnFields<Mahasiswa>,
+  Mahasiswa: ArgsAdminCreateFnBasedOnFields<Mahasiswa & {
+    prodiId: string,
+    konsentrasiId: string,
+    proyekId?: string
+  
+  }>,
   Pendaftaran: ArgsAdminCreateFnBasedOnFields<Pendaftaran>,
   Persyaratan: ArgsAdminCreateFnBasedOnFields<Persyaratan>,
   ProgramStudi: ArgsAdminCreateFnBasedOnFields<ProgramStudi>,
@@ -87,6 +92,7 @@ export const adminCreateFnBasedOnFields: AdminCreateFnBasedOnFields<AdminFields>
           fullname: data.fullname,
           nidn: data.nidn,
           userId: userId,
+          
         }
       });
   
@@ -103,11 +109,43 @@ export const adminCreateFnBasedOnFields: AdminCreateFnBasedOnFields<AdminFields>
   
 
   },
+  Mahasiswa: async (data,createMahasiswa,createUser) => {
+    try {
+      const createdUser = await createUser?.
+      ({
+        variables: {
+          signUpInput: {
+            username: data.fullname,
+            role: Role.Mahasiswa,
+            password: data.fullname,
+          }
+        }
+      })
+      if(!createdUser?.data.signUp.id) throw new Error("UserId not found")
+        const userId = createdUser?.data.signUp.id
+      const result =await createMahasiswa({
+          variables: {
+            fullname: data.fullname,
+            nim: data.nim,
+            userId: userId,
+            semester: +data.semester,
+            prodiId: data.prodiId,
+            konsentrasiId: data.konsentrasiId,
+            ...(data.proyekId && {proyekId: data.proyekId})
+          }
+        })
+        
+        return {
+          message: `Mahasiswa ${data.fullname} berhasil dibuat`
+        }
+    } catch (err) {
+      console.log(err)
+      return {
+        message: `Mahasiswa ${data.fullname} gagal dibuat hubungi admin`}
+    }
+  },
   Fakultas: (data,error) => {},
   Konsentrasi: (data,error) => {},
-  Mahasiswa: (data,error) => {
-    
-  },
   Pendaftaran: (data,error) => {},
   Persyaratan: (data,error) => {},
   ProgramStudi: (data,error) => {},

@@ -44,18 +44,23 @@ export type UnionAdminNavigatorParamList = keyof AdminNavigatorParamList;
 export type DosenNavigatorParamList = EntityNavigatorParamList<"Dosens">
 export type UnionDosenNavigatorParamList = keyof DosenNavigatorParamList;
 
+export type MahasiswaNavigatorParamList = EntityNavigatorParamList<"Mahasiswas">
+export type UnionMahasiswaNavigatorParamList = keyof MahasiswaNavigatorParamList;
+
 
 // ! AdminNavigatorScreenProps
 
-// gampang nya begini:
+// ! gampang nya begini:
 // export type AdminNavigatorScreenProps<T extends keyof AdminNavigatorParamList> = {
 //   navigation: NativeStackNavigationProp<AdminNavigatorParamList, T>;
 //   route: RouteProp<AdminNavigatorParamList, T>;
 // }
 
 
-export type EntityNavigatorScreenProps<
-  Entity extends string,
+export type AdminNavigator = "Admins" | "Dosens" | "Mahasiswas";
+
+export type EntityAdminNavigatorScreenProps<
+  Entity extends AdminNavigator,
   ParamList extends EntityNavigatorParamList<Entity>
 > = {
   
@@ -64,10 +69,14 @@ export type EntityNavigatorScreenProps<
   route: RouteProp<ParamList, keyof ParamList>;
 };
 // ! nge extends UnionAdminNavigatorParamList biar gak salah masukin key dan dapet auto completion dari IDE
-export type AdminNavigatorScreenProps<_T extends UnionAdminNavigatorParamList> = EntityNavigatorScreenProps<
+export type AdminNavigatorScreenProps<_T extends UnionAdminNavigatorParamList> = EntityAdminNavigatorScreenProps<
   'Admins',
   AdminNavigatorParamList
 >;
+
+export type DosenNavigatorScreenProps<_T extends UnionDosenNavigatorParamList> = EntityAdminNavigatorScreenProps<'Dosens', DosenNavigatorParamList>;
+
+export type MahasiswaNavigatorScreenProps<_T extends UnionMahasiswaNavigatorParamList> = EntityAdminNavigatorScreenProps<'Mahasiswas', MahasiswaNavigatorParamList>;
 
 
 

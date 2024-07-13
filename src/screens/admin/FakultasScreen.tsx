@@ -1,9 +1,12 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { Button, StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import { getFakultas } from '../../api/query/fakultas.query'
 import { useQuery } from '@apollo/client'
+import { AdminStackScreenProps } from '../../types/adminNavigator.type'
 
-const FakultasScreen = () => {
+const FakultasScreen = (
+  { navigation, route }: AdminStackScreenProps<"Fakultas">
+) => {
 
   const { data, loading, error, } = useQuery(getFakultas)
 
@@ -12,6 +15,7 @@ const FakultasScreen = () => {
   return (
     <View>
       <Text>FakultasScreen</Text>
+
       {loading && <Text>Loading...</Text>}
       {error && <Text>Error </Text>}
       <Text>

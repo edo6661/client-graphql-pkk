@@ -1,9 +1,9 @@
 import { Alert, Button, StyleSheet, Text, TextInput, View } from 'react-native'
 import React, { Fragment, useEffect, useState } from 'react'
 import { baseStyles } from '../../styles'
-import { gql, useMutation } from '@apollo/client'
+import { gql, useMutation, useQuery } from '@apollo/client'
 import { createAdmin } from '../../api/mutation/admin.mutation'
-import { MutationCreateAdminArgs, MutationSignUpArgs, SignUpInput } from '../../__generated__/graphql'
+import { Fakultas, Konsentrasi, MutationCreateAdminArgs, MutationCreateDosenArgs, MutationCreateMahasiswaArgs, MutationSignUpArgs, ProgramStudi, Proyek, SignUpInput } from '../../__generated__/graphql'
 import { signUp } from '../../api/mutation/user.mutation'
 import { useNavigation } from '@react-navigation/native'
 import { AdminStackParamList, AdminStackScreenProps } from '../../types/adminNavigator.type'
@@ -15,6 +15,12 @@ import { adminCreateFnBasedOnFields } from '../../constants/create'
 import { createDosen } from '../../api/mutation/dosen.mutation'
 import { adminFragments, dosenFragments } from '../../fragments'
 import { MutationFn } from '../../types/mutation.type'
+import { createMahasiswa } from '../../api/mutation/mahasiswa.mutation'
+import { getFakultas } from '../../api/query/fakultas.query'
+import { getProyeks } from '../../api/query/proyek.query'
+import { getKonsentrasis } from '../../api/query/konsentrasi.query'
+import { Picker } from '@react-native-picker/picker'
+import { getProgramStudis } from '../../api/query/programStudi.query'
 interface CreateFormProps {
   selectedValue: AdminFields
 }
@@ -23,6 +29,19 @@ const CreateForm = (
 ) => {
   const navigation = useNavigation<NativeStackNavigationProp<AdminStackParamList, 'Create'>>();
   const [formData, setFormData] = useState<{ [key: string]: string }>({})
+  const [selectedKonsentrasi, setSelectedKonsentrasi] = useState<string>();
+  const [selectedProdi, setSelectedProdi] = useState<string>();
+  const [selectedProyek, setSelectedProyek] = useState<string>();
+
+  const { data: fakultas } = useQuery<{
+    programStudis: Array<ProgramStudi>
+  }>(getProgramStudis)
+  const { data: proyeks } = useQuery<{
+    proyeks: Array<Proyek>
+  }>(getProyeks)
+  const { data: konsentrasi } = useQuery<{
+    konsentrasis: Array<Konsentrasi>
+  }>(getKonsentrasis)
 
   const [createAdminMutation] = useMutation<any, MutationCreateAdminArgs>(createAdmin, {
     update(cache, { data }) {
@@ -40,7 +59,7 @@ const CreateForm = (
       })
     }
   })
-  const [createDosenMutation] = useMutation<any, MutationCreateAdminArgs>(createDosen, {
+  const [createDosenMutation] = useMutation<any, MutationCreateDosenArgs>(createDosen, {
     update(cache, { data }) {
       cache.modify({
         fields: {
@@ -64,6 +83,32 @@ const CreateForm = (
       })
     }
   })
+  const [createMahasiswaMutation, { error }] = useMutation<any, MutationCreateMahasiswaArgs>(createMahasiswa, {
+    update(cache, { data }) {
+      cache.modify({
+        fields: {
+          mahasiswas(existingMahasiswa = []) {
+            if (!data?.createMahasiswa) return console.error('Data not found')
+            if (existingMahasiswa.length < 0) return console.error('Existing Mahasiswa not found')
+            const newMahasiswa = cache.writeFragment({
+              data: data?.createMahasiswa,
+              fragment: gql`
+                fragment NewMahasiswa on Mahasiswa {
+                  id
+                  fullname
+                  nim
+                  userId
+                }
+              `
+            })
+            if (!newMahasiswa) return console.error('New Mahasiswa not found')
+            return [...existingMahasiswa, newMahasiswa]
+          }
+        }
+      })
+    }
+  })
+
   const [createUser, { loading }] = useMutation<MutationSignUpArgs>(signUp)
 
   useEffect(() => {
@@ -80,6 +125,9 @@ const CreateForm = (
       [field]: value
     }))
   }
+
+
+
 
   const resetForm = () => {
     setFormData({})
@@ -98,9 +146,7 @@ const CreateForm = (
       Konsentrasi: () => {
         console.log("test")
       },
-      Mahasiswa: () => {
-        console.log("test")
-      },
+      Mahasiswa: createMahasiswaMutation,
       Pendaftaran: () => {
         console.log("test")
       },
@@ -141,8 +187,16 @@ const CreateForm = (
     } catch (err) {
       console.error(err)
     }
-
   }
+
+  useEffect(() => {
+    setFormData(prev => ({
+      ...prev,
+      ...(selectedKonsentrasi && { konsentrasiId: selectedKonsentrasi }),
+      ...(selectedProdi && { prodiId: selectedProdi }),
+      ...(selectedProyek && { proyekId: selectedProyek })
+    }))
+  }, [selectedKonsentrasi, selectedProdi, selectedProyek])
 
 
   return (
@@ -151,13 +205,49 @@ const CreateForm = (
     >
       {adminItemFields[selectedValue].map((field) => (
         <Fragment key={field}>
-          {field !== 'userId' && (
+          {(field !== 'userId' && field !== 'prodiId' && field !== "konsentrasiId" && field !== "proyekId") && (
             <TextInput
               placeholder={field}
               value={formData[field]}
               onChangeText={(text) => handleInputChange(field, text)}
             />
           )}
+          {field === 'prodiId' && (
+            <Picker
+              selectedValue={selectedProdi}
+              onValueChange={(itemValue) => setSelectedProdi(itemValue)}
+            >
+              <Picker.Item label="Pilih Prodi" value="" />
+              {fakultas?.programStudis.map((prodi) => (
+                <Picker.Item key={prodi.id} label={prodi.name} value={prodi.id} />
+              ))}
+            </Picker>
+          )}
+
+          {field === 'konsentrasiId' && (
+            <Picker
+              selectedValue={selectedKonsentrasi}
+              onValueChange={(itemValue) => setSelectedKonsentrasi(itemValue)}
+            >
+              <Picker.Item label="Pilih Konsentrasi" value="" />
+              {konsentrasi?.konsentrasis.map((konsentrasi) => (
+                <Picker.Item key={konsentrasi.id} label={konsentrasi.name} value={konsentrasi.id} />
+              ))}
+            </Picker>
+          )}
+
+          {field === 'proyekId' && (
+            <Picker
+              selectedValue={selectedProyek}
+              onValueChange={(itemValue) => setSelectedProyek(itemValue)}
+            >
+              <Picker.Item label="Pilih Proyek" value="" />
+              {proyeks?.proyeks.map((proyek) => (
+                <Picker.Item key={proyek.id} label={proyek.name} value={proyek.id} />
+              ))}
+            </Picker>
+          )}
+
         </Fragment>
       ))}
       <Button
