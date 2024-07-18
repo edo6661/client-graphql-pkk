@@ -29,9 +29,9 @@ const CreateForm = (
 ) => {
   const navigation = useNavigation<NativeStackNavigationProp<AdminStackParamList, 'Create'>>();
   const [formData, setFormData] = useState<{ [key: string]: string }>({})
-  const [selectedKonsentrasi, setSelectedKonsentrasi] = useState<string>();
-  const [selectedProdi, setSelectedProdi] = useState<string>();
-  const [selectedProyek, setSelectedProyek] = useState<string>();
+  const [selectedKonsentrasi, setSelectedKonsentrasi] = useState<string | null>();
+  const [selectedProdi, setSelectedProdi] = useState<string | null>();
+  const [selectedProyek, setSelectedProyek] = useState<string | null>();
 
   const { data: fakultas } = useQuery<{
     programStudis: Array<ProgramStudi>
@@ -64,7 +64,8 @@ const CreateForm = (
       cache.modify({
         fields: {
           dosens(existingDosen = []) {
-            if (!data?.createDosen) return console.error('Data not found')
+            console.log("DATA", data)
+            // if (!data?.createDosen) return console.error('Data not found')
             if (existingDosen.length < 0) return console.error('Existing Dosen not found')
             const newDosen = cache.writeFragment({
               data: data?.createDosen,
@@ -73,6 +74,7 @@ const CreateForm = (
                   id
                   fullname
                   nidn
+                  userId
                 }
               `
             })
@@ -131,6 +133,9 @@ const CreateForm = (
 
   const resetForm = () => {
     setFormData({})
+    setSelectedProdi(null)
+    setSelectedKonsentrasi(null)
+    setSelectedProyek(null)
   }
 
 
@@ -241,7 +246,7 @@ const CreateForm = (
               selectedValue={selectedProyek}
               onValueChange={(itemValue) => setSelectedProyek(itemValue)}
             >
-              <Picker.Item label="Pilih Proyek" value="" />
+              <Picker.Item label="Pilih Proyek" value={null} />
               {proyeks?.proyeks.map((proyek) => (
                 <Picker.Item key={proyek.id} label={proyek.name} value={proyek.id} />
               ))}

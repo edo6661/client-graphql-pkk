@@ -75,6 +75,7 @@ export const dosenFragments = gql`
       updatedAt
     }
     fullname
+    proyekId
     nidn
     userId
     createdAt

@@ -14,7 +14,7 @@ export type AdminFields = typeof adminFields[number];
 
 export const adminItemFields = {
   Admin: ["fullname", "userId"],
-  Dosen: ["fullname", "userId", "nidn"],
+  Dosen: ["fullname", "userId", "nidn", "proyekId"],
   Fakultas: ["name"],
   Konsentrasi: ["name", "programStudiId"],
   Mahasiswa: ["fullname", "userId", "nim", "semester", "prodiId", "konsentrasiId", "proyekId"],
@@ -53,6 +53,7 @@ export const adminItemFieldsInitialValue: AdminItemFieldsInitialValue = {
     fullname: "",
     userId: "",
     nidn: "",
+    proyekId: ""
   },
   Fakultas: {
     name: ""

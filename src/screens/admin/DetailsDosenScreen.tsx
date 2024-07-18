@@ -2,20 +2,26 @@ import { Button, StyleSheet, Text, TextInput, View } from 'react-native'
 import React, { Fragment, useState } from 'react'
 import { DosenNavigatorScreenProps } from '../../types/adminNavigator.type'
 import { adminItemFields } from '../../types/admin.type'
-import { gql, useApolloClient, useMutation } from '@apollo/client'
-import { Dosen, MutationUpdateDosenArgs, MutationUpdateUserArgs } from '../../__generated__/graphql'
+import { gql, useApolloClient, useMutation, useQuery } from '@apollo/client'
+import { Dosen, MutationUpdateDosenArgs, MutationUpdateUserArgs, Proyek } from '../../__generated__/graphql'
 import { updateUser } from '../../api/mutation/user.mutation'
 import Toast from 'react-native-toast-message'
 import { updateDosen } from '../../api/mutation/dosen.mutation'
+import { Picker } from '@react-native-picker/picker'
+import { getProyeks } from '../../api/query/proyek.query'
 
 
 const DetailsDosenScreen = (
   { navigation, route }: DosenNavigatorScreenProps<"DetailsDosens">
 ) => {
   if (route.params?.id === undefined) return <Text>Id not found</Text>
+  const { data: proyeks } = useQuery<{
+    proyeks: Array<Proyek>
+  }>(getProyeks)
+
   const client = useApolloClient()
   const dosen = client.readFragment<Dosen & {
-    userId: string
+    userId: string,
   }>({
     id: `Dosen:${route.params.id}`,
     fragment: gql`
@@ -24,6 +30,10 @@ const DetailsDosenScreen = (
       }
     `,
   })
+  const [selectedProyek, setSelectedProyek] = useState<string | null>(
+    dosen?.proyekId || null
+  );
+
 
 
   const [updateUserDosen] = useMutation<any, MutationUpdateUserArgs>(updateUser)
@@ -80,7 +90,8 @@ const DetailsDosenScreen = (
         id: route.params?.id!,
         fullname: form?.fullname!,
         nidn: form?.nidn!,
-        userId: dosen?.userId!
+        userId: dosen?.userId!,
+        proyekId: selectedProyek || null,
       },
       optimisticResponse: {
         updateDosen: {
@@ -125,10 +136,22 @@ const DetailsDosenScreen = (
             <TextInput
               key={field}
               placeholder={field}
-              value={form[field]}
+              value={form[field]!}
               onChangeText={(value) => onChange(field, value)}
             />
           )}
+          {field === 'proyekId' && (
+            <Picker
+              selectedValue={selectedProyek}
+              onValueChange={(itemValue) => setSelectedProyek(itemValue)}
+            >
+              <Picker.Item label="Pilih Proyek" value={null} />
+              {proyeks?.proyeks.map((proyek) => (
+                <Picker.Item key={proyek.id} label={proyek.name} value={proyek.id} />
+              ))}
+            </Picker>
+          )}
+
         </Fragment>
       ))}
       <Button

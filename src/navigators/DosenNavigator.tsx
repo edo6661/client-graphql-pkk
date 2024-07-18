@@ -13,7 +13,6 @@ const DosenNavigator = () => {
         name='Dosens'
         component={DosenScreen}
         options={{
-          headerShown: false
         }}
       />
       <DosenStack.Screen
