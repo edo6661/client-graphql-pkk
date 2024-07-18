@@ -65,7 +65,7 @@ const CreateForm = (
         fields: {
           dosens(existingDosen = []) {
             console.log("DATA", data)
-            // if (!data?.createDosen) return console.error('Data not found')
+            if (!data?.createDosen) return console.error('Data not found')
             if (existingDosen.length < 0) return console.error('Existing Dosen not found')
             const newDosen = cache.writeFragment({
               data: data?.createDosen,

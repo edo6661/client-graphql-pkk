@@ -132,7 +132,7 @@ const DetailsDosenScreen = (
     <View>
       {adminItemFields["Dosen"].map((field) => (
         <Fragment key={field}>
-          {field.includes("userId") ? null : (
+          {field.includes("userId") || field.includes("proyekId") ? null : (
             <TextInput
               key={field}
               placeholder={field}

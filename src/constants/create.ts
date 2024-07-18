@@ -86,7 +86,12 @@ export const adminCreateFnBasedOnFields: AdminCreateFnBasedOnFields<AdminFields>
   
       const userId = createdUser?.data.signUp.id;
   
-      console.log("DATA DOSEN", data);
+      console.log("DATA DOSEN", {
+        data:{
+          ...data,
+          userId
+        }
+      });
   
       const createdDosen = await createDosen({
         variables: {
