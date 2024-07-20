@@ -1,4 +1,4 @@
-import { Admin, Dosen, Fakultas, Konsentrasi, Mahasiswa, MutationSignUpArgs, Pendaftaran, Persyaratan, ProgramStudi, Proyek, Role, User } from "../__generated__/graphql";
+import { Admin, Dosen, Fakultas, Konsentrasi, Mahasiswa, MutationCreateFakultasArgs, MutationSignUpArgs, Pendaftaran, Persyaratan, ProgramStudi, Proyek, Role, User } from "../__generated__/graphql";
 import { MutationFn } from "../types/mutation.type";
 import { AdminFields } from "../types/admin.type";
 import { ApolloError } from "@apollo/client";
@@ -15,12 +15,12 @@ interface ArgsAdminCreateFnBasedOnFields<T> {
       }
     }>,
   ): Promise<{message: string}> 
-  | void
+  | {message: string} | void
 }
 export interface AdminCreateFnBasedOnFields<T> {
   Admin: ArgsAdminCreateFnBasedOnFields<Admin>,
   Dosen: ArgsAdminCreateFnBasedOnFields<Dosen>,
-  Fakultas: ArgsAdminCreateFnBasedOnFields<Fakultas>,
+  Fakultas: ArgsAdminCreateFnBasedOnFields<MutationCreateFakultasArgs>,
   Konsentrasi: ArgsAdminCreateFnBasedOnFields<Konsentrasi>,
   Mahasiswa: ArgsAdminCreateFnBasedOnFields<Mahasiswa & {
     prodiId: string,
@@ -150,7 +150,16 @@ export const adminCreateFnBasedOnFields: AdminCreateFnBasedOnFields<AdminFields>
         message: `Mahasiswa ${data.fullname} gagal dibuat hubungi admin`}
     }
   },
-  Fakultas: (data,error) => {},
+  Fakultas: (data,createFakultas) => {
+    createFakultas({
+      variables: {
+        name: data.name,
+      },
+    })
+    return {
+      message: "Fakultas berhasil dibuat"
+    }
+  },
   Konsentrasi: (data,error) => {},
   Pendaftaran: (data,error) => {},
   Persyaratan: (data,error) => {},

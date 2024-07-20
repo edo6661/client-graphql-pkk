@@ -3,7 +3,7 @@ import React, { Fragment, useEffect, useState } from 'react'
 import { baseStyles } from '../../styles'
 import { gql, useMutation, useQuery } from '@apollo/client'
 import { createAdmin } from '../../api/mutation/admin.mutation'
-import { Fakultas, Konsentrasi, MutationCreateAdminArgs, MutationCreateDosenArgs, MutationCreateMahasiswaArgs, MutationSignUpArgs, ProgramStudi, Proyek, SignUpInput } from '../../__generated__/graphql'
+import { Fakultas, Konsentrasi, MutationCreateAdminArgs, MutationCreateDosenArgs, MutationCreateFakultasArgs, MutationCreateMahasiswaArgs, MutationSignUpArgs, ProgramStudi, Proyek, SignUpInput } from '../../__generated__/graphql'
 import { signUp } from '../../api/mutation/user.mutation'
 import { useNavigation } from '@react-navigation/native'
 import { AdminStackParamList, AdminStackScreenProps } from '../../types/adminNavigator.type'
@@ -21,6 +21,7 @@ import { getProyeks } from '../../api/query/proyek.query'
 import { getKonsentrasis } from '../../api/query/konsentrasi.query'
 import { Picker } from '@react-native-picker/picker'
 import { getProgramStudis } from '../../api/query/programStudi.query'
+import { createFakultas } from '../../api/mutation/fakultas.mutation'
 interface CreateFormProps {
   selectedValue: AdminFields
 }
@@ -54,6 +55,27 @@ const CreateForm = (
             })
             if (!newAdmin) return console.error('New Admin not found')
             return [...existingAdmins, newAdmin]
+          }
+        }
+      })
+    }
+  })
+  const [createFakultasMutation] = useMutation<any, MutationCreateFakultasArgs>(createFakultas, {
+    update(cache, { data }) {
+      if (!data?.createFakultas) return console.error('Data not found')
+      cache.modify({
+        fields: {
+          fakultas(existingFakultas = []) {
+            const newFakultas = cache.writeFragment({
+              data: data.createFakultas,
+              fragment: gql`
+                fragment NewFakultas on Fakultas {
+                  name
+                  id
+                }`
+            })
+            if (!newFakultas) return console.error('New Fakultas not found')
+            return [...existingFakultas, newFakultas]
           }
         }
       })
@@ -145,9 +167,7 @@ const CreateForm = (
     = {
       Admin: createAdminMutation,
       Dosen: createDosenMutation,
-      Fakultas: () => {
-        console.log("test")
-      },
+      Fakultas: createFakultasMutation,
       Konsentrasi: () => {
         console.log("test")
       },
