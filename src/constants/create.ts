@@ -21,7 +21,9 @@ export interface AdminCreateFnBasedOnFields<T> {
   Admin: ArgsAdminCreateFnBasedOnFields<Admin>,
   Dosen: ArgsAdminCreateFnBasedOnFields<Dosen>,
   Fakultas: ArgsAdminCreateFnBasedOnFields<MutationCreateFakultasArgs>,
-  Konsentrasi: ArgsAdminCreateFnBasedOnFields<Konsentrasi>,
+  Konsentrasi: ArgsAdminCreateFnBasedOnFields< Konsentrasi & {
+    prodiId: string
+  }>,
   Mahasiswa: ArgsAdminCreateFnBasedOnFields<Mahasiswa & {
     prodiId: string,
     konsentrasiId: string,
@@ -160,7 +162,18 @@ export const adminCreateFnBasedOnFields: AdminCreateFnBasedOnFields<AdminFields>
       message: "Fakultas berhasil dibuat"
     }
   },
-  Konsentrasi: (data,error) => {},
+  Konsentrasi: (data,createKonsentrasi) => {
+    createKonsentrasi({
+      variables: {
+        name: data.name,
+        programStudiId: data.prodiId
+      },
+      
+    })
+    return {
+      message: "Konsentrasi berhasil dibuat"
+    }
+  },
   Pendaftaran: (data,error) => {},
   Persyaratan: (data,error) => {},
   ProgramStudi: (data,error) => {},

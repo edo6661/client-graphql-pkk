@@ -16,6 +16,7 @@ import AdminNavigator from '../../navigators/AdminNavigator'
 import DosenNavigator from '../../navigators/DosenNavigator'
 import MahasiswaNavigator from '../../navigators/MahasiswaNavigator'
 import FakultasNavigator from '../../navigators/FakultasNavigator'
+import KonsentrasiNavigator from '../../navigators/KonsentrasiNavigator'
 
 
 
@@ -35,7 +36,8 @@ const AdminStackScreen = () => {
       <AdminStack.Screen name="Admin" component={AdminNavigator} />
       <AdminStack.Screen name="Dosen" component={DosenNavigator} />
       <AdminStack.Screen name="Fakultas" component={FakultasNavigator} />
-      <AdminStack.Screen name="Konsentrasi" component={KonsentrasiScreen} />
+      <AdminStack.Screen name="Konsentrasi" component={KonsentrasiNavigator}
+      />
       <AdminStack.Screen name="ProgramStudi" component={ProgramStudiScreen} />
       <AdminStack.Screen name="Pendaftaran" component={PendaftaranScreen} />
       <AdminStack.Screen name="Persyaratan" component={PersyaratanScreen} />

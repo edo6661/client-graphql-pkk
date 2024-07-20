@@ -5,6 +5,7 @@ export const getKonsentrasis = gql`
     konsentrasis {
       id
       name
+      programStudiId
       # TODO:
       # programStudi {
       #   name

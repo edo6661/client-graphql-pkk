@@ -3,7 +3,7 @@ import React, { Fragment, useEffect, useState } from 'react'
 import { baseStyles } from '../../styles'
 import { gql, useMutation, useQuery } from '@apollo/client'
 import { createAdmin } from '../../api/mutation/admin.mutation'
-import { Fakultas, Konsentrasi, MutationCreateAdminArgs, MutationCreateDosenArgs, MutationCreateFakultasArgs, MutationCreateMahasiswaArgs, MutationSignUpArgs, ProgramStudi, Proyek, SignUpInput } from '../../__generated__/graphql'
+import { Fakultas, Konsentrasi, MutationCreateAdminArgs, MutationCreateDosenArgs, MutationCreateFakultasArgs, MutationCreateKonsentrasiArgs, MutationCreateMahasiswaArgs, MutationSignUpArgs, ProgramStudi, Proyek, SignUpInput } from '../../__generated__/graphql'
 import { signUp } from '../../api/mutation/user.mutation'
 import { useNavigation } from '@react-navigation/native'
 import { AdminStackParamList, AdminStackScreenProps } from '../../types/adminNavigator.type'
@@ -22,6 +22,7 @@ import { getKonsentrasis } from '../../api/query/konsentrasi.query'
 import { Picker } from '@react-native-picker/picker'
 import { getProgramStudis } from '../../api/query/programStudi.query'
 import { createFakultas } from '../../api/mutation/fakultas.mutation'
+import { createKonsentrasi } from '../../api/mutation/konsentrasi.mutation'
 interface CreateFormProps {
   selectedValue: AdminFields
 }
@@ -81,12 +82,32 @@ const CreateForm = (
       })
     }
   })
+  const [createKonsentrasiMutation] = useMutation<any, MutationCreateKonsentrasiArgs>(createKonsentrasi, {
+    update(cache, { data }) {
+      if (!data?.createKonsentrasi) return console.error('Data not found')
+      cache.modify({
+        fields: {
+          konsentrasis(existingKonsentrasi = []) {
+            const newKonsentrasi = cache.writeFragment({
+              data: data.createKonsentrasi,
+              fragment: gql`
+                fragment NewKonsentrasi on Konsentrasi {
+                  name
+                  id
+                }`
+            })
+            if (!newKonsentrasi) return console.error('New Konsentrasi not found')
+            return [...existingKonsentrasi, newKonsentrasi]
+          }
+        }
+      })
+    }
+  })
   const [createDosenMutation] = useMutation<any, MutationCreateDosenArgs>(createDosen, {
     update(cache, { data }) {
       cache.modify({
         fields: {
           dosens(existingDosen = []) {
-            console.log("DATA", data)
             if (!data?.createDosen) return console.error('Data not found')
             if (existingDosen.length < 0) return console.error('Existing Dosen not found')
             const newDosen = cache.writeFragment({
@@ -168,9 +189,7 @@ const CreateForm = (
       Admin: createAdminMutation,
       Dosen: createDosenMutation,
       Fakultas: createFakultasMutation,
-      Konsentrasi: () => {
-        console.log("test")
-      },
+      Konsentrasi: createKonsentrasiMutation,
       Mahasiswa: createMahasiswaMutation,
       Pendaftaran: () => {
         console.log("test")
@@ -230,14 +249,14 @@ const CreateForm = (
     >
       {adminItemFields[selectedValue].map((field) => (
         <Fragment key={field}>
-          {(field !== 'userId' && field !== 'prodiId' && field !== "konsentrasiId" && field !== "proyekId") && (
+          {(field !== 'userId' && field !== 'prodiId' && field !== "konsentrasiId" && field !== "proyekId" && field !== 'programStudiId') && (
             <TextInput
               placeholder={field}
               value={formData[field]}
               onChangeText={(text) => handleInputChange(field, text)}
             />
           )}
-          {field === 'prodiId' && (
+          {(field === 'prodiId' || field === 'programStudiId') && (
             <Picker
               selectedValue={selectedProdi}
               onValueChange={(itemValue) => setSelectedProdi(itemValue)}
