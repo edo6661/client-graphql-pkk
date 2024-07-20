@@ -9,12 +9,13 @@ import ModalClose from '../../components/ModalClose'
 import { deleteFakultas } from '../../api/mutation/fakultas.mutation'
 
 const FakultasScreen = (
-  { navigation, route }: FakultasNavigatorScreenProps<"Fakultas">
+  { navigation, route }: FakultasNavigatorScreenProps<"Fakultass">
 ) => {
 
   const { data, loading, error, } = useQuery<{
     fakultas: Fakultas[]
   }>(getFakultas)
+
 
   const [remove] = useMutation<any, MutationDeleteFakultasArgs>(deleteFakultas, {
     update(cache, { data }) {
@@ -71,7 +72,7 @@ const FakultasScreen = (
             justifyContent: 'space-between'
           }}>
             <TouchableOpacity
-              onPress={() => navigation.navigate('DetailsFakultas', { id: item.id })}
+              onPress={() => navigation.navigate('DetailsFakultass', { id: item.id })}
             >
               <Text>{
                 item.name

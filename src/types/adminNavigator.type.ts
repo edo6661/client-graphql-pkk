@@ -1,6 +1,6 @@
-import { NativeStackNavigationProp } from 'react-native-screens/lib/typescript/native-stack/types';
-import { RouteProp } from '@react-navigation/native';
-import { AdminFields } from './admin.type';
+/* eslint-disable prettier/prettier */
+import {NativeStackNavigationProp} from 'react-native-screens/lib/typescript/native-stack/types';
+import {RouteProp} from '@react-navigation/native';
 
 // ! AdminStack
 export type AdminStackParamList = {
@@ -9,7 +9,7 @@ export type AdminStackParamList = {
   Dashboard: undefined;
   Dosen: undefined;
   Mahasiswa: undefined;
-  Fakultass: undefined;
+  Fakultas: undefined;
   Konsentrasi: undefined;
   ProgramStudi: undefined;
   Pendaftaran: undefined;
@@ -49,7 +49,7 @@ export type MahasiswaNavigatorParamList =
 export type UnionMahasiswaNavigatorParamList =
   keyof MahasiswaNavigatorParamList;
 
-export type FakultasNavigatorParamList = EntityNavigatorParamList<'Fakultas'>;
+export type FakultasNavigatorParamList = EntityNavigatorParamList<'Fakultass'>;
 export type UnionFakultasNavigatorParamList = keyof FakultasNavigatorParamList;
 
 // ! AdminNavigatorScreenProps
@@ -64,7 +64,7 @@ export type AdminNavigator =
   | 'Admins'
   | 'Dosens'
   | 'Mahasiswas'
-  | 'Fakultas'
+  | 'Fakultass'
   | 'Konsentrasi'
   | 'ProgramStudi'
   | 'Pendaftaran'
@@ -92,4 +92,4 @@ export type MahasiswaNavigatorScreenProps<
 
 export type FakultasNavigatorScreenProps<
   _T extends UnionFakultasNavigatorParamList,
-> = EntityAdminNavigatorScreenProps<'Fakultas', FakultasNavigatorParamList>;
+> = EntityAdminNavigatorScreenProps<'Fakultass', FakultasNavigatorParamList>;

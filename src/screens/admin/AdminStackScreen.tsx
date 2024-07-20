@@ -34,7 +34,7 @@ const AdminStackScreen = () => {
       <AdminStack.Screen name="Mahasiswa" component={MahasiswaNavigator} />
       <AdminStack.Screen name="Admin" component={AdminNavigator} />
       <AdminStack.Screen name="Dosen" component={DosenNavigator} />
-      <AdminStack.Screen name="Fakultass" component={FakultasNavigator} />
+      <AdminStack.Screen name="Fakultas" component={FakultasNavigator} />
       <AdminStack.Screen name="Konsentrasi" component={KonsentrasiScreen} />
       <AdminStack.Screen name="ProgramStudi" component={ProgramStudiScreen} />
       <AdminStack.Screen name="Pendaftaran" component={PendaftaranScreen} />

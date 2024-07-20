@@ -10,8 +10,8 @@ const FakultasStack = createStackNavigator<FakultasNavigatorParamList>()
 const FakultasNavigator = () => {
   return (
     <FakultasStack.Navigator>
-      <FakultasStack.Screen name='Fakultas' component={FakultasScreen} />
-      <FakultasStack.Screen name='DetailsFakultas' component={DetailsFakultasScreen} />
+      <FakultasStack.Screen name='Fakultass' component={FakultasScreen} />
+      <FakultasStack.Screen name='DetailsFakultass' component={DetailsFakultasScreen} />
     </FakultasStack.Navigator>
   )
 }

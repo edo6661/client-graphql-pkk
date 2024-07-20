@@ -1,4 +1,4 @@
-import { gql } from "@apollo/client";
+import {gql} from '@apollo/client';
 
 export const createFakultas = gql`
   mutation createFakultas($name: String!) {
@@ -7,14 +7,16 @@ export const createFakultas = gql`
       name
     }
   }
-`
+`;
 export const updateFakultas = gql`
-  mutation updateFakultas($id: String!, $name: String!) {
+  mutation updateFakultas($id: ID!, $name: String!) {
     updateFakultas(id: $id, name: $name) {
-      ...FakultasFields
+      id
+      name
+    
     }
   }
-`
+`;
 export const deleteFakultas = gql`
   mutation deleteFakultas($id: ID!) {
     deleteFakultas(id: $id) {
@@ -22,4 +24,4 @@ export const deleteFakultas = gql`
       name
     }
   }
-`
+`;

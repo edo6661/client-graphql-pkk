@@ -1,27 +1,50 @@
+/* eslint-disable prettier/prettier */
 export const adminFields = [
-  "Admin",
-  "Dosen",
-  "Fakultas",
-  "Konsentrasi",
-  "Mahasiswa",
-  "Pendaftaran",
-  "Persyaratan",
-  "ProgramStudi",
-  "Proyek"
+  'Admin',
+  'Dosen',
+  'Fakultas',
+  'Konsentrasi',
+  'Mahasiswa',
+  'Pendaftaran',
+  'Persyaratan',
+  'ProgramStudi',
+  'Proyek',
 ] as const;
 
-export type AdminFields = typeof adminFields[number];
+export type AdminFields = (typeof adminFields)[number];
 
 export const adminItemFields = {
-  Admin: ["fullname", "userId"],
-  Dosen: ["fullname", "userId", "nidn", "proyekId"],
-  Fakultas: ["name"],
-  Konsentrasi: ["name", "programStudiId"],
-  Mahasiswa: ["fullname", "userId", "nim", "semester", "prodiId", "konsentrasiId", "proyekId"],
-Pendaftaran: ["mahasiswaId", "tanggalPendaftaran", "buktiPembayaran"],
-  Persyaratan: ["mahasiswaId", "keteranganSehat", "keteranganPembayaran", "keteranganOrangTua", "keteranganKelakuanBaik"],
-  ProgramStudi: ["name", "fakultasId"],
-  Proyek: ["name", "photo", "bolehDimulai", "telahSelesai", "description", "batasOrang", "pembimbing"]
+  Admin: ['fullname', 'userId'],
+  Dosen: ['fullname', 'userId', 'nidn', 'proyekId'],
+  Fakultas: ['name'],
+  Konsentrasi: ['name', 'programStudiId'],
+  Mahasiswa: [
+    'fullname',
+    'userId',
+    'nim',
+    'semester',
+    'prodiId',
+    'konsentrasiId',
+    'proyekId',
+  ],
+  Pendaftaran: ['mahasiswaId', 'tanggalPendaftaran', 'buktiPembayaran'],
+  Persyaratan: [
+    'mahasiswaId',
+    'keteranganSehat',
+    'keteranganPembayaran',
+    'keteranganOrangTua',
+    'keteranganKelakuanBaik',
+  ],
+  ProgramStudi: ['name', 'fakultasId'],
+  Proyek: [
+    'name',
+    'photo',
+    'bolehDimulai',
+    'telahSelesai',
+    'description',
+    'batasOrang',
+    'pembimbing',
+  ],
 } as const;
 
 type FieldTypes = {
@@ -37,65 +60,62 @@ export type AdminItemFieldsInitialValue = {
   // Loop melalui setiap key di AdminFields
   [K in AdminFields]: {
     // Loop melalui setiap field di adminItemFields sesuai dengan key yang ada di AdminFields
-    [F in typeof adminItemFields[K][number]]: 
-    // Gunakan FieldValue untuk menentukan tipe dari value berdasarkan field
-    // Jika field adalah 'semester' atau 'batasOrang', gunakan 'number'
-    // Jika tidak, gunakan 'string' atau 'boolean'
-    FieldValue<F extends 'semester' | 'batasOrang' ? 'number' : 'string' | 'boolean'>
-  }
-}
+    [F in (typeof adminItemFields)[K][number]]: FieldValue<
+      // Jika tidak, gunakan 'string' atau 'boolean' // Jika field adalah 'semester' atau 'batasOrang', gunakan 'number' // Gunakan FieldValue untuk menentukan tipe dari value berdasarkan field
+      F extends 'semester' | 'batasOrang' ? 'number' : 'string' | 'boolean'
+    >;
+  };
+};
 export const adminItemFieldsInitialValue: AdminItemFieldsInitialValue = {
   Admin: {
-    fullname: "",
-    userId: ""
+    fullname: '',
+    userId: '',
   },
   Dosen: {
-    fullname: "",
-    userId: "",
-    nidn: "",
-    proyekId: ""
+    fullname: '',
+    userId: '',
+    nidn: '',
+    proyekId: '',
   },
   Fakultas: {
-    name: ""
+    name: '',
   },
   Konsentrasi: {
-    name: "",
-    programStudiId: ""
+    name: '',
+    programStudiId: '',
   },
   Mahasiswa: {
-    fullname: "",
-    userId: "",
-    nim: "",
+    fullname: '',
+    userId: '',
+    nim: '',
     semester: 0,
-    prodiId: "",
-    konsentrasiId: "",
-    proyekId: ""
+    prodiId: '',
+    konsentrasiId: '',
+    proyekId: '',
   },
   Pendaftaran: {
-    mahasiswaId: "",
-    tanggalPendaftaran: "",
-    buktiPembayaran: ""
+    mahasiswaId: '',
+    tanggalPendaftaran: '',
+    buktiPembayaran: '',
   },
   Persyaratan: {
-    mahasiswaId: "",
+    mahasiswaId: '',
     keteranganSehat: false,
     keteranganPembayaran: false,
     keteranganOrangTua: false,
-    keteranganKelakuanBaik: false
+    keteranganKelakuanBaik: false,
   },
   ProgramStudi: {
-    name: "",
-    fakultasId: ""
+    name: '',
+    fakultasId: '',
   },
   Proyek: {
-    name: "",
-    photo: "",
+    name: '',
+    photo: '',
     bolehDimulai: false,
     telahSelesai: false,
-    description: "",
+    description: '',
     batasOrang: 0,
-    pembimbing: ""
-  }
+    pembimbing: '',
+  },
 } as const;
-
-
