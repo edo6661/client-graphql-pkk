@@ -3,7 +3,7 @@ import React, { Fragment, useEffect, useState } from 'react'
 import { baseStyles } from '../../styles'
 import { gql, useMutation, useQuery } from '@apollo/client'
 import { createAdmin } from '../../api/mutation/admin.mutation'
-import { Fakultas, Konsentrasi, MutationCreateAdminArgs, MutationCreateDosenArgs, MutationCreateFakultasArgs, MutationCreateKonsentrasiArgs, MutationCreateMahasiswaArgs, MutationSignUpArgs, ProgramStudi, Proyek, SignUpInput } from '../../__generated__/graphql'
+import { Fakultas, Konsentrasi, MutationCreateAdminArgs, MutationCreateDosenArgs, MutationCreateFakultasArgs, MutationCreateKonsentrasiArgs, MutationCreateMahasiswaArgs, MutationCreateProgramStudiArgs, MutationSignUpArgs, ProgramStudi, Proyek, SignUpInput } from '../../__generated__/graphql'
 import { signUp } from '../../api/mutation/user.mutation'
 import { useNavigation } from '@react-navigation/native'
 import { AdminStackParamList, AdminStackScreenProps } from '../../types/adminNavigator.type'
@@ -23,6 +23,7 @@ import { Picker } from '@react-native-picker/picker'
 import { getProgramStudis } from '../../api/query/programStudi.query'
 import { createFakultas } from '../../api/mutation/fakultas.mutation'
 import { createKonsentrasi } from '../../api/mutation/konsentrasi.mutation'
+import { createProgramStudi } from '../../api/mutation/programStudi.mutation'
 interface CreateFormProps {
   selectedValue: AdminFields
 }
@@ -34,8 +35,9 @@ const CreateForm = (
   const [selectedKonsentrasi, setSelectedKonsentrasi] = useState<string | null>();
   const [selectedProdi, setSelectedProdi] = useState<string | null>();
   const [selectedProyek, setSelectedProyek] = useState<string | null>();
+  const [selectedFakultas, setSelectedFakultas] = useState<string | null>();
 
-  const { data: fakultas } = useQuery<{
+  const { data: programStudi } = useQuery<{
     programStudis: Array<ProgramStudi>
   }>(getProgramStudis)
   const { data: proyeks } = useQuery<{
@@ -44,6 +46,9 @@ const CreateForm = (
   const { data: konsentrasi } = useQuery<{
     konsentrasis: Array<Konsentrasi>
   }>(getKonsentrasis)
+  const { data: fakultas } = useQuery<{
+    fakultas: Array<Fakultas>
+  }>(getFakultas)
 
   const [createAdminMutation] = useMutation<any, MutationCreateAdminArgs>(createAdmin, {
     update(cache, { data }) {
@@ -77,6 +82,29 @@ const CreateForm = (
             })
             if (!newFakultas) return console.error('New Fakultas not found')
             return [...existingFakultas, newFakultas]
+          }
+        }
+      })
+    }
+  })
+  const [createProgramStudiMutation] = useMutation<any, MutationCreateProgramStudiArgs>(createProgramStudi, {
+    update(cache, { data }) {
+      if (!data?.createProgramStudi) return console.error('Data not found')
+      console.log(data)
+      cache.modify({
+        fields: {
+          programStudis(existingProgramStudi = []) {
+            const newProgramStudi = cache.writeFragment({
+              data: data.createProgramStudi,
+              fragment: gql`
+                fragment NewProgramStudi on ProgramStudi {
+                  id
+                  name
+                  fakultasId
+                }`
+            })
+            if (!newProgramStudi) return console.error('New ProgramStudi not found')
+            return [...existingProgramStudi, newProgramStudi]
           }
         }
       })
@@ -179,6 +207,7 @@ const CreateForm = (
     setSelectedProdi(null)
     setSelectedKonsentrasi(null)
     setSelectedProyek(null)
+    setSelectedFakultas(null)
   }
 
 
@@ -197,9 +226,7 @@ const CreateForm = (
       Persyaratan: () => {
         console.log("test")
       },
-      ProgramStudi: () => {
-        console.log("test")
-      },
+      ProgramStudi: createProgramStudiMutation,
       Proyek: () => {
         console.log("test")
       },
@@ -238,9 +265,10 @@ const CreateForm = (
       ...prev,
       ...(selectedKonsentrasi && { konsentrasiId: selectedKonsentrasi }),
       ...(selectedProdi && { prodiId: selectedProdi }),
-      ...(selectedProyek && { proyekId: selectedProyek })
+      ...(selectedProyek && { proyekId: selectedProyek }),
+      ...(selectedFakultas && { fakultasId: selectedFakultas }),
     }))
-  }, [selectedKonsentrasi, selectedProdi, selectedProyek])
+  }, [selectedKonsentrasi, selectedProdi, selectedProyek, selectedFakultas])
 
 
   return (
@@ -249,7 +277,7 @@ const CreateForm = (
     >
       {adminItemFields[selectedValue].map((field) => (
         <Fragment key={field}>
-          {(field !== 'userId' && field !== 'prodiId' && field !== "konsentrasiId" && field !== "proyekId" && field !== 'programStudiId') && (
+          {(field !== 'userId' && field !== 'prodiId' && field !== "konsentrasiId" && field !== "proyekId" && field !== 'programStudiId' && field !== "fakultasId") && (
             <TextInput
               placeholder={field}
               value={formData[field]}
@@ -262,7 +290,7 @@ const CreateForm = (
               onValueChange={(itemValue) => setSelectedProdi(itemValue)}
             >
               <Picker.Item label="Pilih Prodi" value="" />
-              {fakultas?.programStudis.map((prodi) => (
+              {programStudi?.programStudis.map((prodi) => (
                 <Picker.Item key={prodi.id} label={prodi.name} value={prodi.id} />
               ))}
             </Picker>
@@ -287,6 +315,17 @@ const CreateForm = (
             >
               <Picker.Item label="Pilih Proyek" value={null} />
               {proyeks?.proyeks.map((proyek) => (
+                <Picker.Item key={proyek.id} label={proyek.name} value={proyek.id} />
+              ))}
+            </Picker>
+          )}
+          {field === 'fakultasId' && (
+            <Picker
+              selectedValue={selectedFakultas}
+              onValueChange={(itemValue) => setSelectedFakultas(itemValue)}
+            >
+              <Picker.Item label="Pilih Fakultas" value={null} />
+              {fakultas?.fakultas.map((proyek) => (
                 <Picker.Item key={proyek.id} label={proyek.name} value={proyek.id} />
               ))}
             </Picker>

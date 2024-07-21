@@ -54,6 +54,9 @@ export type UnionFakultasNavigatorParamList = keyof FakultasNavigatorParamList;
 export type KonsentrasiNavigatorParamList = EntityNavigatorParamList<'Konsentrasis'>;
 export type UnionKonsentrasiNavigatorParamList = keyof KonsentrasiNavigatorParamList;
 
+export type ProgramStudiNavigatorParamList = EntityNavigatorParamList<'ProgramStudis'>;
+export type UnionProgramStudiNavigatorParamList = keyof ProgramStudiNavigatorParamList;
+
 // ! AdminNavigatorScreenProps
 
 // ! gampang nya begini:
@@ -68,7 +71,7 @@ export type AdminNavigator =
   | 'Mahasiswas'
   | 'Fakultass'
   | 'Konsentrasis'
-  | 'ProgramStudi'
+  | 'ProgramStudis'
   | 'Pendaftaran'
   | 'Persyaratan'
   | 'Proyek';
@@ -99,3 +102,7 @@ export type FakultasNavigatorScreenProps<
 export type KonsentrasiNavigatorScreenProps<
   _T extends UnionKonsentrasiNavigatorParamList,
 > = EntityAdminNavigatorScreenProps<'Konsentrasis', KonsentrasiNavigatorParamList>;
+
+export type ProgramStudiNavigatorScreenProps<
+  _T extends UnionProgramStudiNavigatorParamList,
+> = EntityAdminNavigatorScreenProps<'ProgramStudis', ProgramStudiNavigatorParamList>;

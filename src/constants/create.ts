@@ -32,7 +32,9 @@ export interface AdminCreateFnBasedOnFields<T> {
   }>,
   Pendaftaran: ArgsAdminCreateFnBasedOnFields<Pendaftaran>,
   Persyaratan: ArgsAdminCreateFnBasedOnFields<Persyaratan>,
-  ProgramStudi: ArgsAdminCreateFnBasedOnFields<ProgramStudi>,
+  ProgramStudi: ArgsAdminCreateFnBasedOnFields<ProgramStudi & {
+    fakultasId: string
+  }>,
   Proyek: ArgsAdminCreateFnBasedOnFields<Proyek>
 }
 
@@ -176,6 +178,17 @@ export const adminCreateFnBasedOnFields: AdminCreateFnBasedOnFields<AdminFields>
   },
   Pendaftaran: (data,error) => {},
   Persyaratan: (data,error) => {},
-  ProgramStudi: (data,error) => {},
+  ProgramStudi: (data,createKonsentrasi) => {
+    createKonsentrasi({
+      variables: {
+        name: data.name,
+        fakultasId: data.fakultasId
+      },
+      
+    })
+    return {
+      message: "Program Studi berhasil dibuat"
+    }
+  },
   Proyek: (data,error) => {}
 }
