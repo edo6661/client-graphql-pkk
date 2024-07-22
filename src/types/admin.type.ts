@@ -9,6 +9,9 @@ export const adminFields = [
   'Persyaratan',
   'ProgramStudi',
   'Proyek',
+  'Kelas',
+  'Angkatan',
+  'Kelompok',
 ] as const;
 
 export type AdminFields = (typeof adminFields)[number];
@@ -26,6 +29,9 @@ export const adminItemFields = {
     'prodiId',
     'konsentrasiId',
     'proyekId',
+    'kelasId',
+    'angkatanId',
+    'kelompokId',
   ],
   Pendaftaran: ['mahasiswaId', 'tanggalPendaftaran', 'buktiPembayaran'],
   Persyaratan: [
@@ -44,7 +50,14 @@ export const adminItemFields = {
     'description',
     'batasOrang',
     'pembimbing',
+    'lokasi',
+    'tanggalMulai',
+    'tanggalSelesai',
+
   ],
+  Kelas:["name"],
+  Angkatan:["tahun"],
+  Kelompok:["name","proyekId"],
 } as const;
 
 type FieldTypes = {
@@ -92,6 +105,9 @@ export const adminItemFieldsInitialValue: AdminItemFieldsInitialValue = {
     prodiId: '',
     konsentrasiId: '',
     proyekId: '',
+    angkatanId: '',
+    kelasId: '',
+    kelompokId: '',
   },
   Pendaftaran: {
     mahasiswaId: '',
@@ -117,5 +133,18 @@ export const adminItemFieldsInitialValue: AdminItemFieldsInitialValue = {
     description: '',
     batasOrang: 0,
     pembimbing: '',
+    lokasi: '',
+    tanggalMulai: '',
+    tanggalSelesai: '',
+  },
+  Kelas: {
+    name: '',
+  },
+  Angkatan: {
+    tahun: '',
+  },
+  Kelompok: {
+    name: '',
+    proyekId: '',
   },
 } as const;

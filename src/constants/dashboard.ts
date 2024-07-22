@@ -1,3 +1,3 @@
 export const listRouteDashboard = [
-  "Dosen","Mahasiswa","Fakultas","Konsentrasi","ProgramStudi","Pendaftaran","Persyaratan","Admin","Dashboard","Proyek"
+  "Dosen","Mahasiswa","Fakultas","Konsentrasi","ProgramStudi","Pendaftaran","Persyaratan","Admin","Dashboard","Proyek","Kelompok","Angkatan","Kelas"
 ]

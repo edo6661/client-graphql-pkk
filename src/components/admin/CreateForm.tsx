@@ -3,7 +3,7 @@ import React, { Fragment, useEffect, useState } from 'react'
 import { baseStyles } from '../../styles'
 import { gql, useMutation, useQuery } from '@apollo/client'
 import { createAdmin } from '../../api/mutation/admin.mutation'
-import { Fakultas, Konsentrasi, MutationCreateAdminArgs, MutationCreateDosenArgs, MutationCreateFakultasArgs, MutationCreateKonsentrasiArgs, MutationCreateMahasiswaArgs, MutationCreateProgramStudiArgs, MutationSignUpArgs, ProgramStudi, Proyek, SignUpInput } from '../../__generated__/graphql'
+import { Fakultas, Konsentrasi, MutationCreateAdminArgs, MutationCreateAngkatanArgs, MutationCreateDosenArgs, MutationCreateFakultasArgs, MutationCreateKelasArgs, MutationCreateKonsentrasiArgs, MutationCreateMahasiswaArgs, MutationCreateProgramStudiArgs, MutationSignUpArgs, ProgramStudi, Proyek, SignUpInput } from '../../__generated__/graphql'
 import { signUp } from '../../api/mutation/user.mutation'
 import { useNavigation } from '@react-navigation/native'
 import { AdminStackParamList, AdminStackScreenProps } from '../../types/adminNavigator.type'
@@ -24,6 +24,8 @@ import { getProgramStudis } from '../../api/query/programStudi.query'
 import { createFakultas } from '../../api/mutation/fakultas.mutation'
 import { createKonsentrasi } from '../../api/mutation/konsentrasi.mutation'
 import { createProgramStudi } from '../../api/mutation/programStudi.mutation'
+import { createAngkatan } from '../../api/mutation/angkatan.mutation'
+import { createKelas } from '../../api/mutation/kelas.mutation'
 interface CreateFormProps {
   selectedValue: AdminFields
 }
@@ -87,6 +89,27 @@ const CreateForm = (
       })
     }
   })
+  const [createAngkatanMutation] = useMutation<any, MutationCreateAngkatanArgs>(createAngkatan, {
+    update(cache, { data }) {
+      if (!data?.createAngkatan) return console.error('Data not found')
+      cache.modify({
+        fields: {
+          angkatans(existingAngkatan = []) {
+            const newAngkatan = cache.writeFragment({
+              data: data.createAngkatan,
+              fragment: gql`
+                fragment NewAngkatan on Angkatan {
+                  id
+                  tahun
+                }`
+            })
+            if (!newAngkatan) return console.error('New Angkatan not found')
+            return [...existingAngkatan, newAngkatan]
+          }
+        }
+      })
+    }
+  })
   const [createProgramStudiMutation] = useMutation<any, MutationCreateProgramStudiArgs>(createProgramStudi, {
     update(cache, { data }) {
       if (!data?.createProgramStudi) return console.error('Data not found')
@@ -131,6 +154,29 @@ const CreateForm = (
       })
     }
   })
+  const [createKelasMutation] = useMutation<any, MutationCreateKelasArgs>(createKelas, {
+    update(cache, { data }) {
+      if (!data?.createKelas) return console.error('Data not found')
+      cache.modify({
+        fields: {
+          kelass(existingKelas = []) {
+            const newKelas = cache.writeFragment({
+              data: data.createKelas,
+              fragment: gql`
+                fragment NewKelas on Kelas {
+                  name
+                  id
+              }`
+            })
+            if (!newKelas) return console.error('New Kelas not found')
+            return [...existingKelas, newKelas]
+          }
+        }
+      })
+    }
+  })
+
+
   const [createDosenMutation] = useMutation<any, MutationCreateDosenArgs>(createDosen, {
     update(cache, { data }) {
       cache.modify({
@@ -220,9 +266,7 @@ const CreateForm = (
       Fakultas: createFakultasMutation,
       Konsentrasi: createKonsentrasiMutation,
       Mahasiswa: createMahasiswaMutation,
-      Pendaftaran: () => {
-        console.log("test")
-      },
+
       Persyaratan: () => {
         console.log("test")
       },
@@ -230,6 +274,10 @@ const CreateForm = (
       Proyek: () => {
         console.log("test")
       },
+      Angkatan: createAngkatanMutation,
+      Kelas: createKelasMutation,
+      Kelompok: () => { },
+      Pendaftaran: () => { }
 
     } as const
   const onSubmit = async () => {
@@ -282,6 +330,9 @@ const CreateForm = (
               placeholder={field}
               value={formData[field]}
               onChangeText={(text) => handleInputChange(field, text)}
+              inputMode={
+                field === 'tahun' ? 'numeric' : 'text'
+              }
             />
           )}
           {(field === 'prodiId' || field === 'programStudiId') && (

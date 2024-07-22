@@ -1,4 +1,4 @@
-import { Admin, Dosen, Fakultas, Konsentrasi, Mahasiswa, MutationCreateFakultasArgs, MutationSignUpArgs, Pendaftaran, Persyaratan, ProgramStudi, Proyek, Role, User } from "../__generated__/graphql";
+import { Admin, Angkatan, Dosen, Fakultas, Kelas, Kelompok, Konsentrasi, Mahasiswa, MutationCreateFakultasArgs, MutationSignUpArgs, Pendaftaran, Persyaratan, ProgramStudi, Proyek, Role, User } from "../__generated__/graphql";
 import { MutationFn } from "../types/mutation.type";
 import { AdminFields } from "../types/admin.type";
 import { ApolloError } from "@apollo/client";
@@ -35,7 +35,10 @@ export interface AdminCreateFnBasedOnFields<T> {
   ProgramStudi: ArgsAdminCreateFnBasedOnFields<ProgramStudi & {
     fakultasId: string
   }>,
-  Proyek: ArgsAdminCreateFnBasedOnFields<Proyek>
+  Proyek: ArgsAdminCreateFnBasedOnFields<Proyek>,
+  Kelas: ArgsAdminCreateFnBasedOnFields<Kelas>,
+  Kelompok: ArgsAdminCreateFnBasedOnFields<Kelompok>,
+  Angkatan: ArgsAdminCreateFnBasedOnFields<Angkatan>,
 }
 
 
@@ -190,5 +193,45 @@ export const adminCreateFnBasedOnFields: AdminCreateFnBasedOnFields<AdminFields>
       message: "Program Studi berhasil dibuat"
     }
   },
-  Proyek: (data,error) => {}
+  Proyek: (data,error) => {},
+  Kelas: (data,createKelas) => {
+    createKelas({
+      variables:{
+        name: data.name
+      },
+      optimisticResponse:{
+        createKelas: {
+            __typename: "Kelas",
+            id: "temp-id",
+            name: data.name,
+            createdAt: new Date().toString(),
+            updatedAt: new Date().toString(),
+        }
+      }
+    })
+    return {
+      message: "Kelas berhasil dibuat"
+    }
+  },
+  Kelompok: (data,error) => {},
+  Angkatan: (data,createAngkatan) => {
+    createAngkatan({
+      variables:{
+        tahun: +data.tahun
+      },
+      optimisticResponse:{
+        createAngkatan: {
+            __typename: "Angkatan",
+            id: "temp-id",
+            tahun: data.tahun,
+            createdAt: new Date().toString(),
+            updatedAt: new Date().toString(),
+        }
+      }
+    })
+    return {
+      message: "Program Studi berhasil dibuat"
+    }
+  },
+
 }

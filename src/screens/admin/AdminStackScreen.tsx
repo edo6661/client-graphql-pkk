@@ -18,6 +18,11 @@ import MahasiswaNavigator from '../../navigators/MahasiswaNavigator'
 import FakultasNavigator from '../../navigators/FakultasNavigator'
 import KonsentrasiNavigator from '../../navigators/KonsentrasiNavigator'
 import ProgramStudiNavigator from '../../navigators/ProgramStudiNavigator'
+import AngkatanScreen from './AngkatanScreen'
+import KelasScreen from './KelasScreen'
+import KelompokScreen from './KelompokScreen'
+import AngkatanNavigator from '../../navigators/AngkatanNavigator'
+import KelasNavigator from '../../navigators/KelasNavigator'
 
 
 
@@ -43,6 +48,9 @@ const AdminStackScreen = () => {
       <AdminStack.Screen name="Pendaftaran" component={PendaftaranScreen} />
       <AdminStack.Screen name="Persyaratan" component={PersyaratanScreen} />
       <AdminStack.Screen name="Proyek" component={ProyekScreen} />
+      <AdminStack.Screen name="Angkatan" component={AngkatanNavigator} />
+      <AdminStack.Screen name="Kelas" component={KelasNavigator} />
+      <AdminStack.Screen name="Kelompok" component={KelompokScreen} />
     </AdminStack.Navigator>
   )
 }

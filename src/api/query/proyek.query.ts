@@ -7,13 +7,8 @@ export const getProyeks = gql`
       name
       description
       photo
-      # pembimbing {
-      #   fullname
-      #   nidn
-      # }
-      # bolehDimulai
-      # telahSelesai
-      createdAt
+      telahSelesai
+      bolehDimulai
     }
   }
 `

@@ -16,6 +16,9 @@ export type AdminStackParamList = {
   Persyaratan: undefined;
   Proyek: undefined;
   Create: undefined;
+  Kelas: undefined;
+  Kelompok: undefined;
+  Angkatan: undefined;
 };
 
 export type AdminStackScreenProps<T extends keyof AdminStackParamList> = {
@@ -57,6 +60,16 @@ export type UnionKonsentrasiNavigatorParamList = keyof KonsentrasiNavigatorParam
 export type ProgramStudiNavigatorParamList = EntityNavigatorParamList<'ProgramStudis'>;
 export type UnionProgramStudiNavigatorParamList = keyof ProgramStudiNavigatorParamList;
 
+export type KelasNavigatorParamList = EntityNavigatorParamList<'Kelass'>;
+export type UnionKelasNavigatorParamList = keyof KelasNavigatorParamList;
+export type AngkatanNavigatorParamList = EntityNavigatorParamList<'Angkatans'>;
+export type UnionAngkatanNavigatorParamList = keyof AngkatanNavigatorParamList;
+export type KelompokNavigatorParamList = EntityNavigatorParamList<'Kelompoks'>;
+export type UnionKelompokNavigatorParamList = keyof KelompokNavigatorParamList;
+export type ProyekNavigatorParamList = EntityNavigatorParamList<'Proyeks'>;
+export type UnionProyekNavigatorParamList = keyof ProyekNavigatorParamList;
+
+
 // ! AdminNavigatorScreenProps
 
 // ! gampang nya begini:
@@ -74,7 +87,10 @@ export type AdminNavigator =
   | 'ProgramStudis'
   | 'Pendaftaran'
   | 'Persyaratan'
-  | 'Proyek';
+  | 'Proyeks'
+  | 'Kelass'
+  | 'Kelompoks'
+  | 'Angkatans';
 
 export type EntityAdminNavigatorScreenProps<
   Entity extends AdminNavigator,
@@ -106,3 +122,16 @@ export type KonsentrasiNavigatorScreenProps<
 export type ProgramStudiNavigatorScreenProps<
   _T extends UnionProgramStudiNavigatorParamList,
 > = EntityAdminNavigatorScreenProps<'ProgramStudis', ProgramStudiNavigatorParamList>;
+export type KelasNavigatorScreenProps<
+  _T extends UnionKelasNavigatorParamList,
+> = EntityAdminNavigatorScreenProps<'Kelass', KelasNavigatorParamList>;
+export type AngkatanNavigatorScreenProps<
+  _T extends UnionAngkatanNavigatorParamList,
+> = EntityAdminNavigatorScreenProps<'Angkatans', AngkatanNavigatorParamList>;
+export type KelompokNavigatorScreenProps<
+  _T extends UnionKelompokNavigatorParamList,
+> = EntityAdminNavigatorScreenProps<'Kelompoks', KelompokNavigatorParamList>;
+
+export type ProyekNavigatorScreenProps<
+  _T extends UnionProyekNavigatorParamList,
+> = EntityAdminNavigatorScreenProps<'Proyeks', ProyekNavigatorParamList>;

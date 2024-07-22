@@ -87,10 +87,15 @@ export const dosenFragments = gql`
 export const mahasiswaFragments = gql`
   fragment MahasiswaFields on Mahasiswa {
     id
-    userId
     nim
     fullname
     semester
+    role
+    userId
+    kelasId
+    angkatanId
+    proyekId
+    kelompokId
     prodi {
       id
       name
@@ -118,6 +123,7 @@ export const mahasiswaFragments = gql`
       updatedAt
     }
     biayaOperasionals {
+
       id
       biayaTransportasi
       biayaProyek
@@ -142,6 +148,7 @@ export const mahasiswaFragments = gql`
       createdAt
       updatedAt
     }
+    
     createdAt
     updatedAt
   }
@@ -203,9 +210,17 @@ export const proyekFragments = gql`
     id
     name
     photo
+    batasOrang
+    verified
+    lokasi
+    tanggalMulai
+    tanggalSelesai
+    bolehDimulai
+    telahSelesai
     pembimbing {
       id
       fullname
+      nidn
       createdAt
       updatedAt
     }
@@ -223,7 +238,7 @@ export const proyekFragments = gql`
       createdAt
       updatedAt
     }
-    biayaOperasional {
+    biayaOperasionals {
       id
       biayaTransportasi
       biayaProyek
