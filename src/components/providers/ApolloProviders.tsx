@@ -113,8 +113,8 @@ const ApolloProviders = (
   })
 
   const client = new ApolloClient({
-    uri: 'http://10.0.2.2:4000/graphql',
-    // uri: 'https://pendaftaran-kkn-kkp.netlify.app/graphql',
+    // uri: 'http://10.0.2.2:4000/graphql',
+    uri: 'https://pendaftaran-kkn-kkp.netlify.app/graphql',
     cache,
     credentials: "include"
   })
