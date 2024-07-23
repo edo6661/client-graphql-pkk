@@ -3,7 +3,7 @@ import React, { Fragment, useEffect, useState } from 'react'
 import { baseStyles } from '../../styles'
 import { gql, useMutation, useQuery } from '@apollo/client'
 import { createAdmin } from '../../api/mutation/admin.mutation'
-import { Fakultas, Konsentrasi, Mahasiswa, MutationCreateAdminArgs, MutationCreateAngkatanArgs, MutationCreateDosenArgs, MutationCreateFakultasArgs, MutationCreateKelasArgs, MutationCreateKonsentrasiArgs, MutationCreateMahasiswaArgs, MutationCreatePersyaratanArgs, MutationCreateProgramStudiArgs, MutationSignUpArgs, ProgramStudi, Proyek, SignUpInput } from '../../__generated__/graphql'
+import { Fakultas, Konsentrasi, Mahasiswa, MutationCreateAdminArgs, MutationCreateAngkatanArgs, MutationCreateDosenArgs, MutationCreateFakultasArgs, MutationCreateKelasArgs, MutationCreateKelompokArgs, MutationCreateKonsentrasiArgs, MutationCreateMahasiswaArgs, MutationCreatePersyaratanArgs, MutationCreateProgramStudiArgs, MutationSignUpArgs, ProgramStudi, Proyek, SignUpInput } from '../../__generated__/graphql'
 import { signUp } from '../../api/mutation/user.mutation'
 import { useNavigation } from '@react-navigation/native'
 import { AdminStackParamList, AdminStackScreenProps } from '../../types/adminNavigator.type'
@@ -29,6 +29,7 @@ import { createKelas } from '../../api/mutation/kelas.mutation'
 import BouncyCheckbox from 'react-native-bouncy-checkbox'
 import { getMahasiswas } from '../../api/query/mahasiswa.query'
 import { createPersyaratan } from '../../api/mutation/persyaratan.mutation'
+import { createKelompok } from '../../api/mutation/kelompok.mutation'
 interface CreateFormProps {
   selectedValue: AdminFields
 }
@@ -92,6 +93,27 @@ const CreateForm = (
             })
             if (!newFakultas) return console.error('New Fakultas not found')
             return [...existingFakultas, newFakultas]
+          }
+        }
+      })
+    }
+  })
+  const [createKelompokMutation] = useMutation<any, MutationCreateKelompokArgs>(createKelompok, {
+    update(cache, { data }) {
+      if (!data?.createKelompok) return console.error('Data not found')
+      cache.modify({
+        fields: {
+          kelompoks(existingKelompok = []) {
+            const newKelompok = cache.writeFragment({
+              data: data.createKelompok,
+              fragment: gql`
+                fragment NewKelompok on Kelompok {
+                  name
+                  id
+                }`
+            })
+            if (!newKelompok) return console.error('New Kelompok not found')
+            return [...existingKelompok, newKelompok]
           }
         }
       })
@@ -307,7 +329,7 @@ const CreateForm = (
       },
       Angkatan: createAngkatanMutation,
       Kelas: createKelasMutation,
-      Kelompok: () => { },
+      Kelompok: createKelompokMutation,
       Pendaftaran: () => { }
 
     } as const

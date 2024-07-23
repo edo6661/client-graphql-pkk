@@ -189,7 +189,6 @@ export const adminCreateFnBasedOnFields: AdminCreateFnBasedOnFields<AdminFields>
       keteranganPembayaran: checkedToBoolean(data.keteranganPembayaran),
       keteranganSehat: checkedToBoolean(data.keteranganSehat),
     }
-    console.log("CONVERTED DATA",convertedData)
     createPersyaratan({
       variables: {
         ...convertedData
@@ -231,7 +230,27 @@ export const adminCreateFnBasedOnFields: AdminCreateFnBasedOnFields<AdminFields>
       message: "Kelas berhasil dibuat"
     }
   },
-  Kelompok: (data,error) => {},
+  Kelompok: (data,createKelompok) => {
+    createKelompok({
+      variables:{
+        name: data.name,
+        proyekId: data.proyekId || null,
+      },
+      optimisticResponse:{
+        createKelompok: {
+            __typename: "Kelompok",
+            id: "temp-id",
+            name: data.name,
+            proyekId: data.proyekId || null,
+            createdAt: new Date().toString(),
+            updatedAt: new Date().toString(),
+        }
+      }
+    })
+    return {
+      message: "Kelompok berhasil"
+    }
+  },
   Angkatan: (data,createAngkatan) => {
     createAngkatan({
       variables:{

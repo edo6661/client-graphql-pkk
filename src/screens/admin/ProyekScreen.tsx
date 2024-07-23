@@ -6,6 +6,7 @@ import { getProyeks } from '../../api/query/proyek.query'
 const ProyekScreen = () => {
   const { data, loading, error, } = useQuery(getProyeks)
   console.log(data)
+  // TODO: IMPLEMENT CRUD
   return (
     <View>
       <Text>ProyekScreen</Text>
