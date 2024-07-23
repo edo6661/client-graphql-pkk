@@ -6,6 +6,8 @@ import { listRouteDashboard } from '../../constants/dashboard'
 import { AdminStackParamList, AdminStackScreenProps } from '../../types/adminNavigator.type'
 import { useQuery } from '@apollo/client'
 import { getCurrentUser } from '../../api/query/auth.query'
+import BouncyCheckbox from "react-native-bouncy-checkbox";
+
 
 const DashboardScreen = (
   { navigation }: AdminStackScreenProps<'Dashboard'>
@@ -44,6 +46,7 @@ const DashboardScreen = (
           gap: 4
         }}
       />
+
     </View>
   )
 }

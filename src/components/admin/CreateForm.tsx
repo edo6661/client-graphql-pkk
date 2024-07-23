@@ -3,7 +3,7 @@ import React, { Fragment, useEffect, useState } from 'react'
 import { baseStyles } from '../../styles'
 import { gql, useMutation, useQuery } from '@apollo/client'
 import { createAdmin } from '../../api/mutation/admin.mutation'
-import { Fakultas, Konsentrasi, MutationCreateAdminArgs, MutationCreateAngkatanArgs, MutationCreateDosenArgs, MutationCreateFakultasArgs, MutationCreateKelasArgs, MutationCreateKonsentrasiArgs, MutationCreateMahasiswaArgs, MutationCreateProgramStudiArgs, MutationSignUpArgs, ProgramStudi, Proyek, SignUpInput } from '../../__generated__/graphql'
+import { Fakultas, Konsentrasi, Mahasiswa, MutationCreateAdminArgs, MutationCreateAngkatanArgs, MutationCreateDosenArgs, MutationCreateFakultasArgs, MutationCreateKelasArgs, MutationCreateKonsentrasiArgs, MutationCreateMahasiswaArgs, MutationCreatePersyaratanArgs, MutationCreateProgramStudiArgs, MutationSignUpArgs, ProgramStudi, Proyek, SignUpInput } from '../../__generated__/graphql'
 import { signUp } from '../../api/mutation/user.mutation'
 import { useNavigation } from '@react-navigation/native'
 import { AdminStackParamList, AdminStackScreenProps } from '../../types/adminNavigator.type'
@@ -26,6 +26,9 @@ import { createKonsentrasi } from '../../api/mutation/konsentrasi.mutation'
 import { createProgramStudi } from '../../api/mutation/programStudi.mutation'
 import { createAngkatan } from '../../api/mutation/angkatan.mutation'
 import { createKelas } from '../../api/mutation/kelas.mutation'
+import BouncyCheckbox from 'react-native-bouncy-checkbox'
+import { getMahasiswas } from '../../api/query/mahasiswa.query'
+import { createPersyaratan } from '../../api/mutation/persyaratan.mutation'
 interface CreateFormProps {
   selectedValue: AdminFields
 }
@@ -38,6 +41,8 @@ const CreateForm = (
   const [selectedProdi, setSelectedProdi] = useState<string | null>();
   const [selectedProyek, setSelectedProyek] = useState<string | null>();
   const [selectedFakultas, setSelectedFakultas] = useState<string | null>();
+  const [selectedMahasiswa, setSelectedMahasiswa] = useState<string | null>();
+
 
   const { data: programStudi } = useQuery<{
     programStudis: Array<ProgramStudi>
@@ -51,6 +56,9 @@ const CreateForm = (
   const { data: fakultas } = useQuery<{
     fakultas: Array<Fakultas>
   }>(getFakultas)
+  const { data: mahasiswa } = useQuery<{
+    mahasiswas: Array<Mahasiswa>
+  }>(getMahasiswas)
 
   const [createAdminMutation] = useMutation<any, MutationCreateAdminArgs>(createAdmin, {
     update(cache, { data }) {
@@ -110,10 +118,34 @@ const CreateForm = (
       })
     }
   })
+  const [createPersyaratanMutation] = useMutation<any, MutationCreatePersyaratanArgs>(createPersyaratan, {
+    update(cache, { data }) {
+      if (!data?.createPersyaratan) return console.error('Data not found')
+      cache.modify({
+        fields: {
+          persyaratans(existingPersyaratan = []) {
+            const newPersyaratan = cache.writeFragment({
+              data: data.createPersyaratan,
+              fragment: gql`
+                fragment NewPersyaratan on Persyaratan {
+                  id
+                  keteranganKelakuanBaik
+                  keteranganOrangTua
+                  keteranganPembayaran
+                  keteranganSehat
+                  mahasiswaId
+                }`
+            })
+            if (!newPersyaratan) return console.error('New Persyaratan not found')
+            return [...existingPersyaratan, newPersyaratan]
+          }
+        }
+      })
+    }
+  })
   const [createProgramStudiMutation] = useMutation<any, MutationCreateProgramStudiArgs>(createProgramStudi, {
     update(cache, { data }) {
       if (!data?.createProgramStudi) return console.error('Data not found')
-      console.log(data)
       cache.modify({
         fields: {
           programStudis(existingProgramStudi = []) {
@@ -254,6 +286,7 @@ const CreateForm = (
     setSelectedKonsentrasi(null)
     setSelectedProyek(null)
     setSelectedFakultas(null)
+    setSelectedMahasiswa(null)
   }
 
 
@@ -267,9 +300,7 @@ const CreateForm = (
       Konsentrasi: createKonsentrasiMutation,
       Mahasiswa: createMahasiswaMutation,
 
-      Persyaratan: () => {
-        console.log("test")
-      },
+      Persyaratan: createPersyaratanMutation,
       ProgramStudi: createProgramStudiMutation,
       Proyek: () => {
         console.log("test")
@@ -315,8 +346,11 @@ const CreateForm = (
       ...(selectedProdi && { prodiId: selectedProdi }),
       ...(selectedProyek && { proyekId: selectedProyek }),
       ...(selectedFakultas && { fakultasId: selectedFakultas }),
+      ...(selectedMahasiswa && { mahasiswaId: selectedMahasiswa })
     }))
-  }, [selectedKonsentrasi, selectedProdi, selectedProyek, selectedFakultas])
+
+  }, [selectedKonsentrasi, selectedProdi, selectedProyek, selectedFakultas, selectedMahasiswa])
+
 
 
   return (
@@ -325,7 +359,7 @@ const CreateForm = (
     >
       {adminItemFields[selectedValue].map((field) => (
         <Fragment key={field}>
-          {(field !== 'userId' && field !== 'prodiId' && field !== "konsentrasiId" && field !== "proyekId" && field !== 'programStudiId' && field !== "fakultasId") && (
+          {(field !== 'userId' && field !== 'prodiId' && field !== "konsentrasiId" && field !== "proyekId" && field !== 'programStudiId' && field !== "fakultasId" && field !== 'mahasiswaId' && !field.includes('keterangan')) && (
             <TextInput
               placeholder={field}
               value={formData[field]}
@@ -381,9 +415,35 @@ const CreateForm = (
               ))}
             </Picker>
           )}
+          {field === 'mahasiswaId' && (
+            <Picker selectedValue={selectedMahasiswa} onValueChange={(itemValue) => setSelectedMahasiswa(itemValue)}>
+              <Picker.Item label='Pilih Mahasiswa' value={null} />
+              {mahasiswa?.mahasiswas.map((mahasiswa) => {
+                return !mahasiswa.persyaratan && (
+                  <Picker.Item key={mahasiswa.id} label={mahasiswa.fullname} value={mahasiswa.id} />
+                )
+              })}
+            </Picker>
+          )}
+          {field.includes("keterangan") && (
+            <BouncyCheckbox
+              size={25}
+              fillColor="cyan"
+              unFillColor="#FFFFFF"
+              iconStyle={{ borderColor: "red" }}
+              innerIconStyle={{ borderWidth: 2 }}
+              onPress={(checked) =>
+                handleInputChange(field, checked ? "Checked" : "Unchecked")
+              }
+              text={field}
+
+            />
+
+          )}
 
         </Fragment>
       ))}
+
       <Button
         title="Submit"
         onPress={onSubmit}

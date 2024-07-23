@@ -30,6 +30,9 @@ const documents = {
     "\n  mutation createFakultas($name: String!) {\n    createFakultas(name: $name) {\n      id\n      name\n    }\n  }\n": types.CreateFakultasDocument,
     "\n  mutation updateFakultas($id: ID!, $name: String!) {\n    updateFakultas(id: $id, name: $name) {\n      id\n      name\n    \n    }\n  }\n": types.UpdateFakultasDocument,
     "\n  mutation deleteFakultas($id: ID!) {\n    deleteFakultas(id: $id) {\n      id\n      name\n    }\n  }\n": types.DeleteFakultasDocument,
+    "\n  mutation createKelas($name: String!) {\n    createKelas(name: $name) {\n      id\n      name\n    }\n  }\n": types.CreateKelasDocument,
+    "\n  mutation updateKelas($id: ID!, $name: String) {\n    updateKelas(id: $id, name: $name) {\n      id\n      name\n    }\n  }\n": types.UpdateKelasDocument,
+    "\n  mutation DeleteKelas($id: ID!) {\n    deleteKelas(id: $id) {\n      id\n      name\n    }\n  }\n": types.DeleteKelasDocument,
     "\n  mutation createKonsentrasi($name: String!, $programStudiId: ID) {\n    createKonsentrasi(name: $name, programStudiId: $programStudiId) {\n      id\n      name\n      programStudiId\n    }\n  }\n": types.CreateKonsentrasiDocument,
     "\n  mutation updateKonsentrasi(\n    $id: ID!\n    $name: String\n    $programStudiId: ID\n  ) {\n    updateKonsentrasi(id: $id, name: $name, programStudiId: $programStudiId) {\n      id\n      name\n      programStudiId\n    }\n  }\n": types.UpdateKonsentrasiDocument,
     "\n  mutation deleteKonsentrasi($id: ID!) {\n    deleteKonsentrasi(id: $id) {\n      id\n      name\n      \n    }\n  }\n": types.DeleteKonsentrasiDocument,
@@ -47,6 +50,7 @@ const documents = {
     "\n                fragment NewAngkatan on Angkatan {\n                  id\n                  tahun\n                }": types.NewAngkatanFragmentDoc,
     "\n                fragment NewProgramStudi on ProgramStudi {\n                  id\n                  name\n                  fakultasId\n                }": types.NewProgramStudiFragmentDoc,
     "\n                fragment NewKonsentrasi on Konsentrasi {\n                  name\n                  id\n                }": types.NewKonsentrasiFragmentDoc,
+    "\n                fragment NewKelas on Kelas {\n                  name\n                  id\n              }": types.NewKelasFragmentDoc,
     "\n                fragment NewDosen on Dosen {\n                  id\n                  fullname\n                  nidn\n                  userId\n                }\n              ": types.NewDosenFragmentDoc,
     "\n                fragment NewMahasiswa on Mahasiswa {\n                  id\n                  fullname\n                  nim\n                  userId\n                }\n              ": types.NewMahasiswaFragmentDoc,
     "\n  fragment BauFields on Bau {\n    id\n    name\n  }\n": types.BauFieldsFragmentDoc,
@@ -68,7 +72,9 @@ const documents = {
     "\n      fragment AngkatanDetails on Angkatan {\n        id\n        tahun\n        createdAt\n        updatedAt\n      }\n    ": types.AngkatanDetailsFragmentDoc,
     "\n      fragment DosenDetails on Dosen {\n        ...DosenFields\n      }\n    ": types.DosenDetailsFragmentDoc,
     "\n      fragment FakultasDetails on Fakultas {\n        id\n        name\n      }\n    ": types.FakultasDetailsFragmentDoc,
+    "\n      fragment KelasDetails on Kelas {\n        id\n        name\n      }\n    ": types.KelasDetailsFragmentDoc,
     "\n      fragment MahasiswaDetails on Mahasiswa {\n        ...MahasiswaFields\n      }\n    ": types.MahasiswaDetailsFragmentDoc,
+    "\n      fragment PersyaratanDetails on Persyaratan {\n        id\n        keteranganKelakuanBaik\n        keteranganOrangTua\n        keteranganPembayaran\n        keteranganSehat\n        mahasiswaId\n        \n      }\n    ": types.PersyaratanDetailsFragmentDoc,
     "\n      fragment ProgramStudiDetails on ProgramStudi {\n        id\n        name\n        fakultasId\n      }\n    ": types.ProgramStudiDetailsFragmentDoc,
     "\n      fragment KonsentrasiDetails on Konsentrasi {\n        id\n        name\n        programStudiId\n      }\n    ": types.KonsentrasiDetailsFragmentDoc,
 };
@@ -158,6 +164,18 @@ export function gql(source: "\n  mutation deleteFakultas($id: ID!) {\n    delete
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
+export function gql(source: "\n  mutation createKelas($name: String!) {\n    createKelas(name: $name) {\n      id\n      name\n    }\n  }\n"): (typeof documents)["\n  mutation createKelas($name: String!) {\n    createKelas(name: $name) {\n      id\n      name\n    }\n  }\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n  mutation updateKelas($id: ID!, $name: String) {\n    updateKelas(id: $id, name: $name) {\n      id\n      name\n    }\n  }\n"): (typeof documents)["\n  mutation updateKelas($id: ID!, $name: String) {\n    updateKelas(id: $id, name: $name) {\n      id\n      name\n    }\n  }\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n  mutation DeleteKelas($id: ID!) {\n    deleteKelas(id: $id) {\n      id\n      name\n    }\n  }\n"): (typeof documents)["\n  mutation DeleteKelas($id: ID!) {\n    deleteKelas(id: $id) {\n      id\n      name\n    }\n  }\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
 export function gql(source: "\n  mutation createKonsentrasi($name: String!, $programStudiId: ID) {\n    createKonsentrasi(name: $name, programStudiId: $programStudiId) {\n      id\n      name\n      programStudiId\n    }\n  }\n"): (typeof documents)["\n  mutation createKonsentrasi($name: String!, $programStudiId: ID) {\n    createKonsentrasi(name: $name, programStudiId: $programStudiId) {\n      id\n      name\n      programStudiId\n    }\n  }\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
@@ -223,6 +241,10 @@ export function gql(source: "\n                fragment NewProgramStudi on Progr
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function gql(source: "\n                fragment NewKonsentrasi on Konsentrasi {\n                  name\n                  id\n                }"): (typeof documents)["\n                fragment NewKonsentrasi on Konsentrasi {\n                  name\n                  id\n                }"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n                fragment NewKelas on Kelas {\n                  name\n                  id\n              }"): (typeof documents)["\n                fragment NewKelas on Kelas {\n                  name\n                  id\n              }"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -310,7 +332,15 @@ export function gql(source: "\n      fragment FakultasDetails on Fakultas {\n   
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
+export function gql(source: "\n      fragment KelasDetails on Kelas {\n        id\n        name\n      }\n    "): (typeof documents)["\n      fragment KelasDetails on Kelas {\n        id\n        name\n      }\n    "];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
 export function gql(source: "\n      fragment MahasiswaDetails on Mahasiswa {\n        ...MahasiswaFields\n      }\n    "): (typeof documents)["\n      fragment MahasiswaDetails on Mahasiswa {\n        ...MahasiswaFields\n      }\n    "];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n      fragment PersyaratanDetails on Persyaratan {\n        id\n        keteranganKelakuanBaik\n        keteranganOrangTua\n        keteranganPembayaran\n        keteranganSehat\n        mahasiswaId\n        \n      }\n    "): (typeof documents)["\n      fragment PersyaratanDetails on Persyaratan {\n        id\n        keteranganKelakuanBaik\n        keteranganOrangTua\n        keteranganPembayaran\n        keteranganSehat\n        mahasiswaId\n        \n      }\n    "];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

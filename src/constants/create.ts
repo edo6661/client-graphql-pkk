@@ -180,7 +180,25 @@ export const adminCreateFnBasedOnFields: AdminCreateFnBasedOnFields<AdminFields>
     }
   },
   Pendaftaran: (data,error) => {},
-  Persyaratan: (data,error) => {},
+  Persyaratan: (data,createPersyaratan) => {
+    const checkedToBoolean = <T>(value:T ) => value === "Checked" ? true : false
+    const convertedData = {
+      ...data,
+      keteranganKelakuanBaik: checkedToBoolean(data.keteranganKelakuanBaik),
+      keteranganOrangTua: checkedToBoolean(data.keteranganOrangTua),
+      keteranganPembayaran: checkedToBoolean(data.keteranganPembayaran),
+      keteranganSehat: checkedToBoolean(data.keteranganSehat),
+    }
+    console.log("CONVERTED DATA",convertedData)
+    createPersyaratan({
+      variables: {
+        ...convertedData
+      }
+    })
+    return {
+      message: "Persyaratan berhasil dibuat"
+    }
+  },
   ProgramStudi: (data,createKonsentrasi) => {
     createKonsentrasi({
       variables: {

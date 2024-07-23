@@ -69,6 +69,9 @@ export type UnionKelompokNavigatorParamList = keyof KelompokNavigatorParamList;
 export type ProyekNavigatorParamList = EntityNavigatorParamList<'Proyeks'>;
 export type UnionProyekNavigatorParamList = keyof ProyekNavigatorParamList;
 
+export type PersyaratanNavigatorParamList = EntityNavigatorParamList<'Persyaratans'>;
+export type UnionPersyaratanNavigatorParamList = keyof PersyaratanNavigatorParamList;
+
 
 // ! AdminNavigatorScreenProps
 
@@ -86,7 +89,7 @@ export type AdminNavigator =
   | 'Konsentrasis'
   | 'ProgramStudis'
   | 'Pendaftaran'
-  | 'Persyaratan'
+  | 'Persyaratans'
   | 'Proyeks'
   | 'Kelass'
   | 'Kelompoks'
@@ -135,3 +138,6 @@ export type KelompokNavigatorScreenProps<
 export type ProyekNavigatorScreenProps<
   _T extends UnionProyekNavigatorParamList,
 > = EntityAdminNavigatorScreenProps<'Proyeks', ProyekNavigatorParamList>;
+export type PersyaratanNavigatorScreenProps<
+  _T extends UnionPersyaratanNavigatorParamList,
+> = EntityAdminNavigatorScreenProps<'Persyaratans', PersyaratanNavigatorParamList>;
