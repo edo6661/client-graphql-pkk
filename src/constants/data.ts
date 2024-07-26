@@ -42,5 +42,10 @@ export const sectionListData = [
   },
 ];
 
+export enum TypeProyek {
+  KKN = 'KKN',
+  KKP = 'KKP',
+}
+
 
 // export const DATA = []

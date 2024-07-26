@@ -91,11 +91,27 @@ export const mahasiswaFragments = gql`
     fullname
     semester
     role
+  
     userId
     kelasId
     angkatanId
     proyekId
     kelompokId
+    konsentrasiId
+    prodiId 
+    kelas {
+      id
+      name
+    }
+    angkatan {
+      id
+      tahun
+    }
+    kelompok {
+      id
+      name
+    }
+
     prodi {
       id
       name
@@ -211,10 +227,12 @@ export const proyekFragments = gql`
     name
     photo
     batasOrang
+    description
     verified
     lokasi
     tanggalMulai
     tanggalSelesai
+    type
     bolehDimulai
     telahSelesai
     pembimbing {
@@ -224,7 +242,6 @@ export const proyekFragments = gql`
       createdAt
       updatedAt
     }
-    description
     mahasiswa {
       id
       fullname
@@ -246,6 +263,10 @@ export const proyekFragments = gql`
       tanggalBiaya
       createdAt
       updatedAt
+    }
+    kelompok {
+      id
+      name
     }
     createdAt
     updatedAt

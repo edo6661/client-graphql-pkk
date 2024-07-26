@@ -3,7 +3,9 @@ import React, { Fragment, useEffect, useState } from 'react'
 import { baseStyles } from '../../styles'
 import { gql, useMutation, useQuery } from '@apollo/client'
 import { createAdmin } from '../../api/mutation/admin.mutation'
-import { Fakultas, Konsentrasi, Mahasiswa, MutationCreateAdminArgs, MutationCreateAngkatanArgs, MutationCreateDosenArgs, MutationCreateFakultasArgs, MutationCreateKelasArgs, MutationCreateKelompokArgs, MutationCreateKonsentrasiArgs, MutationCreateMahasiswaArgs, MutationCreatePersyaratanArgs, MutationCreateProgramStudiArgs, MutationSignUpArgs, ProgramStudi, Proyek, SignUpInput } from '../../__generated__/graphql'
+import DateTimePicker from 'react-native-ui-datepicker';
+
+import { Angkatan, Fakultas, Kelas, Konsentrasi, Mahasiswa, MutationCreateAdminArgs, MutationCreateAngkatanArgs, MutationCreateDosenArgs, MutationCreateFakultasArgs, MutationCreateKelasArgs, MutationCreateKelompokArgs, MutationCreateKonsentrasiArgs, MutationCreateMahasiswaArgs, MutationCreatePersyaratanArgs, MutationCreateProgramStudiArgs, MutationCreateProyekArgs, MutationSignUpArgs, ProgramStudi, Proyek, SignUpInput, TypeProyek } from '../../__generated__/graphql'
 import { signUp } from '../../api/mutation/user.mutation'
 import { useNavigation } from '@react-navigation/native'
 import { AdminStackParamList, AdminStackScreenProps } from '../../types/adminNavigator.type'
@@ -30,6 +32,10 @@ import BouncyCheckbox from 'react-native-bouncy-checkbox'
 import { getMahasiswas } from '../../api/query/mahasiswa.query'
 import { createPersyaratan } from '../../api/mutation/persyaratan.mutation'
 import { createKelompok } from '../../api/mutation/kelompok.mutation'
+import dayjs from 'dayjs'
+import { createProyek } from '../../api/mutation/proyek.mutation'
+import { getKelass } from '../../api/query/kelas.query'
+import { getAngkatans } from '../../api/query/angkatan.query'
 interface CreateFormProps {
   selectedValue: AdminFields
 }
@@ -60,6 +66,13 @@ const CreateForm = (
   const { data: mahasiswa } = useQuery<{
     mahasiswas: Array<Mahasiswa>
   }>(getMahasiswas)
+  const { data: kelas } = useQuery<{
+    kelass: Array<Kelas>
+  }>(getKelass);
+  const { data: angkatan } = useQuery<{
+    angkatans: Array<Angkatan>
+  }>(getAngkatans)
+
 
   const [createAdminMutation] = useMutation<any, MutationCreateAdminArgs>(createAdmin, {
     update(cache, { data }) {
@@ -229,6 +242,26 @@ const CreateForm = (
       })
     }
   })
+  const [createProyekMutation] = useMutation<any, MutationCreateProyekArgs>(createProyek, {
+    update(cache, { data }) {
+      if (!data?.createProyek) return console.error('Data not found')
+      cache.modify({
+        fields: {
+          proyeks(existingProyek = []) {
+            const newProyek = cache.writeFragment({
+              data: data.createProyek,
+              fragment: gql`
+                fragment NewProyek on Proyek {
+                  ...ProyekFields
+              }`
+            })
+            if (!newProyek) return console.error('New Proyek not found')
+            return [...existingProyek, newProyek]
+          }
+        }
+      })
+    }
+  })
 
 
   const [createDosenMutation] = useMutation<any, MutationCreateDosenArgs>(createDosen, {
@@ -286,18 +319,31 @@ const CreateForm = (
 
   useEffect(() => {
     const initialFormData = adminItemFields[selectedValue].reduce((acc, field) => {
-      acc[field] = '';
+      switch (acc[field]) {
+        case 'bolehDimulai':
+        case 'telahSelesai':
+        case 'verified':
+          acc[field] = 'Unchecked'
+          break
+        default:
+          acc[field] = ''
+          break
+      }
       return acc
     }, {} as { [key: string]: string })
     setFormData(initialFormData)
   }, [selectedValue])
 
   const handleInputChange = (field: string, value: string) => {
+    const formattedValue = field === 'tanggalMulai' || field === 'tanggalSelesai'
+      ? dayjs(value).startOf('day').format('YYYY-MM-DDTHH:mm:ss.SSS[Z]')
+      : value;
+
     setFormData(prevState => ({
       ...prevState,
-      [field]: value
-    }))
-  }
+      [field]: formattedValue,
+    }));
+  };
 
 
 
@@ -324,9 +370,7 @@ const CreateForm = (
 
       Persyaratan: createPersyaratanMutation,
       ProgramStudi: createProgramStudiMutation,
-      Proyek: () => {
-        console.log("test")
-      },
+      Proyek: createProyekMutation,
       Angkatan: createAngkatanMutation,
       Kelas: createKelasMutation,
       Kelompok: createKelompokMutation,
@@ -381,13 +425,13 @@ const CreateForm = (
     >
       {adminItemFields[selectedValue].map((field) => (
         <Fragment key={field}>
-          {(field !== 'userId' && field !== 'prodiId' && field !== "konsentrasiId" && field !== "proyekId" && field !== 'programStudiId' && field !== "fakultasId" && field !== 'mahasiswaId' && !field.includes('keterangan')) && (
+          {(field !== 'userId' && field !== 'prodiId' && field !== "konsentrasiId" && field !== "proyekId" && field !== 'programStudiId' && field !== "fakultasId" && field !== 'mahasiswaId' && !field.includes('keterangan') && field !== 'verified' && field !== 'type' && !field.includes('tanggal') && field !== 'bolehDimulai' && field !== 'telahSelesai') && (
             <TextInput
               placeholder={field}
               value={formData[field]}
               onChangeText={(text) => handleInputChange(field, text)}
               inputMode={
-                field === 'tahun' ? 'numeric' : 'text'
+                (field === 'tahun' || field === 'batasOrang') && field ? 'numeric' : 'text'
               }
             />
           )}
@@ -422,7 +466,7 @@ const CreateForm = (
             >
               <Picker.Item label="Pilih Proyek" value={null} />
               {proyeks?.proyeks.map((proyek) => (
-                <Picker.Item key={proyek.id} label={proyek.name} value={proyek.id} />
+                <Picker.Item key={proyek.id} label={proyek.name!} value={proyek.id} />
               ))}
             </Picker>
           )}
@@ -447,7 +491,14 @@ const CreateForm = (
               })}
             </Picker>
           )}
-          {field.includes("keterangan") && (
+          {field === 'type' && (
+            <Picker selectedValue={formData.type} onValueChange={(itemValue) => handleInputChange(field, itemValue)}>
+              <Picker.Item label="Pilih Type" value="" />
+              <Picker.Item label={TypeProyek.Kkn} value={TypeProyek.Kkn} />
+              <Picker.Item label={TypeProyek.Kkp} value={TypeProyek.Kkp} />
+            </Picker>
+          )}
+          {(field.includes("keterangan") || field === 'verified' || field === 'bolehDimulai' || field === 'telahSelesai') && (
             <BouncyCheckbox
               size={25}
               fillColor="cyan"
@@ -460,7 +511,21 @@ const CreateForm = (
               text={field}
 
             />
-
+          )}
+          {field.includes('tanggal') && (
+            <>
+              <Text>
+                {field}
+              </Text>
+              <DateTimePicker
+                minDate={new Date()}
+                date={formData[field] ? dayjs(formData[field]) : dayjs()}
+                onChange={(params) => {
+                  handleInputChange(field, params.date as string)
+                }}
+                mode="single"
+              />
+            </>
           )}
 
         </Fragment>

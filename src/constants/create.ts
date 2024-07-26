@@ -93,12 +93,6 @@ export const adminCreateFnBasedOnFields: AdminCreateFnBasedOnFields<AdminFields>
   
       const userId = createdUser?.data.signUp.id;
   
-      console.log("DATA DOSEN", {
-        data:{
-          ...data,
-          userId
-        }
-      });
   
       const createdDosen = await createDosen({
         variables: {
@@ -210,7 +204,28 @@ export const adminCreateFnBasedOnFields: AdminCreateFnBasedOnFields<AdminFields>
       message: "Program Studi berhasil dibuat"
     }
   },
-  Proyek: (data,error) => {},
+  // TODO: Implement createProyek
+  Proyek:  (data,createProyek) => {
+    const checkedToBoolean = <T>(value:T ) => value === "Checked" ? true : false
+    const convertedData = {
+      ...data,
+      bolehDimulai: checkedToBoolean(data.bolehDimulai),
+      telahSelesai: checkedToBoolean(data.telahSelesai),
+      verified: checkedToBoolean(data.verified),
+      batasOrang: +data.batasOrang!,
+    }
+
+     createProyek({
+      variables:{
+        ...convertedData
+      },
+    })
+    return {
+      message: "Proyek berhasil dibuat"
+    }
+    
+    
+  },
   Kelas: (data,createKelas) => {
     createKelas({
       variables:{

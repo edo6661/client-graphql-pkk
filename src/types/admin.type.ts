@@ -1,3 +1,6 @@
+import { RoleMahasiswa,  } from "../__generated__/graphql";
+import { TypeProyek } from "../constants/data";
+
 /* eslint-disable prettier/prettier */
 export const adminFields = [
   'Admin',
@@ -22,16 +25,17 @@ export const adminItemFields = {
   Fakultas: ['name'],
   Konsentrasi: ['name', 'programStudiId'],
   Mahasiswa: [
-    'fullname',
-    'userId',
     'nim',
+    'fullname',
     'semester',
-    'prodiId',
-    'konsentrasiId',
+    'role',
     'proyekId',
+    'prodiId',
     'kelasId',
     'angkatanId',
     'kelompokId',
+    'konsentrasiId',
+    'userId',
   ],
   Pendaftaran: ['mahasiswaId', 'tanggalPendaftaran', 'buktiPembayaran'],
   Persyaratan: [
@@ -45,15 +49,15 @@ export const adminItemFields = {
   Proyek: [
     'name',
     'photo',
-    'bolehDimulai',
-    'telahSelesai',
     'description',
     'batasOrang',
-    'pembimbing',
+    'verified',
     'lokasi',
     'tanggalMulai',
     'tanggalSelesai',
-
+    'type',
+    'bolehDimulai',
+    'telahSelesai',
   ],
   Kelas:["name"],
   Angkatan:["tahun"],
@@ -108,6 +112,7 @@ export const adminItemFieldsInitialValue: AdminItemFieldsInitialValue = {
     angkatanId: '',
     kelasId: '',
     kelompokId: '',
+    role: RoleMahasiswa.Anggota,
   },
   Pendaftaran: {
     mahasiswaId: '',
@@ -132,10 +137,11 @@ export const adminItemFieldsInitialValue: AdminItemFieldsInitialValue = {
     telahSelesai: false,
     description: '',
     batasOrang: 0,
-    pembimbing: '',
     lokasi: '',
     tanggalMulai: '',
     tanggalSelesai: '',
+    type: TypeProyek.KKN,
+    verified: false,
   },
   Kelas: {
     name: '',

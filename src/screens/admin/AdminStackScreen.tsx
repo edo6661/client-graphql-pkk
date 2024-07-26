@@ -25,6 +25,7 @@ import AngkatanNavigator from '../../navigators/AngkatanNavigator'
 import KelasNavigator from '../../navigators/KelasNavigator'
 import PersyaratanNavigator from '../../navigators/PersyaratanNavigator'
 import KelompokNavigator from '../../navigators/KelompokNavigator'
+import ProyekNavigator from '../../navigators/ProyekNavigator'
 
 
 
@@ -49,7 +50,7 @@ const AdminStackScreen = () => {
       <AdminStack.Screen name="ProgramStudi" component={ProgramStudiNavigator} />
       <AdminStack.Screen name="Pendaftaran" component={PendaftaranScreen} />
       <AdminStack.Screen name='Persyaratan' component={PersyaratanNavigator} />
-      <AdminStack.Screen name="Proyek" component={ProyekScreen} />
+      <AdminStack.Screen name="Proyek" component={ProyekNavigator} />
       <AdminStack.Screen name="Angkatan" component={AngkatanNavigator} />
       <AdminStack.Screen name="Kelas" component={KelasNavigator} />
       <AdminStack.Screen name="Kelompok" component={KelompokNavigator} />

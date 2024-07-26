@@ -8,7 +8,11 @@ export const createMahasiswa = gql`
     $semester: Int!,
     $prodiId: ID!,
     $konsentrasiId: ID!,
-    $proyekId: ID
+    $kelasId: ID,
+    $kelompokId: ID,
+    $proyekId: ID,
+    $angkatanId: ID,
+    $role: RoleMahasiswa
   ) {
     createMahasiswa(
       userId: $userId,
@@ -17,7 +21,11 @@ export const createMahasiswa = gql`
       semester: $semester,
       prodiId: $prodiId,
       konsentrasiId: $konsentrasiId,
-      proyekId: $proyekId
+      kelasId: $kelasId,
+      kelompokId: $kelompokId,
+      proyekId: $proyekId,
+      angkatanId: $angkatanId,
+      role: $role
     ) {
       ...MahasiswaFields
     }
@@ -26,12 +34,17 @@ export const createMahasiswa = gql`
 export const updateMahasiswa = gql`
   mutation updateMahasiswa(
     $id: ID!,
+    $userId: ID!,
     $nim: String,
     $fullname: String,
     $semester: Int,
     $prodiId: ID,
     $konsentrasiId: ID,
-    $proyekId: ID
+    $kelasId: ID,
+    $kelompokId: ID,
+    $proyekId: ID,
+    $angkatanId: ID,
+    $role: RoleMahasiswa
   ) {
     updateMahasiswa(
       id: $id,
@@ -40,7 +53,13 @@ export const updateMahasiswa = gql`
       semester: $semester,
       prodiId: $prodiId,
       konsentrasiId: $konsentrasiId,
-      proyekId: $proyekId
+      proyekId: $proyekId,
+      angkatanId: $angkatanId,
+      kelasId: $kelasId,
+      kelompokId: $kelompokId,
+      role: $role,
+      userId: $userId
+      
     ) {
       ...MahasiswaFields
     }

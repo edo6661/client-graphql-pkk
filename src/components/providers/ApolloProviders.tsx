@@ -3,7 +3,7 @@ import React from 'react'
 import { ApolloClient, ApolloProvider, InMemoryCache, gql } from '@apollo/client'
 import { Bau } from '../../__generated__/graphql'
 import { createFragmentRegistry } from '@apollo/client/cache'
-import { adminFragments, bauFragments, dosenFragments, fakultasFragments, mahasiswaFragments } from '../../fragments'
+import { adminFragments, bauFragments, dosenFragments, fakultasFragments, konsentrasiFragments, laporanFragments, mahasiswaFragments, persyaratanFragments, programStudiFragments, proyekFragments, userFragments } from '../../fragments'
 
 const ApolloProviders = (
   { children }: { children: React.ReactNode }
@@ -16,6 +16,14 @@ const ApolloProviders = (
         ${dosenFragments}
         ${mahasiswaFragments}
         ${fakultasFragments}
+        ${dosenFragments}
+        ${fakultasFragments}
+        ${konsentrasiFragments}
+        ${laporanFragments}
+        ${persyaratanFragments}
+        ${programStudiFragments}
+        ${proyekFragments}
+        ${userFragments}
       `),
     // typePolicies: {
     //   Query: {

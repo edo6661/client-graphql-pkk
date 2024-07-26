@@ -141,13 +141,14 @@ const DetailsDosenScreen = (
             />
           )}
           {field === 'proyekId' && (
+
             <Picker
               selectedValue={selectedProyek}
               onValueChange={(itemValue) => setSelectedProyek(itemValue)}
             >
               <Picker.Item label="Pilih Proyek" value={null} />
               {proyeks?.proyeks.map((proyek) => (
-                <Picker.Item key={proyek.id} label={proyek.name} value={proyek.id} />
+                <Picker.Item key={proyek.id} label={proyek.name!} value={proyek.id} />
               ))}
             </Picker>
           )}
