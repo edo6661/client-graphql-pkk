@@ -5,7 +5,7 @@ import { gql, useMutation, useQuery } from '@apollo/client'
 import { createAdmin } from '../../api/mutation/admin.mutation'
 import DateTimePicker from 'react-native-ui-datepicker';
 
-import { Angkatan, Fakultas, Kelas, Konsentrasi, Mahasiswa, MutationCreateAdminArgs, MutationCreateAngkatanArgs, MutationCreateDosenArgs, MutationCreateFakultasArgs, MutationCreateKelasArgs, MutationCreateKelompokArgs, MutationCreateKonsentrasiArgs, MutationCreateMahasiswaArgs, MutationCreatePersyaratanArgs, MutationCreateProgramStudiArgs, MutationCreateProyekArgs, MutationSignUpArgs, ProgramStudi, Proyek, SignUpInput, TypeProyek } from '../../__generated__/graphql'
+import { Angkatan, Fakultas, Kelas, Kelompok, Konsentrasi, Mahasiswa, MutationCreateAdminArgs, MutationCreateAngkatanArgs, MutationCreateDosenArgs, MutationCreateFakultasArgs, MutationCreateKelasArgs, MutationCreateKelompokArgs, MutationCreateKonsentrasiArgs, MutationCreateMahasiswaArgs, MutationCreatePersyaratanArgs, MutationCreateProgramStudiArgs, MutationCreateProyekArgs, MutationSignUpArgs, ProgramStudi, Proyek, RoleMahasiswa, SignUpInput, TypeProyek } from '../../__generated__/graphql'
 import { signUp } from '../../api/mutation/user.mutation'
 import { useNavigation } from '@react-navigation/native'
 import { AdminStackParamList, AdminStackScreenProps } from '../../types/adminNavigator.type'
@@ -36,6 +36,7 @@ import dayjs from 'dayjs'
 import { createProyek } from '../../api/mutation/proyek.mutation'
 import { getKelass } from '../../api/query/kelas.query'
 import { getAngkatans } from '../../api/query/angkatan.query'
+import { getKelompoks } from '../../api/query/kelompok.query'
 interface CreateFormProps {
   selectedValue: AdminFields
 }
@@ -72,6 +73,10 @@ const CreateForm = (
   const { data: angkatan } = useQuery<{
     angkatans: Array<Angkatan>
   }>(getAngkatans)
+
+  const { data: kelompok } = useQuery<{
+    kelompoks: Array<Kelompok>
+  }>(getKelompoks)
 
 
   const [createAdminMutation] = useMutation<any, MutationCreateAdminArgs>(createAdmin, {
@@ -270,7 +275,6 @@ const CreateForm = (
         fields: {
           dosens(existingDosen = []) {
             if (!data?.createDosen) return console.error('Data not found')
-            if (existingDosen.length < 0) return console.error('Existing Dosen not found')
             const newDosen = cache.writeFragment({
               data: data?.createDosen,
               fragment: gql`
@@ -300,10 +304,7 @@ const CreateForm = (
               data: data?.createMahasiswa,
               fragment: gql`
                 fragment NewMahasiswa on Mahasiswa {
-                  id
-                  fullname
-                  nim
-                  userId
+                  ...MahasiswaFields
                 }
               `
             })
@@ -314,6 +315,7 @@ const CreateForm = (
       })
     }
   })
+
 
   const [createUser, { loading }] = useMutation<MutationSignUpArgs>(signUp)
 
@@ -425,7 +427,7 @@ const CreateForm = (
     >
       {adminItemFields[selectedValue].map((field) => (
         <Fragment key={field}>
-          {(field !== 'userId' && field !== 'prodiId' && field !== "konsentrasiId" && field !== "proyekId" && field !== 'programStudiId' && field !== "fakultasId" && field !== 'mahasiswaId' && !field.includes('keterangan') && field !== 'verified' && field !== 'type' && !field.includes('tanggal') && field !== 'bolehDimulai' && field !== 'telahSelesai') && (
+          {(field !== 'userId' && field !== 'prodiId' && field !== "konsentrasiId" && field !== "proyekId" && field !== 'programStudiId' && field !== "fakultasId" && field !== 'mahasiswaId' && !field.includes('keterangan') && field !== 'verified' && field !== 'type' && !field.includes('tanggal') && field !== 'bolehDimulai' && field !== 'telahSelesai' && field !== 'angkatanId' && field !== 'kelasId' && field !== 'kelompokId' && field !== 'role') && (
             <TextInput
               placeholder={field}
               value={formData[field]}
@@ -455,6 +457,25 @@ const CreateForm = (
               <Picker.Item label="Pilih Konsentrasi" value="" />
               {konsentrasi?.konsentrasis.map((konsentrasi) => (
                 <Picker.Item key={konsentrasi.id} label={konsentrasi.name} value={konsentrasi.id} />
+              ))}
+            </Picker>
+          )}
+          {(field === 'angkatanId' || field === 'kelasId' || field === 'kelompokId') && (
+            <Picker
+              selectedValue={formData[field]}
+              onValueChange={(itemValue) =>
+                handleInputChange(field, itemValue)
+              }
+            >
+              <Picker.Item label={`Pilih ${field.slice(0, -2)}`} value="" />
+              {field === 'angkatanId' && angkatan?.angkatans.map((angkatan) => (
+                <Picker.Item key={angkatan.id} label={angkatan.tahun.toString()} value={angkatan.id} />
+              ))}
+              {field === 'kelasId' && kelas?.kelass.map((kelas) => (
+                <Picker.Item key={kelas.id} label={kelas.name} value={kelas.id} />
+              ))}
+              {field === 'kelompokId' && kelompok?.kelompoks.map((kelompok) => (
+                <Picker.Item key={kelompok.id} label={kelompok.name} value={kelompok.id} />
               ))}
             </Picker>
           )}
@@ -511,6 +532,13 @@ const CreateForm = (
               text={field}
 
             />
+          )}
+          {field === 'role' && (
+            <Picker selectedValue={formData.role} onValueChange={(itemValue) => handleInputChange(field, itemValue)}>
+              <Picker.Item label="Pilih Role di kelompok" value="" />
+              <Picker.Item label={RoleMahasiswa.Anggota} value={RoleMahasiswa.Anggota} />
+              <Picker.Item label={RoleMahasiswa.Ketua} value={RoleMahasiswa.Ketua} />
+            </Picker>
           )}
           {field.includes('tanggal') && (
             <>

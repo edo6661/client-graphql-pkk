@@ -1,4 +1,4 @@
-import { Admin, Angkatan, Dosen, Fakultas, Kelas, Kelompok, Konsentrasi, Mahasiswa, MutationCreateFakultasArgs, MutationSignUpArgs, Pendaftaran, Persyaratan, ProgramStudi, Proyek, Role, User } from "../__generated__/graphql";
+import { Admin, Angkatan, Dosen, Fakultas, Kelas, Kelompok, Konsentrasi, Mahasiswa, MutationCreateFakultasArgs, MutationSignUpArgs, Pendaftaran, Persyaratan, ProgramStudi, Proyek, Role, RoleMahasiswa, User } from "../__generated__/graphql";
 import { MutationFn } from "../types/mutation.type";
 import { AdminFields } from "../types/admin.type";
 import { ApolloError } from "@apollo/client";
@@ -130,16 +130,35 @@ export const adminCreateFnBasedOnFields: AdminCreateFnBasedOnFields<AdminFields>
       })
       if(!createdUser?.data.signUp.id) throw new Error("UserId not found")
         const userId = createdUser?.data.signUp.id
+      const sendedData = {
+        ...data,
+        semester: +data.semester,
+        userId: userId,
+        ...(data.proyekId ? {proyekId: data.proyekId} : {
+          proyekId: null
+        }),
+        ...(data.kelompokId ? {kelompokId: data.kelompokId} : {
+          kelompokId: null
+        }),
+        ...(data.kelasId ? {kelasId: data.kelasId} : {
+          kelasId: null
+        }),
+        ...(data.konsentrasiId ? {konsentrasiId: data.konsentrasiId} : {
+          konsentrasiId: null
+        }),
+        ...(data.angkatanId ? {angkatanId: data.angkatanId} : {
+          angkatanId: null
+        }),
+        ...(data.prodiId ? {prodiId: data.prodiId} : {
+          prodiId: null
+        }),
+        ...(data.role ? {role: data.role} : {role: RoleMahasiswa.Anggota}),
+      }
+      console.log("SENDING DATA",sendedData)
       const result =await createMahasiswa({
           variables: {
-            fullname: data.fullname,
-            nim: data.nim,
-            userId: userId,
-            semester: +data.semester,
-            prodiId: data.prodiId,
-            konsentrasiId: data.konsentrasiId,
-            ...(data.proyekId && {proyekId: data.proyekId})
-          }
+            ...sendedData 
+            }
         })
         
         return {

@@ -3,7 +3,7 @@ import React, { Fragment, useEffect, useState } from 'react'
 import { AdminNavigatorScreenProps, MahasiswaNavigatorScreenProps } from '../../types/adminNavigator.type'
 import { adminItemFields } from '../../types/admin.type'
 import { gql, useApolloClient, useMutation, useQuery } from '@apollo/client'
-import { Admin, Konsentrasi, Mahasiswa, MutationUpdateAdminArgs, MutationUpdateMahasiswaArgs, MutationUpdateUserArgs, ProgramStudi, Proyek, Role, User } from '../../__generated__/graphql'
+import { Admin, Angkatan, Kelas, Kelompok, Konsentrasi, Mahasiswa, MutationUpdateAdminArgs, MutationUpdateMahasiswaArgs, MutationUpdateUserArgs, ProgramStudi, Proyek, Role, RoleMahasiswa, User } from '../../__generated__/graphql'
 import { updateUser } from '../../api/mutation/user.mutation'
 import Toast from 'react-native-toast-message'
 import { updateMahasiswa } from '../../api/mutation/mahasiswa.mutation'
@@ -11,6 +11,9 @@ import { Picker } from '@react-native-picker/picker'
 import { getProgramStudis } from '../../api/query/programStudi.query'
 import { getProyeks } from '../../api/query/proyek.query'
 import { getKonsentrasis } from '../../api/query/konsentrasi.query'
+import { getKelass } from '../../api/query/kelas.query'
+import { getAngkatans } from '../../api/query/angkatan.query'
+import { getKelompoks } from '../../api/query/kelompok.query'
 
 
 const DetailsMahasiswaScreen = (
@@ -27,6 +30,16 @@ const DetailsMahasiswaScreen = (
   const { data: konsentrasi } = useQuery<{
     konsentrasis: Array<Konsentrasi>
   }>(getKonsentrasis)
+  const { data: kelas } = useQuery<{
+    kelass: Array<Kelas>
+  }>(getKelass);
+  const { data: angkatan } = useQuery<{
+    angkatans: Array<Angkatan>
+  }>(getAngkatans)
+
+  const { data: kelompok } = useQuery<{
+    kelompoks: Array<Kelompok>
+  }>(getKelompoks)
 
 
 
@@ -82,30 +95,30 @@ const DetailsMahasiswaScreen = (
   })
 
   const [form, setForm] = useState<Partial<
-    Mahasiswa & {
-      prodiId: string,
-      konsentrasiId: string,
-      proyekId: string,
-    }
-  >>({
-    fullname: mahasiswa?.fullname || "",
-    id: mahasiswa?.id || "",
-    userId: mahasiswa?.userId || "",
-    prodiId: mahasiswa?.prodi.id || "",
-    konsentrasiId: mahasiswa?.konsentrasi.id || "",
-    proyekId: mahasiswa?.proyek?.id || "",
-    nim: mahasiswa?.nim || "",
-    semester: +mahasiswa?.semester! || 0,
-  })
+    Mahasiswa>>({
+      fullname: mahasiswa?.fullname || "",
+      id: mahasiswa?.id || "",
+      userId: mahasiswa?.userId || "",
+      prodiId: mahasiswa?.prodiId || "",
+      konsentrasiId: mahasiswa?.konsentrasiId || "",
+      proyekId: mahasiswa?.proyekId || "",
+      nim: mahasiswa?.nim || "",
+      semester: +mahasiswa?.semester! || 0,
+      kelompokId: mahasiswa?.kelompokId || "",
+      angkatanId: mahasiswa?.angkatanId || "",
+      role: mahasiswa?.role!,
+      kelasId: mahasiswa?.kelasId || "",
+    })
   const [selectedKonsentrasi, setSelectedKonsentrasi] = useState<string>(
-    mahasiswa?.konsentrasi.id || ""
+    mahasiswa?.konsentrasi?.id || ""
   );
   const [selectedProdi, setSelectedProdi] = useState<string>(
-    mahasiswa?.prodi.id || ""
+    mahasiswa?.prodi?.id || ""
   );
   const [selectedProyek, setSelectedProyek] = useState<string>(
     mahasiswa?.proyek?.id || ""
   );
+
 
 
   const onChange = (field: string, value: string) => {
@@ -115,66 +128,73 @@ const DetailsMahasiswaScreen = (
     }))
   }
 
+
   const onUpdate = async () => {
-    update({
-      variables: {
-        id: route.params?.id!,
-        fullname: form?.fullname!,
-        nim: form?.nim!,
-        semester: +form?.semester!,
-        prodiId: form?.prodiId!,
-        konsentrasiId: form?.konsentrasiId!,
-        proyekId: form?.proyekId,
-
-      },
-      optimisticResponse: {
-        updateMahasiswa: {
-          ...mahasiswa,
-          fullname: form.fullname,
-          nim: form.nim,
-          semester: form.semester,
-          prodi: {
-            ...mahasiswa?.prodi!,
-            id: form.prodiId! ?? mahasiswa?.prodi?.id!,
-          },
-          konsentrasi: {
-            ...mahasiswa?.konsentrasi!,
-            id: form.konsentrasiId! ?? mahasiswa?.konsentrasi?.id!,
-          },
-          proyek: {
-            ...mahasiswa?.proyek!,
-            id: form.proyekId! ?? mahasiswa?.proyek?.id!,
-          }
-
-
-        }
+    try {
+      const sendedData = {
+        ...form,
+        semester: +form.semester!,
+        userId: form.userId!,
+        ...(form.proyekId ? { proyekId: form.proyekId } : {
+          proyekId: null
+        }),
+        ...(form.kelompokId ? { kelompokId: form.kelompokId } : {
+          kelompokId: null
+        }),
+        ...(form.kelasId ? { kelasId: form.kelasId } : {
+          kelasId: null
+        }),
+        ...(form.konsentrasiId ? { konsentrasiId: form.konsentrasiId } : {
+          konsentrasiId: null
+        }),
+        ...(form.angkatanId ? { angkatanId: form.angkatanId } : {
+          angkatanId: null
+        }),
+        ...(form.prodiId ? { prodiId: form.prodiId } : {
+          prodiId: null
+        }),
+        ...(form.role ? { role: form.role } : { role: RoleMahasiswa.Anggota }),
       }
-    })
-    updateUserMahasiswa({
-      variables: {
-        id: mahasiswa?.userId!,
-        data: {
-          password: form.fullname,
-          username: form.fullname,
+      await update({
+        variables: {
+          id: route.params?.id!,
+          ...sendedData!,
         },
-
-      },
-      optimisticResponse: {
-        updateUser: {
-          id: mahasiswa?.userId!,
-          password: form.fullname,
-          username: form.fullname,
+        optimisticResponse: {
+          updateMahasiswa: {
+            ...mahasiswa,
+            ...sendedData,
+            __typename: "Mahasiswa"
+          }
         }
-      }
-    })
-    Toast.show({
-      swipeable: true,
-      type: 'success',
-      text1: `Sukses Update Mahasiswa ${form.fullname}`,
-    })
+      })
+      updateUserMahasiswa({
+        variables: {
+          id: mahasiswa?.userId!,
+          data: {
+            password: form.fullname,
+            username: form.fullname,
+          },
 
-    navigation.navigate("Mahasiswas")
+        },
+        optimisticResponse: {
+          updateUser: {
+            id: mahasiswa?.userId!,
+            password: form.fullname,
+            username: form.fullname,
+          }
+        }
+      })
+      Toast.show({
+        swipeable: true,
+        type: 'success',
+        text1: `Sukses Update Mahasiswa ${form.fullname}`,
+      })
 
+      navigation.navigate("Mahasiswas")
+    } catch (err) {
+      console.error(err)
+    }
   }
 
   useEffect(() => {
@@ -186,12 +206,11 @@ const DetailsMahasiswaScreen = (
     }))
   }, [selectedKonsentrasi, selectedProdi, selectedProyek])
 
-
   return (
     <View>
       {adminItemFields["Mahasiswa"].map((field) => (
         <Fragment key={field}>
-          {field.includes("id") || field.includes("Id") ? null : (
+          {field.includes("id") || field.includes("Id") || field === 'role' ? null : (
             <TextInput
               key={field}
               placeholder={field}
@@ -230,12 +249,43 @@ const DetailsMahasiswaScreen = (
             >
               <Picker.Item label="Pilih Proyek" value={null} />
               {proyeks?.proyeks.map((proyek) => (
-                <Picker.Item key={proyek.id} label={proyek.name} value={proyek.id} />
+                <Picker.Item key={proyek.id} label={proyek.name!} value={proyek.id} />
+              ))}
+            </Picker>
+          )}
+          {field === 'role' && (
+            <Picker selectedValue={form.role} onValueChange={(itemValue) => onChange(field, itemValue as string)}>
+              <Picker.Item label="Pilih Role di kelompok" value="" />
+              <Picker.Item label={RoleMahasiswa.Anggota} value={RoleMahasiswa.Anggota} />
+              <Picker.Item label={RoleMahasiswa.Ketua} value={RoleMahasiswa.Ketua} />
+            </Picker>
+          )}
+
+          {(field === 'angkatanId' || field === 'kelasId' || field === 'kelompokId') && (
+            <Picker
+              selectedValue={form[field]}
+              onValueChange={(itemValue) =>
+                onChange(field, itemValue!)
+              }
+            >
+              {form[field] === null && (
+                <Picker.Item label={`Pilih ${field}`} value={null} />
+              )}
+              {field === 'angkatanId' && angkatan?.angkatans.map((angkatan) => (
+                <Picker.Item key={angkatan.id} label={angkatan.tahun.toString()} value={angkatan.id} />
+              ))}
+              {field === 'kelasId' && kelas?.kelass.map((kelas) => (
+                <Picker.Item key={kelas.id} label={kelas.name} value={kelas.id} />
+              ))}
+
+              {field === 'kelompokId' && kelompok?.kelompoks.map((kelompok) => (
+                <Picker.Item key={kelompok.id} label={kelompok.name} value={kelompok.id} />
               ))}
             </Picker>
           )}
         </Fragment>
       ))}
+
       <Button
         title="Update"
         onPress={onUpdate}

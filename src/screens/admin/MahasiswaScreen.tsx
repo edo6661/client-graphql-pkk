@@ -16,6 +16,7 @@ const MahasiswaScreen = (
   const { data, loading, error, } = useQuery(getMahasiswas)
   const [remove] = useMutation<any, MutationDeleteUserArgs>(deleteUser, {
 
+
     update(cache, { data }) {
       cache.modify({
         fields: {
@@ -28,6 +29,7 @@ const MahasiswaScreen = (
       })
     }
   })
+
 
 
   const onRemove = async (item: Mahasiswa) => {
