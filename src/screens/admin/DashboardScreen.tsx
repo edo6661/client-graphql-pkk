@@ -15,8 +15,6 @@ const DashboardScreen = (
 
   const { logout, user } = useAuthContext()
   const { data, error } = useQuery(getCurrentUser)
-  console.log(data)
-  console.log(error)
   const renderItem = ({ item }: { item: string }) => (
     <TouchableOpacity
       onPress={() => {

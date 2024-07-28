@@ -34,20 +34,6 @@ const BottomTabs = () => {
           }}
         />
       )}
-      <Tab.Screen
-        name='Bau'
-        component={BauScreen}
-        options={{
-          headerShown: false,
-        }}
-      />
-      <Tab.Screen
-        name="CreateBau"
-        component={CreateBau}
-        options={{
-          headerShown: false,
-        }}
-      />
 
     </Tab.Navigator>
   )

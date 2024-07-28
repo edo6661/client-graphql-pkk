@@ -202,6 +202,7 @@ export const adminCreateFnBasedOnFields: AdminCreateFnBasedOnFields<AdminFields>
       keteranganPembayaran: checkedToBoolean(data.keteranganPembayaran),
       keteranganSehat: checkedToBoolean(data.keteranganSehat),
     }
+    console.log("CONVERTED DATA",convertedData)
     createPersyaratan({
       variables: {
         ...convertedData
@@ -211,12 +212,22 @@ export const adminCreateFnBasedOnFields: AdminCreateFnBasedOnFields<AdminFields>
       message: "Persyaratan berhasil dibuat"
     }
   },
-  ProgramStudi: (data,createKonsentrasi) => {
-    createKonsentrasi({
+  ProgramStudi: (data,createProgramStudi) => {
+    createProgramStudi({
       variables: {
         name: data.name,
         fakultasId: data.fakultasId
       },
+      optimisticResponse:{
+        createProgramStudi: {
+            __typename: "Konsentrasi",
+            id: "temp-id",
+            name: data.name,
+            fakultasId: data.fakultasId,
+            createdAt: new Date().toString(),
+            updatedAt: new Date().toString(),
+        }
+      }
       
     })
     return {

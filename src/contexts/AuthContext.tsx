@@ -18,7 +18,6 @@ export const AuthContextProvider = ({ children }: PropsWithChildren<{}>) => {
     if (currentUser) {
       setUser(currentUser);
     }
-    console.log("called initializeUser")
   };
 
   const storeUser = async (user: User) => {
@@ -30,7 +29,6 @@ export const AuthContextProvider = ({ children }: PropsWithChildren<{}>) => {
   const logout = async () => {
     setUser(null);
     await asyncLogout();
-    console.log("called logout")
   };
 
   useEffect(() => {

@@ -5,6 +5,7 @@ export const createProgramStudi = gql`
     createProgramStudi(name: $name, fakultasId: $fakultasId) {
       id
       name
+      fakultasId
     }
   }
 `
