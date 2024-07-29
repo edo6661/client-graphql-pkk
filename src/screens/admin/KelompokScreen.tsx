@@ -2,11 +2,12 @@ import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native
 import React from 'react'
 import { useMutation, useQuery } from '@apollo/client'
 import { getKelompoks } from '../../api/query/kelompok.query'
-import { Kelompok, MutationDeleteKelompokArgs } from '../../__generated__/graphql'
+import { Kelompok, Mahasiswa, MutationDeleteKelompokArgs, MutationUpdateMahasiswaArgs } from '../../__generated__/graphql'
 import { baseStyles } from '../../styles'
 import { KelompokNavigatorParamList, KelompokNavigatorScreenProps } from '../../types/adminNavigator.type'
 import ModalClose from '../../components/ModalClose'
 import { deleteKelompok } from '../../api/mutation/kelompok.mutation'
+import { updateMahasiswa } from '../../api/mutation/mahasiswa.mutation'
 
 const KelompokScreen = (
   { navigation, route }: KelompokNavigatorScreenProps<"Kelompoks">
@@ -25,6 +26,41 @@ const KelompokScreen = (
             return existingKelompoks.filter((kelompok: Kelompok) =>
               readField('id', kelompok) !== data.deleteKelompok.id
             )
+          }
+        }
+      })
+    }
+  })
+
+  const [update] = useMutation<
+    {
+      updateMahasiswa: Partial<Mahasiswa> & {
+
+      }
+    },
+    MutationUpdateMahasiswaArgs
+  >(updateMahasiswa, {
+    update(cache, { data }) {
+      if (!data) return console.error('Data not found')
+      if (!data.updateMahasiswa) return console.error('Data updateMahasiswa not found')
+      cache.modify({
+        fields: {
+          mahasiswas(existingMahasiswas = [], { readField }) {
+            return existingMahasiswas.map((mahasiswaExist:
+              Mahasiswa
+            ) => {
+              if (route.params?.id === undefined) return <Text>Id not found</Text>
+
+              if (readField('id', mahasiswaExist) === route.params.id) {
+                return {
+                  ...mahasiswaExist,
+                  ...data.updateMahasiswa,
+
+                }
+              } else {
+                return mahasiswaExist
+              }
+            })
           }
         }
       })
@@ -50,6 +86,7 @@ const KelompokScreen = (
           }
         }
       })
+
     } catch (err) {
       console.log(err)
     }

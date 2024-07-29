@@ -154,7 +154,6 @@ export const adminCreateFnBasedOnFields: AdminCreateFnBasedOnFields<AdminFields>
         }),
         ...(data.role ? {role: data.role} : {role: RoleMahasiswa.Anggota}),
       }
-      console.log("SENDING DATA",sendedData)
       const result =await createMahasiswa({
           variables: {
             ...sendedData 
@@ -280,12 +279,16 @@ export const adminCreateFnBasedOnFields: AdminCreateFnBasedOnFields<AdminFields>
       variables:{
         name: data.name,
         proyekId: data.proyekId || null,
+        nilai: data.nilai || null,
+        feedback: data.feedback || null,
       },
       optimisticResponse:{
         createKelompok: {
             __typename: "Kelompok",
             id: "temp-id",
             name: data.name,
+            nilai: data.nilai || null,
+            feedback: data.feedback || null,
             proyekId: data.proyekId || null,
             createdAt: new Date().toString(),
             updatedAt: new Date().toString(),

@@ -1,9 +1,5 @@
-export interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: Role;
-  profilePhoto: string;
+import { User as UserT } from "../__generated__/graphql";
+export interface User extends UserT {
 }
 
 type Role = 'ADMIN' | 'MAHASISWA' | 'DOSEN';

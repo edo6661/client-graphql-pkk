@@ -10,9 +10,17 @@ import { useAuthContext } from '../contexts/AuthContext'
 import HomeAdminScreen from '../screens/HomeAdminScreen'
 import DashboardScreen from '../screens/admin/DashboardScreen'
 import CreateBau from '../screens/CreateBau'
+import Proyeks from '../components/user/Proyeks'
+import ProyeksScreen from '../screens/user/ProyeksScreen'
+import UserProyekNavigator from '../navigators/user/UserProyekNavigator'
+import MahasiswaKelompok from '../screens/user/UserKelompokScreen'
+import ProfileScreen from '../screens/user/ProfileScreen'
+import YourProyekNavigator from '../navigators/user/YourProyekNavigator'
+import UserKelompokNavigator from '../navigators/user/UserKelompokNavigator'
 
 
 const Tab = createBottomTabNavigator<BottomTabParamList>()
+
 
 const BottomTabs = () => {
   const { user } = useAuthContext()
@@ -34,6 +42,48 @@ const BottomTabs = () => {
           }}
         />
       )}
+      <Tab.Screen
+        name='UserProyekNavigator'
+        component={UserProyekNavigator}
+        options={{
+          tabBarIcon: ({ focused, color, size }) => <Icon name='list' size={size} color={color} />,
+          headerShown: false,
+          title: 'Proyek'
+        }}
+      />
+      {user && (
+        <>
+          {(user.mahasiswa) && (
+            <Tab.Screen
+              name='UserKelompokNavigator'
+              component={UserKelompokNavigator}
+              options={{
+                tabBarIcon: ({ focused, color, size }) => <Icon name='group' size={size} color={color} />,
+                headerShown: false,
+                title: 'Kelompok'
+              }}
+            />
+          )}
+          {(user.mahasiswa?.proyekId || user.dosen?.proyekId) && (
+            <Tab.Screen
+              name='YourProyekNavigator'
+              component={YourProyekNavigator}
+              options={{
+                tabBarIcon: ({ focused, color, size }) => <Icon name='list' size={size} color={color} />,
+                title: 'Proyek Saya'
+              }}
+            />
+          )}
+          <Tab.Screen
+            name='Profile'
+            component={ProfileScreen}
+            options={{
+              tabBarIcon: ({ focused, color, size }) => <Icon name='user' size={size} color={color} />,
+            }}
+          />
+        </>
+      )}
+
 
     </Tab.Navigator>
   )

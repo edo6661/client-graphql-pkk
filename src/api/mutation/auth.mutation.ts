@@ -5,9 +5,21 @@ export const signIn = gql`
     signIn(signInInput: $signInInput) {
       id
       username
-      email
-      role
+      password
       profilePhoto
+      role
+      email
+      mahasiswa {
+        ...MahasiswaFields
+      }
+      dosen {
+        ...DosenFields
+      }
+      admin {
+        id
+        fullname
+      }
+      
     }
   }
 `;

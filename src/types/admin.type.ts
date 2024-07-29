@@ -61,7 +61,7 @@ export const adminItemFields = {
   ],
   Kelas:["name"],
   Angkatan:["tahun"],
-  Kelompok:["name","proyekId"],
+  Kelompok:["name","proyekId","nilai","feedback"],
 } as const;
 
 type FieldTypes = {
@@ -152,5 +152,7 @@ export const adminItemFieldsInitialValue: AdminItemFieldsInitialValue = {
   Kelompok: {
     name: '',
     proyekId: '',
+    feedback: '',
+    nilai: '',
   },
 } as const;

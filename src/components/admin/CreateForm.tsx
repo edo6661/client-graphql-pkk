@@ -116,6 +116,7 @@ const CreateForm = (
       })
     }
   })
+  // TODO: createKelompokMutation
   const [createKelompokMutation] = useMutation<any, MutationCreateKelompokArgs>(createKelompok, {
     update(cache, { data }) {
       if (!data?.createKelompok) return console.error('Data not found')
@@ -126,8 +127,11 @@ const CreateForm = (
               data: data.createKelompok,
               fragment: gql`
                 fragment NewKelompok on Kelompok {
-                  name
                   id
+                  name
+                  proyekId
+                  nilai
+                  feedback
                 }`
             })
             if (!newKelompok) return console.error('New Kelompok not found')
@@ -299,7 +303,6 @@ const CreateForm = (
         fields: {
           mahasiswas(existingMahasiswa = []) {
             if (!data?.createMahasiswa) return console.error('Data not found')
-            if (existingMahasiswa.length < 0) return console.error('Existing Mahasiswa not found')
             const newMahasiswa = cache.writeFragment({
               data: data?.createMahasiswa,
               fragment: gql`

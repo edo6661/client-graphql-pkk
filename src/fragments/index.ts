@@ -35,27 +35,16 @@ export const userFragments = gql`
     email
     profilePhoto
     role 
-    admin {
-      id
-      fullname
-      createdAt
-      updatedAt
-    }
     mahasiswa {
-      id
-      fullname
-      nim
-      semester
-      createdAt
-      updatedAt
-    }
+        ...MahasiswaFields
+      }
     dosen {
-      id
-      fullname
-      nidn
-      createdAt
-      updatedAt
+      ...DosenFields
     }
+    admin {
+      ...AdminFields
+    }    
+    
     createdAt
     updatedAt
   }
@@ -110,6 +99,13 @@ export const mahasiswaFragments = gql`
     kelompok {
       id
       name
+      nilai
+      feedback
+      mahasiswa {
+        id
+        fullname
+        nim
+      }
     }
 
     prodi {
@@ -267,6 +263,9 @@ export const proyekFragments = gql`
     kelompok {
       id
       name
+      nilai
+      feedback
+      
     }
     createdAt
     updatedAt
