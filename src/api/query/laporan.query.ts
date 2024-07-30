@@ -7,3 +7,11 @@ export const getLaporanByProyekId = gql`
     }
   }
 `;
+
+export const getLaporan = gql`
+  query getLaporan($id: ID!) {
+    getLaporan(id: $id) {
+      ...LaporanFields
+    }
+  }
+`

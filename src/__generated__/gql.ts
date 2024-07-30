@@ -39,6 +39,9 @@ const documents = {
     "\n  mutation createKonsentrasi($name: String!, $programStudiId: ID) {\n    createKonsentrasi(name: $name, programStudiId: $programStudiId) {\n      id\n      name\n      programStudiId\n    }\n  }\n": types.CreateKonsentrasiDocument,
     "\n  mutation updateKonsentrasi(\n    $id: ID!\n    $name: String\n    $programStudiId: ID\n  ) {\n    updateKonsentrasi(id: $id, name: $name, programStudiId: $programStudiId) {\n      id\n      name\n      programStudiId\n    }\n  }\n": types.UpdateKonsentrasiDocument,
     "\n  mutation deleteKonsentrasi($id: ID!) {\n    deleteKonsentrasi(id: $id) {\n      id\n      name\n      \n    }\n  }\n": types.DeleteKonsentrasiDocument,
+    "\n  mutation createLaporan(\n    $photo: String,\n    $file: String,\n    $proyekId: ID!,\n    $mahasiswaId: ID!,\n  ) {\n    createLaporan(\n      photo: $photo,\n      file: $file,\n      proyekId: $proyekId,\n      mahasiswaId: $mahasiswaId,\n    ) {\n      ...LaporanFields\n    }\n  }\n": types.CreateLaporanDocument,
+    "\n  mutation updateLaporan(\n    $id: ID!,\n    $photo: String,\n    $file: String,\n    $proyekId: ID,\n    $mahasiswaId: ID\n  ) {\n    updateLaporan(\n      id: $id,\n      photo: $photo,\n      file: $file,\n      proyekId: $proyekId,\n      mahasiswaId: $mahasiswaId\n    ) {\n      ...LaporanFields\n    }\n  }\n": types.UpdateLaporanDocument,
+    "\n  mutation deleteLaporan($id: ID!) {\n    deleteLaporan(id: $id) {\n      ...LaporanFields\n    }\n  }\n": types.DeleteLaporanDocument,
     "\n  mutation createMahasiswa(\n    $userId: ID!,\n    $nim: String!,\n    $fullname: String!,\n    $semester: Int!,\n    $prodiId: ID,\n    $konsentrasiId: ID,\n    $kelasId: ID,\n    $kelompokId: ID,\n    $proyekId: ID,\n    $angkatanId: ID,\n    $role: RoleMahasiswa\n  ) {\n    createMahasiswa(\n      userId: $userId,\n      nim: $nim,\n      fullname: $fullname,\n      semester: $semester,\n      prodiId: $prodiId,\n      konsentrasiId: $konsentrasiId,\n      kelasId: $kelasId,\n      kelompokId: $kelompokId,\n      proyekId: $proyekId,\n      angkatanId: $angkatanId,\n      role: $role\n    ) {\n      ...MahasiswaFields\n    }\n  }\n": types.CreateMahasiswaDocument,
     "\n  mutation updateMahasiswa(\n    $id: ID!,\n    $userId: ID,\n    $nim: String,\n    $fullname: String,\n    $semester: Int,\n    $prodiId: ID,\n    $konsentrasiId: ID,\n    $kelasId: ID,\n    $kelompokId: ID,\n    $proyekId: ID,\n    $angkatanId: ID,\n    $role: RoleMahasiswa\n  ) {\n    updateMahasiswa(\n      id: $id,\n      nim: $nim,\n      fullname: $fullname,\n      semester: $semester,\n      prodiId: $prodiId,\n      konsentrasiId: $konsentrasiId,\n      proyekId: $proyekId,\n      angkatanId: $angkatanId,\n      kelasId: $kelasId,\n      kelompokId: $kelompokId,\n      role: $role,\n      userId: $userId\n      \n    ) {\n      ...MahasiswaFields\n    }\n  }\n": types.UpdateMahasiswaDocument,
     "\n  mutation deleteMahasiswa($id: ID!) {\n    deleteMahasiswa(id: $id) {\n      id\n      \n    }\n  }\n": types.DeleteMahasiswaDocument,
@@ -95,6 +98,7 @@ const documents = {
     "\n      fragment ProyekDetails on Proyek {\n        ...ProyekFields\n      }\n    ": types.ProyekDetailsFragmentDoc,
     "\n      fragment KonsentrasiDetails on Konsentrasi {\n        id\n        name\n        programStudiId\n      }\n    ": types.KonsentrasiDetailsFragmentDoc,
     "\n                fragment NewKelompokMahasiswa on Kelompok {\n                  name\n                  id\n                }": types.NewKelompokMahasiswaFragmentDoc,
+    "\n                fragment NewLaporan on Laporan {\n                  ...LaporanFields\n                }\n              ": types.NewLaporanFragmentDoc,
     "\n      fragment ProyekDetails on Proyek {\n        ...ProyekFields \n      }\n    ": types.ProyekDetailsFragmentDoc,
 };
 
@@ -216,6 +220,18 @@ export function gql(source: "\n  mutation updateKonsentrasi(\n    $id: ID!\n    
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function gql(source: "\n  mutation deleteKonsentrasi($id: ID!) {\n    deleteKonsentrasi(id: $id) {\n      id\n      name\n      \n    }\n  }\n"): (typeof documents)["\n  mutation deleteKonsentrasi($id: ID!) {\n    deleteKonsentrasi(id: $id) {\n      id\n      name\n      \n    }\n  }\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n  mutation createLaporan(\n    $photo: String,\n    $file: String,\n    $proyekId: ID!,\n    $mahasiswaId: ID!,\n  ) {\n    createLaporan(\n      photo: $photo,\n      file: $file,\n      proyekId: $proyekId,\n      mahasiswaId: $mahasiswaId,\n    ) {\n      ...LaporanFields\n    }\n  }\n"): (typeof documents)["\n  mutation createLaporan(\n    $photo: String,\n    $file: String,\n    $proyekId: ID!,\n    $mahasiswaId: ID!,\n  ) {\n    createLaporan(\n      photo: $photo,\n      file: $file,\n      proyekId: $proyekId,\n      mahasiswaId: $mahasiswaId,\n    ) {\n      ...LaporanFields\n    }\n  }\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n  mutation updateLaporan(\n    $id: ID!,\n    $photo: String,\n    $file: String,\n    $proyekId: ID,\n    $mahasiswaId: ID\n  ) {\n    updateLaporan(\n      id: $id,\n      photo: $photo,\n      file: $file,\n      proyekId: $proyekId,\n      mahasiswaId: $mahasiswaId\n    ) {\n      ...LaporanFields\n    }\n  }\n"): (typeof documents)["\n  mutation updateLaporan(\n    $id: ID!,\n    $photo: String,\n    $file: String,\n    $proyekId: ID,\n    $mahasiswaId: ID\n  ) {\n    updateLaporan(\n      id: $id,\n      photo: $photo,\n      file: $file,\n      proyekId: $proyekId,\n      mahasiswaId: $mahasiswaId\n    ) {\n      ...LaporanFields\n    }\n  }\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n  mutation deleteLaporan($id: ID!) {\n    deleteLaporan(id: $id) {\n      ...LaporanFields\n    }\n  }\n"): (typeof documents)["\n  mutation deleteLaporan($id: ID!) {\n    deleteLaporan(id: $id) {\n      ...LaporanFields\n    }\n  }\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -440,6 +456,10 @@ export function gql(source: "\n      fragment KonsentrasiDetails on Konsentrasi 
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function gql(source: "\n                fragment NewKelompokMahasiswa on Kelompok {\n                  name\n                  id\n                }"): (typeof documents)["\n                fragment NewKelompokMahasiswa on Kelompok {\n                  name\n                  id\n                }"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n                fragment NewLaporan on Laporan {\n                  ...LaporanFields\n                }\n              "): (typeof documents)["\n                fragment NewLaporan on Laporan {\n                  ...LaporanFields\n                }\n              "];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

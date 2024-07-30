@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image, FlatList, Button } from 'react-native';
+import { StyleSheet, Text, View, Image, FlatList, Button, TouchableOpacity } from 'react-native';
 import React from 'react';
 import { useMutation, useQuery } from '@apollo/client';
 import { getLaporanByProyekId } from '../../api/query/laporan.query';
@@ -60,7 +60,13 @@ const LaporanProyekScreen = ({ navigation }: CreateLaporanProyekScreenProps) => 
   }
 
   const renderItem = ({ item }: { item: Laporan }) => (
-    <View style={styles.itemContainer}>
+    <TouchableOpacity style={styles.itemContainer}
+      onPress={
+        () => navigation.navigate('DetailsLaporanProyek', {
+          id: item.id
+        })
+      }
+    >
       <Image source={{
         uri: item.photo?.includes(
           'http' || 'https'
@@ -68,13 +74,14 @@ const LaporanProyekScreen = ({ navigation }: CreateLaporanProyekScreenProps) => 
 
       }} style={styles.image} />
       <Text style={styles.title}>{item.file}</Text>
+      <Text style={styles.subtitle}>Feedback: {item.feedback}</Text>
       <Text style={styles.subtitle}>Dari: {item.mahasiswa.fullname}</Text>
       <ModalClose
         action={onDelete}
         item={item}
         trigger='Hapus'
       />
-    </View>
+    </TouchableOpacity>
   );
 
   return (

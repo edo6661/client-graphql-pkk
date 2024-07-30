@@ -24,12 +24,14 @@ export const updateLaporan = gql`
     $photo: String,
     $file: String,
     $proyekId: ID,
+    $feedback: String,
     $mahasiswaId: ID
   ) {
     updateLaporan(
       id: $id,
       photo: $photo,
       file: $file,
+      feedback: $feedback,
       proyekId: $proyekId,
       mahasiswaId: $mahasiswaId
     ) {

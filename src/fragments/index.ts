@@ -273,6 +273,7 @@ export const laporanFragments = gql`
     photo
     file
     proyekId
+    feedback
     mahasiswa {
       fullname
     }
