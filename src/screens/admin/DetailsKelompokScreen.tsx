@@ -35,6 +35,9 @@ const DetailsKelompokScreen = ({
         id
         name
         proyekId
+        nilai
+        feedback
+
       }
     `,
   });
@@ -71,6 +74,8 @@ const DetailsKelompokScreen = ({
     id: kelompok?.id || '',
     name: kelompok?.name || '',
     proyekId: kelompok?.proyekId || '',
+    nilai: +kelompok?.nilai! || 0,
+    feedback: kelompok?.feedback || '',
   });
   const [selectedProyek, setSelectedProyek] = useState<string | null>(
     kelompok?.proyekId || null
@@ -86,11 +91,14 @@ const DetailsKelompokScreen = ({
 
   const onUpdate = async () => {
     try {
+      console.log(form)
       await update({
         variables: {
           id: route.params?.id!,
           name: form?.name!,
-          proyekId: form?.proyekId!,
+          proyekId: form?.proyekId! || null,
+          feedback: form?.feedback! || null,
+          nilai: +form?.nilai! || null,
         },
         optimisticResponse: {
           updateKelompok: {
@@ -145,7 +153,7 @@ const DetailsKelompokScreen = ({
             >
               <Picker.Item label="Pilih Proyek" value={null} />
               {proyeks?.proyeks.map((proyek) => (
-                <Picker.Item key={proyek.id} label={proyek.name} value={proyek.id} />
+                <Picker.Item key={proyek.id} label={proyek.name!} value={proyek.id} />
               ))}
             </Picker>
           )}

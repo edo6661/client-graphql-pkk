@@ -139,6 +139,7 @@ const UserKelompokScreen = () => {
               if (value === null) return
               onChange('id', value)
             }}
+
           >
             <Picker.Item label='Select Mahasiswa' value={null} />
             {data?.mahasiswas.filter((mhs) =>
@@ -148,12 +149,20 @@ const UserKelompokScreen = () => {
                 key={mahasiswa.id}
                 label={mahasiswa.fullname}
                 value={mahasiswa.id}
+
               />
             ))}
           </Picker>
           <Button
-            title='Add Mahasiswa'
+            title={
+              currentKelompok?.kelompok?.mahasiswa?.length! > 3
+                ? 'Anggota Kelompok Penuh'
+                : 'Tambah Anggota'
+            }
             onPress={onUpdate}
+            disabled={
+              currentKelompok?.kelompok?.mahasiswa?.length! > 3
+            }
           />
         </View>
       )}

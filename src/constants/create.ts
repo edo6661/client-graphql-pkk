@@ -279,7 +279,7 @@ export const adminCreateFnBasedOnFields: AdminCreateFnBasedOnFields<AdminFields>
       variables:{
         name: data.name,
         proyekId: data.proyekId || null,
-        nilai: data.nilai || null,
+        nilai: +data.nilai! || null,
         feedback: data.feedback || null,
       },
       optimisticResponse:{
@@ -287,7 +287,7 @@ export const adminCreateFnBasedOnFields: AdminCreateFnBasedOnFields<AdminFields>
             __typename: "Kelompok",
             id: "temp-id",
             name: data.name,
-            nilai: data.nilai || null,
+            nilai: +data.nilai! || null,
             feedback: data.feedback || null,
             proyekId: data.proyekId || null,
             createdAt: new Date().toString(),

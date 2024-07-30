@@ -2,7 +2,7 @@ import { gql } from "@apollo/client";
 
 export const createMahasiswa = gql`
   mutation createMahasiswa(
-    $userId: ID,
+    $userId: ID!,
     $nim: String!,
     $fullname: String!,
     $semester: Int!,

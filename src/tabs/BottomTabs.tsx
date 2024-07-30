@@ -64,13 +64,14 @@ const BottomTabs = () => {
               }}
             />
           )}
-          {(user.mahasiswa?.proyekId || user.dosen?.proyekId) && (
+          {(user.mahasiswa?.proyekId || user.mahasiswa?.kelompok?.proyekId || user.dosen?.proyekId) && (
             <Tab.Screen
               name='YourProyekNavigator'
               component={YourProyekNavigator}
               options={{
                 tabBarIcon: ({ focused, color, size }) => <Icon name='list' size={size} color={color} />,
-                title: 'Proyek Saya'
+                title: 'Proyek Saya',
+                headerShown: false
               }}
             />
           )}

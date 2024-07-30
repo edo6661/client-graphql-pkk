@@ -12,7 +12,6 @@ export const getKelompoks = gql`
         id
         fullname
         nim
-        email
         kelompokId
         proyekId
         role

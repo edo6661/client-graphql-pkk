@@ -436,7 +436,7 @@ const CreateForm = (
               value={formData[field]}
               onChangeText={(text) => handleInputChange(field, text)}
               inputMode={
-                (field === 'tahun' || field === 'batasOrang') && field ? 'numeric' : 'text'
+                (field === 'tahun' || field === 'batasOrang' || field === 'nilai') && field ? 'numeric' : 'text'
               }
             />
           )}

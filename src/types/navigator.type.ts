@@ -27,12 +27,27 @@ export type UserProyekNavigatorParamList ={
 }
 export type MahasiswaProyekNavigatorParamList ={
   MahasiswaProyek: undefined;
-  LaporanProyek: undefined;
+  LaporanProyekNavigator: undefined;
   BiayaOperasionalProyek: undefined;
+}
+export type MahasiswaProyekLaporanNavigatorParamList = {
+  LaporanProyek: undefined;
+  CreateLaporanProyek: undefined;
+  DetailsLaporanProyek: {id: string};
 }
 export type UserKelompokNavigatorParamList ={
   UserKelompok: undefined;
   DetailsUserKelompok: {id: string};
+}
+export type MahasiswaProyekLaporanScreenProps = {
+  navigation: NativeStackNavigationProp<MahasiswaProyekLaporanNavigatorParamList, 'LaporanProyek'>;
+}
+export type CreateLaporanProyekScreenProps = {
+  navigation: NativeStackNavigationProp<MahasiswaProyekLaporanNavigatorParamList, 'CreateLaporanProyek'>;
+}
+export type DetailsLaporanProyekScreenProps = {
+  navigation: NativeStackNavigationProp<MahasiswaProyekLaporanNavigatorParamList, 'DetailsLaporanProyek'>;
+  route: RouteProp<MahasiswaProyekLaporanNavigatorParamList, 'DetailsLaporanProyek'>;
 }
 export type UserKelompokNavigatorProps ={
   navigation: NativeStackNavigationProp<UserKelompokNavigatorParamList, 'UserKelompok'>;
@@ -50,7 +65,7 @@ export type MahasiswaDetailsProyekScreenProps ={
   route: RouteProp<MahasiswaProyekNavigatorParamList, 'MahasiswaProyek'>;
 }
 export type LaporanProyekScreenProps ={
-  navigation: NativeStackNavigationProp<MahasiswaProyekNavigatorParamList, 'LaporanProyek'>;
+  navigation: NativeStackNavigationProp<MahasiswaProyekNavigatorParamList, 'LaporanProyekNavigator'>;
 }
 export type BiayaOperasionalProyekScreenProps ={
   navigation: NativeStackNavigationProp<MahasiswaProyekNavigatorParamList, 'BiayaOperasionalProyek'>;

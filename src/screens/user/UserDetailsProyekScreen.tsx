@@ -1,15 +1,20 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useState } from 'react';
 import { StyleSheet, Text, View, Image, Button } from 'react-native';
 import { DetailsProyekScreenProps } from '../../types/navigator.type';
-import { gql, useApolloClient } from '@apollo/client';
-import { Proyek, RoleMahasiswa, TypeProyek } from '../../__generated__/graphql';
+import { gql, useApolloClient, useMutation, useQuery } from '@apollo/client';
+import { Kelompok, Mahasiswa, MutationUpdateKelompokArgs, MutationUpdateMahasiswaArgs, Proyek, RoleMahasiswa, TypeProyek } from '../../__generated__/graphql';
 import { Picker } from '@react-native-picker/picker';
 import { useAuthContext } from '../../contexts/AuthContext';
+import dayjs from 'dayjs';
+import { updateKelompok } from '../../api/mutation/kelompok.mutation';
+import { updateMahasiswa } from '../../api/mutation/mahasiswa.mutation';
+import { getProyeks } from '../../api/query/proyek.query';
 
 const UserDetailsProyekScreen = ({ navigation, route }: DetailsProyekScreenProps) => {
-  const { user } = useAuthContext();
+  const { user, storeUser } = useAuthContext();
 
   const client = useApolloClient();
+
   const proyek = client.readFragment<Proyek>({
     id: `Proyek:${route?.params?.id}`,
     fragment: gql`
@@ -18,7 +23,40 @@ const UserDetailsProyekScreen = ({ navigation, route }: DetailsProyekScreenProps
       }
     `
   });
+  const { refetch } = useQuery(getProyeks)
 
+
+
+
+  const [update] = useMutation<
+    { updateKelompok: Partial<Kelompok> },
+    MutationUpdateKelompokArgs
+  >(updateKelompok, {
+    update(cache, { data }) {
+      if (!data) return console.error('Data not found');
+      if (!data.updateKelompok) return console.error('Data updateKelompok not found');
+      cache.modify({
+        fields: {
+          kelompoks(existingKelompoks = [], { readField }) {
+            return existingKelompoks.map((kelompokExist: Kelompok) => {
+              if (route.params?.id === undefined)
+                return <Text>Id not found</Text>;
+
+              if (readField('id', kelompokExist) === route.params.id) {
+                return {
+                  ...kelompokExist,
+                  ...data.updateKelompok,
+                };
+              } else {
+                return kelompokExist;
+              }
+            });
+          },
+
+        },
+      });
+    },
+  });
   if (!proyek) {
     return (
       <View style={styles.container}>
@@ -26,6 +64,48 @@ const UserDetailsProyekScreen = ({ navigation, route }: DetailsProyekScreenProps
       </View>
     );
   }
+
+  const isProyekKkn = proyek.type === TypeProyek.Kkn;
+  const isMahasiswaHaveKelompok = user?.mahasiswa?.kelompokId;
+  const isMahasiswaHaveProyek = user?.mahasiswa?.proyekId || user?.mahasiswa?.kelompok?.proyekId;
+  const isMahasiswaKetua = user?.mahasiswa?.role === RoleMahasiswa.Ketua;
+  const isDosen = user?.dosen;
+  const isDosenHaveProyek = user?.dosen?.proyekId;
+
+
+
+  const kelompokDaftarKeProyek = () => {
+    update({
+      variables: {
+        id: user?.mahasiswa?.kelompokId!,
+        proyekId: proyek.id!
+      },
+      optimisticResponse: {
+        updateKelompok: {
+          __typename: "Kelompok",
+          ...user?.mahasiswa?.kelompok,
+          id: user?.mahasiswa?.kelompokId!,
+          proyekId: proyek.id!
+        },
+      },
+    })
+    storeUser({
+      ...user!,
+      mahasiswa: {
+        ...user?.mahasiswa!,
+        kelompok: {
+          ...user?.mahasiswa?.kelompok!,
+          proyekId: proyek.id!
+        }
+      }
+    })
+    refetch()
+    navigation.navigate('UserProyek')
+
+
+  }
+
+
 
 
 
@@ -45,8 +125,12 @@ const UserDetailsProyekScreen = ({ navigation, route }: DetailsProyekScreenProps
       </View>
       {proyek.type === TypeProyek.Kkn && (
         <View style={styles.infoContainer}>
-          <Text style={styles.infoLabel}>Batas Kelompok:</Text>
-          <Text style={styles.infoValue}>{proyek?.batasOrang! - proyek.mahasiswa?.length!} / {proyek.batasOrang}   </Text>
+          <Text style={styles.infoLabel}>
+            {proyek.type === TypeProyek.Kkn ? 'Batas Kelompok' : 'Batas Orang'}:
+          </Text>
+          <Text style={styles.infoValue}>{
+            proyek.kelompok?.length
+          } / {proyek.batasOrang}   </Text>
         </View>
       )}
       <View style={styles.infoContainer}>
@@ -57,12 +141,27 @@ const UserDetailsProyekScreen = ({ navigation, route }: DetailsProyekScreenProps
         <Text style={styles.infoLabel}>Pembimbing:</Text>
         <Text style={styles.infoValue}>{proyek?.pembimbing![0]?.fullname || 'N/A'}</Text>
       </View>
+      <View style={styles.infoContainer}>
+        <Text style={styles.infoLabel}>Tanggal mulai</Text>
+        <Text style={styles.infoValue}>{dayjs(+proyek?.tanggalMulai!).format('DD-MM-YYYY') || 'N/A'}</Text>
+      </View>
+      <View style={styles.infoContainer}>
+        <Text style={styles.infoLabel}>Tanggal selesai</Text>
+        <Text style={styles.infoValue}>{dayjs(+proyek?.tanggalSelesai!).format('DD-MM-YYYY') || 'N/A'}</Text>
+      </View>
+      <View style={{
+        ...styles.infoContainer,
+        justifyContent: 'center',
+      }}>
+      </View>
+      {proyek?.kelompok?.length! > 0 && (
+        <Text style={styles.infoLabel}>Kelompok</Text>
+      )}
       {proyek.type === TypeProyek.Kkn && (
         <View style={{
           ...styles.infoContainer,
           flex: 1 / 4
         }}>
-          <Text style={styles.infoLabel}>Kelompok:</Text>
           <View
             style={{
               flexDirection: 'row',
@@ -91,7 +190,7 @@ const UserDetailsProyekScreen = ({ navigation, route }: DetailsProyekScreenProps
           disabled
         />
       )}
-      {(user?.mahasiswa?.proyek?.type === TypeProyek.Kkn && !user?.mahasiswa?.proyekId && user?.mahasiswa?.role === RoleMahasiswa.Anggota) && (
+      {(!isDosen && user?.mahasiswa?.proyek?.type === TypeProyek.Kkn && !user?.mahasiswa?.proyekId && user?.mahasiswa?.role === RoleMahasiswa.Anggota) && (
         <>
           <Picker>
             <Picker.Item label='Pilih Kelompok' value='' />
@@ -102,26 +201,75 @@ const UserDetailsProyekScreen = ({ navigation, route }: DetailsProyekScreenProps
           </Picker>
         </>
       )}
-      {(user?.mahasiswa?.proyek?.type === TypeProyek.Kkn && !user?.mahasiswa?.proyekId && user?.mahasiswa?.role === RoleMahasiswa.Anggota) && (
+      {/*  */}
+      {isMahasiswaHaveProyek && proyek.id !== isMahasiswaHaveProyek && (
+        <Button
+          title='Sudah Terdaftar Di Proyek Lain'
+          disabled
+        />
+      )}
+      {/*  */}
+
+      {/*  */}
+      {!isDosen && user && isProyekKkn && !isMahasiswaHaveKelompok && !isMahasiswaKetua && (
+        <Button
+          title='Daftar Kelompok'
+        />
+      )}
+      {/*  */}
+      {isProyekKkn && isMahasiswaHaveKelompok && !isMahasiswaKetua && (
+        <Button
+          title='Tunggu Ketua Kelompok untuk mendaftar'
+          disabled
+        />
+      )}
+      {isProyekKkn && isMahasiswaHaveKelompok && isMahasiswaKetua && !isMahasiswaHaveProyek && (
         <Button
           title='Daftar'
+          onPress={kelompokDaftarKeProyek}
         />
       )}
-      {user?.mahasiswa?.proyekId && (
+      {/*  */}
+      {isMahasiswaHaveProyek === proyek.id && (
         <Button
-          title='Sudah Terdaftar Di Proyek'
+          title='Sudah Terdaftar Di Proyek ini'
           disabled
         />
       )}
-      {user?.dosen && (
+      {/*  */}
+      {isDosen && !isDosenHaveProyek && (
         <Button
-          title={
-            !user.dosen.proyekId ? 'Tunggu didaftarkan pembimbing oleh admin' : 'Sudah Menjadi Pembimbing'
-          }
+          title='Tunggu didaftarkan oleh admin'
           disabled
         />
       )}
-
+      {/*  */}
+      {isDosen && isDosenHaveProyek === proyek.id && (
+        <Button
+          title='Dosen ini sudah terdaftar di proyek ini'
+          disabled
+        />
+      )}
+      {/*  */}
+      {isDosen && isDosenHaveProyek !== proyek.id && (
+        <Button
+          title='Sudah terdaftar di proyek lain'
+          disabled
+        />
+      )}
+      {/*  */}
+      {proyek.batasOrang === proyek.kelompok?.length && (
+        <Button
+          title='Proyek Penuh'
+          disabled
+        />
+      )}
+      <Text>
+        Kelompok Length: {proyek.kelompok?.length}
+      </Text>
+      <Text>
+        Kelompok Batas Orang:{proyek.batasOrang}
+      </Text>
 
 
     </View>

@@ -9,10 +9,13 @@ import { Picker } from '@react-native-picker/picker';
 
 const Proyeks = ({ navigation }: ProyeksScreenProps) => {
   const [typeProyek, setTypeProyek] = useState<TypeProyek>(TypeProyek.Kkn);
-  const { data } = useQuery<{ proyeks: Proyek[] }>(getProyeks);
+  const { data, loading } = useQuery<{ proyeks: Proyek[] }>(getProyeks);
+
+  console.log(data?.proyeks[0])
 
   return (
     <View style={styles.container}>
+      {loading && <Text>Loading...</Text>}
       <Picker
         selectedValue={typeProyek}
         onValueChange={(itemValue) => setTypeProyek(itemValue)}

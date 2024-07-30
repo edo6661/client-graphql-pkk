@@ -13,9 +13,12 @@ const KelompokScreen = (
   { navigation, route }: KelompokNavigatorScreenProps<"Kelompoks">
 ) => {
 
-  const { data } = useQuery<{
+  const { data, error: errKel } = useQuery<{
     kelompoks: Kelompok[]
   }>(getKelompoks)
+
+  console.log(data)
+  console.log(errKel)
 
   const [remove, { error }] = useMutation<any, MutationDeleteKelompokArgs>(deleteKelompok, {
 

@@ -3,7 +3,7 @@ import { gql } from "@apollo/client";
 export const createKelompok = gql`
   mutation createKelompok($name: String!, $proyekId: ID, $nilai: Int, $feedback: String) {
     createKelompok
-    (name: $name, proyekId: $proyekId
+(name: $name, proyekId: $proyekId
     , nilai: $nilai, feedback: $feedback  
     ) {
       id
@@ -22,9 +22,9 @@ export const updateKelompok = gql`
     updateKelompok(
       id: $id,
       name: $name,
-      proyekId: $proyekId
-      , nilai: $nilai
-      , feedback: $feedback
+      proyekId: $proyekId, 
+      nilai: $nilai, 
+      feedback: $feedback
     ) {
       id
       name

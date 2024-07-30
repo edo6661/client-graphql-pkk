@@ -54,15 +54,6 @@ export const userFragments = gql`
 export const dosenFragments = gql`
   fragment DosenFields on Dosen {
     id
-    user {
-      id
-      username
-      email
-      profilePhoto
-      role
-      createdAt
-      updatedAt
-    }
     fullname
     proyekId
     nidn
@@ -101,6 +92,7 @@ export const mahasiswaFragments = gql`
       name
       nilai
       feedback
+      proyekId
       mahasiswa {
         id
         fullname
@@ -265,7 +257,9 @@ export const proyekFragments = gql`
       name
       nilai
       feedback
-      
+      mahasiswa {
+        ...MahasiswaFields
+      }
     }
     createdAt
     updatedAt
@@ -278,20 +272,13 @@ export const laporanFragments = gql`
     id
     photo
     file
-    proyek {
-      id
-      name
-      createdAt
-      updatedAt
-    }
+    proyekId
     mahasiswa {
-      id
       fullname
-      createdAt
-      updatedAt
     }
-    createdAt
-    updatedAt
+    proyek {
+      name
+    }
   }
 `;
 
