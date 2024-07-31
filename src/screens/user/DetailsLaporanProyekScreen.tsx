@@ -15,17 +15,41 @@ const DetailsLaporanProyekScreen = ({ route }: DetailsLaporanProyekScreenProps) 
     feedback: '',
   });
 
+  const isUserDosen = user?.dosen !== null;
+
+
   const { data, loading, error } = useQuery<{ getLaporan: Laporan }>(getLaporan, {
     variables: {
       id: route.params.id,
     },
   });
 
+  console.log(user)
+
   const [addFeedback] = useMutation<{
     updateLaporan: Partial<Laporan>
   }, MutationUpdateLaporanArgs>(updateLaporan, {
     update(cache, { data }) {
-      // ... (cache update logic remains the same)
+      if (!data) return console.error('Data not found');
+      if (!data.updateLaporan) return console.error('Data updateLaporan not found');
+      cache.modify({
+        fields: {
+          getLaporanByProyekId(existingLaporans = [], { readField }) {
+            return existingLaporans.map((laporanExist: Laporan) => {
+              if (route.params.id === undefined) return <Text>Id not found</Text>;
+
+              if (readField('id', laporanExist) === route.params.id) {
+                return {
+                  ...laporanExist,
+                  ...data.updateLaporan,
+                };
+              } else {
+                return laporanExist;
+              }
+            });
+          },
+        },
+      });
     },
   });
 

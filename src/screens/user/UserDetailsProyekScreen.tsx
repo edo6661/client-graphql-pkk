@@ -1,5 +1,5 @@
 import React, { Fragment, useState } from 'react';
-import { StyleSheet, Text, View, Image, Button } from 'react-native';
+import { StyleSheet, Text, View, Image, Button, ScrollView } from 'react-native';
 import { DetailsProyekScreenProps } from '../../types/navigator.type';
 import { gql, useApolloClient, useMutation, useQuery } from '@apollo/client';
 import { Kelompok, Mahasiswa, MutationUpdateKelompokArgs, MutationUpdateMahasiswaArgs, Proyek, RoleMahasiswa, TypeProyek } from '../../__generated__/graphql';
@@ -9,6 +9,7 @@ import dayjs from 'dayjs';
 import { updateKelompok } from '../../api/mutation/kelompok.mutation';
 import { updateMahasiswa } from '../../api/mutation/mahasiswa.mutation';
 import { getProyeks } from '../../api/query/proyek.query';
+import { parseDate } from '../../utils/date';
 
 const UserDetailsProyekScreen = ({ navigation, route }: DetailsProyekScreenProps) => {
   const { user, storeUser } = useAuthContext();
@@ -105,12 +106,81 @@ const UserDetailsProyekScreen = ({ navigation, route }: DetailsProyekScreenProps
 
   }
 
+  const titleDaftarBasedOnStatus = () => {
+    if (proyek.bolehDimulai) {
+      return 'Sudah Dimulai'
+    }
+    if (proyek.telahSelesai) {
+      return 'Proyek Telah Selesai'
+    }
+    if (proyek.batasOrang === (proyek.kelompok?.length || proyek.mahasiswa?.length)) {
+      return 'Proyek Penuh'
+    }
+    if (isMahasiswaHaveProyek === proyek.id) {
+      return 'Sudah Terdaftar di Proyek ini'
+    }
+    if (isDosen && isDosenHaveProyek) {
+      return 'Sudah Terdaftar di Proyek ini'
+    }
+    if (isDosen && !isDosenHaveProyek) {
+      return 'Tunggu didaftarkan oleh admin'
+    }
+    if (isMahasiswaHaveProyek) {
+      return 'Sudah Terdaftar di Proyek Lain'
+    }
+    if (isProyekKkn && isMahasiswaHaveKelompok && !isMahasiswaKetua) {
+      return 'Tunggu Ketua Kelompok untuk mendaftar'
+    }
+    if (isProyekKkn && !isMahasiswaHaveKelompok) {
+      return 'Daftar Kelompok'
+    }
+    if (isMahasiswaKetua) {
+      return 'Daftar'
+    }
+    if (!user) {
+      return 'Login terlebih dahulu sebelum mendaftar'
+    }
+    return 'Ga masuk kondisi'
+  }
+  const boolDaftarBasedOnStatus = () => {
+    if (proyek.bolehDimulai) {
+      return true
+    }
+    if (proyek.telahSelesai) {
+      return true
+    }
+    if (proyek.batasOrang === (proyek.kelompok?.length || proyek.mahasiswa?.length)) {
+      return true
+    }
+    if (isMahasiswaHaveProyek === proyek.id) {
+      return true
+    }
+    if (isDosen && isDosenHaveProyek) {
+      return true
+    }
+    if (isDosen && !isDosenHaveProyek) {
+      return true
+    }
+    if (isMahasiswaHaveProyek) {
+      return true
+    }
+    if (isProyekKkn && isMahasiswaHaveKelompok && !isMahasiswaKetua) {
+      return true
+    }
+    if (!user) {
+      return true
+    }
+
+    return false
+  }
+
+
 
 
 
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <Image source={{
         uri: proyek.photo?.includes(
           'http' || 'https'
@@ -143,11 +213,16 @@ const UserDetailsProyekScreen = ({ navigation, route }: DetailsProyekScreenProps
       </View>
       <View style={styles.infoContainer}>
         <Text style={styles.infoLabel}>Tanggal mulai</Text>
-        <Text style={styles.infoValue}>{dayjs(+proyek?.tanggalMulai!).format('DD-MM-YYYY') || 'N/A'}</Text>
+        <Text style={styles.infoValue}>
+          {
+            parseDate(+proyek.tanggalMulai!)
+          }
+        </Text>
       </View>
       <View style={styles.infoContainer}>
         <Text style={styles.infoLabel}>Tanggal selesai</Text>
-        <Text style={styles.infoValue}>{dayjs(+proyek?.tanggalSelesai!).format('DD-MM-YYYY') || 'N/A'}</Text>
+        <Text style={styles.infoValue}>
+          {parseDate(+proyek.tanggalSelesai!)}</Text>
       </View>
       <View style={{
         ...styles.infoContainer,
@@ -159,15 +234,13 @@ const UserDetailsProyekScreen = ({ navigation, route }: DetailsProyekScreenProps
       )}
       {proyek.type === TypeProyek.Kkn && (
         <View style={{
-          ...styles.infoContainer,
-          flex: 1 / 4
+
         }}>
           <View
             style={{
+              gap: 4,
               flexDirection: 'row',
-              flexWrap: 'wrap',
-              alignItems: 'center',
-              gap: 5,
+              justifyContent: 'space-between',
             }}
           >
             {proyek.kelompok!.length > 0 ? proyek?.kelompok!.map((k, index) => (
@@ -176,9 +249,19 @@ const UserDetailsProyekScreen = ({ navigation, route }: DetailsProyekScreenProps
                 }}
               >
                 <Text style={styles.infoValue}>{k?.name}</Text>
+                {!isMahasiswaKetua || isDosen && (
+                  <Button
+                    title={titleDaftarBasedOnStatus()}
+                    disabled={
+                      boolDaftarBasedOnStatus()
+                    }
+                  />
+                )}
               </View>
             )) : (
-              <Text style={styles.infoValue}>N/A</Text>
+              <Text style={styles.infoValue}>
+                Belum ada kelompok
+              </Text>
             )}
           </View>
         </View>
@@ -225,8 +308,11 @@ const UserDetailsProyekScreen = ({ navigation, route }: DetailsProyekScreenProps
       )}
       {isProyekKkn && isMahasiswaHaveKelompok && isMahasiswaKetua && !isMahasiswaHaveProyek && (
         <Button
-          title='Daftar'
+          title={titleDaftarBasedOnStatus()}
           onPress={kelompokDaftarKeProyek}
+          disabled={
+            boolDaftarBasedOnStatus()
+          }
         />
       )}
       {/*  */}
@@ -272,7 +358,7 @@ const UserDetailsProyekScreen = ({ navigation, route }: DetailsProyekScreenProps
       </Text>
 
 
-    </View>
+    </ScrollView>
   );
 };
 

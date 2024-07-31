@@ -58,7 +58,6 @@ const CreateLaporanProyekScreen = (
 
   const onSubmit = async () => {
     try {
-      console.log(form)
       await create({
         variables: {
           mahasiswaId: form.mahasiswaId!,

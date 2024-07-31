@@ -142,7 +142,7 @@ const UserKelompokScreen = () => {
           >
             <Picker.Item label='Select Mahasiswa' value={null} />
             {data?.mahasiswas.filter((mhs) =>
-              mhs.kelompokId !== currentKelompok?.kelompok.id && mhs.role === RoleMahasiswa.Anggota
+              mhs.kelompokId === null && mhs.role === RoleMahasiswa.Anggota
             ).map((mahasiswa) => (
               <Picker.Item
                 key={mahasiswa.id}

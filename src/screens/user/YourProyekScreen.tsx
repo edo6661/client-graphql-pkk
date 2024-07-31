@@ -1,11 +1,12 @@
-import { StyleSheet, Text, View, Image, FlatList, Button, ScrollView, TouchableOpacity } from 'react-native';
-import React, { Fragment } from 'react';
+import { StyleSheet, Text, View, Image, FlatList, Button, TouchableOpacity } from 'react-native';
+import React from 'react';
 import { useQuery } from '@apollo/client';
 import { getProyek } from '../../api/query/proyek.query';
 import { useAuthContext } from '../../contexts/AuthContext';
 import dayjs from 'dayjs';
 import { Kelompok, Maybe, Proyek } from '../../__generated__/graphql';
 import { MahasiswaProyekNavigatorProps } from '../../types/navigator.type';
+import { parseDate } from '../../utils/date';
 
 const MahasiswaProyekScreen = (
   { navigation }: MahasiswaProyekNavigatorProps
@@ -20,20 +21,13 @@ const MahasiswaProyekScreen = (
     }
   });
 
-  const isMahasiswa = user?.mahasiswa
-
+  const isMahasiswa = user?.mahasiswa;
   const idKelompokMahasiswa = user?.mahasiswa?.kelompokId ?? user?.mahasiswa?.kelompok?.id;
-
-
-
-
 
   if (loading) return <Text>Loading...</Text>;
   if (error) return <Text>Error: {error.message}</Text>;
 
-
   const proyek = data?.getProyek;
-
 
   if (!proyek) {
     return (
@@ -42,6 +36,9 @@ const MahasiswaProyekScreen = (
       </View>
     );
   }
+  const isDosen = user?.dosen;
+
+  const isBolehDimulaiDanAdaPembimbing = proyek.bolehDimulai && proyek.pembimbing?.length;
 
 
   const renderHeader = () => (
@@ -51,7 +48,6 @@ const MahasiswaProyekScreen = (
           uri: proyek.photo?.includes(
             'http' || 'https'
           ) ? proyek.photo : "https://i.pinimg.com/236x/42/92/f8/4292f8591dab26fcaa4b3ab213895e6f.jpg"
-
         }}
         style={styles.image}
       />
@@ -68,25 +64,34 @@ const MahasiswaProyekScreen = (
       </View>
       <View style={styles.infoContainer}>
         <Text style={styles.infoLabel}>Pembimbing:</Text>
-        <Text style={styles.infoValue}>{proyek?.pembimbing![0]!.fullname || 'N/A'}</Text>
+        <Text style={styles.infoValue}>{proyek.pembimbing?.[0]?.fullname || 'N/A'}</Text>
       </View>
       <View style={styles.infoContainer}>
         <Text style={styles.infoLabel}>Tanggal Mulai:</Text>
-        <Text style={styles.infoValue}>{dayjs(+proyek.tanggalMulai!).format(
-          'DD-MM-YYYY'
-        )}</Text>
+        <Text style={styles.infoValue}>{proyek.tanggalMulai ? parseDate(+proyek.tanggalMulai) : 'N/A'}</Text>
       </View>
       <View style={styles.infoContainer}>
         <Text style={styles.infoLabel}>Tanggal Selesai:</Text>
-        <Text style={styles.infoValue}>{dayjs(+proyek.tanggalSelesai!).format('DD-MM-YYYY')}</Text>
+        <Text style={styles.infoValue}>{proyek.tanggalSelesai ? parseDate(+proyek.tanggalSelesai) : 'N/A'}</Text>
       </View>
+      <View style={styles.infoContainer}>
+        <Text style={styles.infoLabel}>Boleh dimulai:</Text>
+        <Text style={styles.infoValue}>{
+          proyek.bolehDimulai ? 'Ya' : 'Belum'
+        }</Text>
+      </View>
+      <View style={styles.infoContainer}>
+        <Text style={styles.infoLabel}>Telah selesai:</Text>
+        <Text style={styles.infoValue}>{
+          proyek.telahSelesai ? 'Ya' : 'Belum'
+        }</Text>
+      </View>
+
     </View>
   );
 
-  const renderKelompokItem = ({ item }: {
-    item: Maybe<Kelompok>
-  }) => (
-    user?.mahasiswa ? (
+  const renderKelompokItem = ({ item }: { item: Maybe<Kelompok> }) => (
+    isMahasiswa ? (
       <View style={styles.kelompokItem}>
         {kelompok(item)}
       </View>
@@ -120,24 +125,24 @@ const MahasiswaProyekScreen = (
         )}
       />
     </>
-  )
+  );
 
   const renderFooter = () => (
     <Button
-      title='Laporan'
+      title={
+        isBolehDimulaiDanAdaPembimbing ? 'Lihat Laporan Proyek' : 'Belum Dimulaikan atau Belum Ada Pembimbing'
+      }
+      disabled={!isBolehDimulaiDanAdaPembimbing}
       onPress={() => navigation.navigate('LaporanProyekNavigator')}
     />
   );
 
   const optionalData = isMahasiswa ? proyek.kelompok?.filter((kel) => kel!.id === idKelompokMahasiswa) : proyek.kelompok;
 
-
   return (
     <FlatList
       ListHeaderComponent={renderHeader}
-      data={
-        optionalData
-      }
+      data={optionalData}
       keyExtractor={(item) => item!.id}
       renderItem={renderKelompokItem}
       ListFooterComponent={renderFooter}
