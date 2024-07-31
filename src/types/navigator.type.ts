@@ -32,6 +32,9 @@ export type MahasiswaProyekNavigatorParamList ={
   KelompokProyek: {
     id: string;
   }
+  MahasiswaDetailsProyek: {
+    id: string;
+  }
   
 }
 export type MahasiswaProyekLaporanNavigatorParamList = {
@@ -67,7 +70,7 @@ export type MahasiswaProyekNavigatorProps ={
 }
 export type MahasiswaDetailsProyekScreenProps ={
   navigation: NativeStackNavigationProp<MahasiswaProyekNavigatorParamList, 'MahasiswaProyek'>;
-  route: RouteProp<MahasiswaProyekNavigatorParamList, 'MahasiswaProyek'>;
+  route: RouteProp<MahasiswaProyekNavigatorParamList, 'MahasiswaDetailsProyek'>;
 }
 export type LaporanProyekScreenProps ={
   navigation: NativeStackNavigationProp<MahasiswaProyekNavigatorParamList, 'LaporanProyekNavigator'>;
@@ -79,6 +82,10 @@ export type BiayaOperasionalProyekScreenProps ={
 export type KelompokProyekScreenProps ={
   navigation: NativeStackNavigationProp<MahasiswaProyekNavigatorParamList, 'KelompokProyek'>;
   route: RouteProp<MahasiswaProyekNavigatorParamList, 'KelompokProyek'>;
+}
+export type MahasiswaProyekScreenProps ={
+  navigation: NativeStackNavigationProp<MahasiswaProyekNavigatorParamList, 'KelompokProyek'>;
+  route: RouteProp<MahasiswaProyekNavigatorParamList, 'MahasiswaDetailsProyek'>;
 }
 export type ProyeksScreenProps ={
   navigation?: NativeStackNavigationProp<UserProyekNavigatorParamList, 'UserProyek'>;

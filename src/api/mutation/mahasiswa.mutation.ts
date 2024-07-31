@@ -44,6 +44,7 @@ export const updateMahasiswa = gql`
     $kelompokId: ID,
     $proyekId: ID,
     $angkatanId: ID,
+    $nilai: Int,
     $role: RoleMahasiswa
   ) {
     updateMahasiswa(
@@ -58,7 +59,8 @@ export const updateMahasiswa = gql`
       kelasId: $kelasId,
       kelompokId: $kelompokId,
       role: $role,
-      userId: $userId
+      userId: $userId,
+      nilai: $nilai
       
     ) {
       ...MahasiswaFields

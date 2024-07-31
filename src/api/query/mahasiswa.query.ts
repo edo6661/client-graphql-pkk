@@ -7,3 +7,11 @@ export const getMahasiswas = gql`
     }
   }
 `; 
+
+export const getMahasiswa = gql`
+  query($id: ID!) {
+    mahasiswa(id: $id) {
+      ...MahasiswaFields
+    }
+  }
+`

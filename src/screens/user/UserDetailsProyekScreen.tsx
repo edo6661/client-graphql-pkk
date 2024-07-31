@@ -182,10 +182,10 @@ const UserDetailsProyekScreen = ({ navigation, route }: DetailsProyekScreenProps
     if (isMahasiswaHaveProyek === proyek.id) {
       return 'Sudah Terdaftar di Proyek ini'
     }
-    if (isDosen && isDosenHaveProyek) {
+    if (isDosen && isDosenHaveProyek === proyek.id) {
       return 'Sudah Terdaftar di Proyek ini'
     }
-    if (isDosen && !isDosenHaveProyek) {
+    if (isDosen && isDosenHaveProyek == null) {
       return 'Tunggu didaftarkan oleh admin'
     }
     if (isMahasiswaHaveProyek) {
@@ -199,12 +199,12 @@ const UserDetailsProyekScreen = ({ navigation, route }: DetailsProyekScreenProps
     }
     if (isMahasiswaKetua) {
       return 'Daftar'
-    } ``
+    }
     if (!user) {
       return 'Login terlebih dahulu sebelum mendaftar'
     }
-    if (!isProyekKkn) {
-      return 'Daftar'
+    if (isDosen && isDosenHaveProyek !== proyek.id) {
+      return 'Sudah Terdaftar di Proyek lain'
     }
     return 'Ga masuk kondisi'
   }
@@ -236,6 +236,10 @@ const UserDetailsProyekScreen = ({ navigation, route }: DetailsProyekScreenProps
     if (!user) {
       return true
     }
+    if (isDosen && isDosenHaveProyek !== proyek.id) {
+      return true
+    }
+
 
     return false
   }
@@ -366,11 +370,11 @@ const UserDetailsProyekScreen = ({ navigation, route }: DetailsProyekScreenProps
       {/*  */}
 
       {/*  */}
-      {!isDosen && user && isProyekKkn && !isMahasiswaHaveKelompok && !isMahasiswaKetua && (
+      {/* {!isDosen && user && isProyekKkn && !isMahasiswaHaveKelompok && !isMahasiswaKetua && (
         <Button
           title='Daftar Kelompok'
         />
-      )}
+      )} */}
       {/*  */}
       {isProyekKkn && isMahasiswaHaveKelompok && !isMahasiswaKetua && (
         <Button
@@ -441,6 +445,13 @@ const UserDetailsProyekScreen = ({ navigation, route }: DetailsProyekScreenProps
           disabled={
             boolDaftarBasedOnStatus()
           }
+        />
+      )}
+      {/* DOSEN */}
+      {isDosen && !isDosenHaveProyek && isProyekKkn && (
+        <Button
+          title='Tunggu didaftarkan oleh admin'
+          disabled
         />
       )}
 

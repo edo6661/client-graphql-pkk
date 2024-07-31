@@ -71,7 +71,7 @@ export const mahasiswaFragments = gql`
     fullname
     semester
     role
-  
+    nilai
     userId
     kelasId
     angkatanId
@@ -235,6 +235,7 @@ export const proyekFragments = gql`
       fullname
       createdAt
       updatedAt
+      nilai
     }
     laporans {
       id

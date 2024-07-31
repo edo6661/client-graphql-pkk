@@ -8,7 +8,7 @@ import { Kelompok, Mahasiswa, Maybe, Proyek, TypeProyek } from '../../__generate
 import { MahasiswaProyekNavigatorProps } from '../../types/navigator.type';
 import { parseDate } from '../../utils/date';
 
-const MahasiswaProyekScreen = (
+const YourProyekScreen = (
   { navigation }: MahasiswaProyekNavigatorProps
 ) => {
   const { user } = useAuthContext();
@@ -87,6 +87,11 @@ const MahasiswaProyekScreen = (
           proyek.telahSelesai ? 'Ya' : 'Belum'
         }</Text>
       </View>
+      <View style={styles.infoContainer}>
+        <Text style={styles.infoLabel}>
+          {proyek.type === TypeProyek.Kkn ? `Kelompok: ${proyek.kelompok?.length}` : `Mahasiswa: ${proyek.mahasiswa?.length}`}
+        </Text>
+      </View>
 
     </View>
   );
@@ -110,16 +115,19 @@ const MahasiswaProyekScreen = (
   const renderMahasiswaItem = ({ item }: { item: Maybe<Mahasiswa> }) => (
     isMahasiswa ? (
       <View style={styles.kelompokItem}>
+
         {mahasiswa(item)}
       </View>
     ) : (
-      <TouchableOpacity style={styles.kelompokItem}
-        onPress={() => navigation.navigate('KelompokProyek', {
-          id: item!.id
-        })}
-      >
-        {mahasiswa(item)}
-      </TouchableOpacity>
+      <>
+        <TouchableOpacity style={styles.kelompokItem}
+          onPress={() => navigation.navigate('MahasiswaDetailsProyek', {
+            id: item!.id
+          })}
+        >
+          {mahasiswa(item)}
+        </TouchableOpacity>
+      </>
     )
   );
 
@@ -146,14 +154,11 @@ const MahasiswaProyekScreen = (
     </>
   );
 
+
   const mahasiswa = (item: Maybe<Mahasiswa>) => (
     <>
-      <View style={styles.infoContainer}>
-        <Text style={styles.infoLabel}>Mahasiswa:</Text>
-      </View>
-
       <Text style={styles.infoValue}>Nama: {item?.fullname}</Text>
-      {/* <Text style={styles.infoValue}>NIM: {item?.nilai}</Text> */}
+      <Text style={styles.infoValue}>Nilai: {item?.nilai ?? 'N/A'}</Text>
     </>
   );
 
@@ -168,7 +173,9 @@ const MahasiswaProyekScreen = (
   );
 
   const optionalDataKkn = isMahasiswa ? proyek.kelompok?.filter((kel) => kel!.id === idKelompokMahasiswa) : proyek.kelompok;
-  const optionalDataKKp = isMahasiswa ? proyek.mahasiswa!.filter((mhs) => mhs!.id === user.mahasiswa!.id) : proyek.mahasiswa
+  const optionalDataKKp = proyek.mahasiswa
+
+
 
   return proyek.type === TypeProyek.Kkn ? (
     <FlatList
@@ -193,7 +200,7 @@ const MahasiswaProyekScreen = (
   )
 };
 
-export default MahasiswaProyekScreen;
+export default YourProyekScreen;
 
 const styles = StyleSheet.create({
   container: {
