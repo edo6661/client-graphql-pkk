@@ -7,6 +7,7 @@ import { useQuery } from '@apollo/client'
 import { getProyek } from '../../api/query/proyek.query'
 import { useAuthContext } from '../../contexts/AuthContext'
 import LaporanProyekNavigator from './LaporanProyekNavigator'
+import KelompokProyekScreen from '../../screens/user/KelompokProyekScreen'
 
 const stack = createStackNavigator<MahasiswaProyekNavigatorParamList>()
 
@@ -18,6 +19,10 @@ const YourProyekNavigator = () => {
       <stack.Screen
         name='MahasiswaProyek'
         component={MahasiswaProyekScreen}
+      />
+      <stack.Screen
+        name='KelompokProyek'
+        component={KelompokProyekScreen}
       />
       <stack.Screen
         name='LaporanProyekNavigator'

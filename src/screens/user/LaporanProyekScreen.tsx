@@ -12,12 +12,12 @@ import ModalClose from '../../components/ModalClose';
 const LaporanProyekScreen = ({ navigation }: CreateLaporanProyekScreenProps) => {
   const { user } = useAuthContext();
 
-  const proyekId = user?.mahasiswa?.proyekId ?? user?.mahasiswa?.kelompok?.proyekId;
+  const proyekId = user?.mahasiswa?.proyekId || user?.mahasiswa?.kelompok?.proyekId || user?.dosen?.proyekId
 
-  // Make sure useQuery and useMutation are called in the same order every render
   const { data, error, loading } = useQuery<{ getLaporanByProyekId: Laporan[] }>(getLaporanByProyekId, {
     variables: { proyekId },
   });
+
 
   const [remove] = useMutation<any, MutationDeleteLaporanArgs>(deleteLaporan, {
     update(cache, { data }) {
@@ -36,6 +36,7 @@ const LaporanProyekScreen = ({ navigation }: CreateLaporanProyekScreenProps) => 
 
   const isMahasiswaKetua = user?.mahasiswa?.role === RoleMahasiswa.Ketua;
   const isDosen = user?.dosen !== null;
+
 
   const onDelete = async (item: Laporan) => {
     try {
@@ -76,11 +77,13 @@ const LaporanProyekScreen = ({ navigation }: CreateLaporanProyekScreenProps) => 
       <Text style={styles.title}>{item.file}</Text>
       <Text style={styles.subtitle}>Feedback: {item.feedback}</Text>
       <Text style={styles.subtitle}>Dari: {item.mahasiswa.fullname}</Text>
-      <ModalClose
-        action={onDelete}
-        item={item}
-        trigger='Hapus'
-      />
+      {isMahasiswaKetua && (
+        <ModalClose
+          action={onDelete}
+          item={item}
+          trigger='Hapus'
+        />
+      )}
     </TouchableOpacity>
   );
 

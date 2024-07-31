@@ -26,7 +26,6 @@ const UserKelompokScreen = () => {
 
   })
 
-  console.log('currentKelompok', currentKelompok)
 
 
   const [form, setForm] = useState<Partial<

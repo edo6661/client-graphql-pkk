@@ -246,7 +246,7 @@ const UserDetailsProyekScreen = ({ navigation, route }: DetailsProyekScreenProps
       {/*  */}
       {isDosen && isDosenHaveProyek === proyek.id && (
         <Button
-          title='Dosen ini sudah terdaftar di proyek ini'
+          title='Sudah terdaftar di proyek ini'
           disabled
         />
       )}

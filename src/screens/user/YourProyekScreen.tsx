@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image, FlatList, Button, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, Image, FlatList, Button, ScrollView, TouchableOpacity } from 'react-native';
 import React, { Fragment } from 'react';
 import { useQuery } from '@apollo/client';
 import { getProyek } from '../../api/query/proyek.query';
@@ -11,20 +11,29 @@ const MahasiswaProyekScreen = (
   { navigation }: MahasiswaProyekNavigatorProps
 ) => {
   const { user } = useAuthContext();
+  const proyekId = user?.mahasiswa?.proyekId || user?.mahasiswa?.kelompok?.proyekId || user?.dosen?.proyekId;
   const { data, loading, error } = useQuery<{
     getProyek: Proyek
   }>(getProyek, {
     variables: {
-      id: user?.mahasiswa?.proyekId ?? user?.mahasiswa?.kelompok?.proyekId
+      id: proyekId
     }
   });
+
+  const isMahasiswa = user?.mahasiswa
+
   const idKelompokMahasiswa = user?.mahasiswa?.kelompokId ?? user?.mahasiswa?.kelompok?.id;
+
+
+
 
 
   if (loading) return <Text>Loading...</Text>;
   if (error) return <Text>Error: {error.message}</Text>;
 
+
   const proyek = data?.getProyek;
+
 
   if (!proyek) {
     return (
@@ -77,7 +86,23 @@ const MahasiswaProyekScreen = (
   const renderKelompokItem = ({ item }: {
     item: Maybe<Kelompok>
   }) => (
-    <View style={styles.kelompokItem}>
+    user?.mahasiswa ? (
+      <View style={styles.kelompokItem}>
+        {kelompok(item)}
+      </View>
+    ) : (
+      <TouchableOpacity style={styles.kelompokItem}
+        onPress={() => navigation.navigate('KelompokProyek', {
+          id: item!.id
+        })}
+      >
+        {kelompok(item)}
+      </TouchableOpacity>
+    )
+  );
+
+  const kelompok = (item: Maybe<Kelompok>) => (
+    <>
       <View style={styles.infoContainer}>
         <Text style={styles.infoLabel}>Kelompok:</Text>
       </View>
@@ -94,8 +119,8 @@ const MahasiswaProyekScreen = (
           <Text style={styles.infoValue}>{item?.fullname}</Text>
         )}
       />
-    </View>
-  );
+    </>
+  )
 
   const renderFooter = () => (
     <Button
@@ -104,10 +129,15 @@ const MahasiswaProyekScreen = (
     />
   );
 
+  const optionalData = isMahasiswa ? proyek.kelompok?.filter((kel) => kel!.id === idKelompokMahasiswa) : proyek.kelompok;
+
+
   return (
     <FlatList
       ListHeaderComponent={renderHeader}
-      data={proyek.kelompok?.filter((kel) => kel!.id === idKelompokMahasiswa)}
+      data={
+        optionalData
+      }
       keyExtractor={(item) => item!.id}
       renderItem={renderKelompokItem}
       ListFooterComponent={renderFooter}
