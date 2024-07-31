@@ -58,6 +58,43 @@ const UserDetailsProyekScreen = ({ navigation, route }: DetailsProyekScreenProps
       });
     },
   });
+
+  const [updateMahasiswaMutation] = useMutation<
+    {
+      updateMahasiswa: Partial<Mahasiswa> & {
+
+      }
+    },
+    MutationUpdateMahasiswaArgs
+  >(updateMahasiswa, {
+    update(cache, { data }) {
+      if (!data) return console.error('Data not found')
+      if (!data.updateMahasiswa) return console.error('Data updateMahasiswa not found')
+      cache.modify({
+        fields: {
+          mahasiswas(existingMahasiswas = [], { readField }) {
+            return existingMahasiswas.map((mahasiswaExist:
+              Mahasiswa
+            ) => {
+              if (route.params?.id === undefined) return <Text>Id not found</Text>
+
+              if (readField('id', mahasiswaExist) === route.params.id) {
+                return {
+                  ...mahasiswaExist,
+                  ...data.updateMahasiswa,
+
+                }
+              } else {
+                return mahasiswaExist
+              }
+            })
+          }
+        }
+      })
+    }
+  })
+
+
   if (!proyek) {
     return (
       <View style={styles.container}>
@@ -76,35 +113,61 @@ const UserDetailsProyekScreen = ({ navigation, route }: DetailsProyekScreenProps
 
 
   const kelompokDaftarKeProyek = () => {
-    update({
-      variables: {
-        id: user?.mahasiswa?.kelompokId!,
-        proyekId: proyek.id!
-      },
-      optimisticResponse: {
-        updateKelompok: {
-          __typename: "Kelompok",
-          ...user?.mahasiswa?.kelompok,
+    if (proyek.type === TypeProyek.Kkn) {
+      update({
+        variables: {
           id: user?.mahasiswa?.kelompokId!,
           proyekId: proyek.id!
         },
-      },
-    })
-    storeUser({
-      ...user!,
-      mahasiswa: {
-        ...user?.mahasiswa!,
-        kelompok: {
-          ...user?.mahasiswa?.kelompok!,
-          proyekId: proyek.id!
+        optimisticResponse: {
+          updateKelompok: {
+            __typename: "Kelompok",
+            ...user?.mahasiswa?.kelompok,
+            id: user?.mahasiswa?.kelompokId!,
+            proyekId: proyek.id!
+          },
+        },
+      })
+      storeUser({
+        ...user!,
+        mahasiswa: {
+          ...user?.mahasiswa!,
+          kelompok: {
+            ...user?.mahasiswa?.kelompok!,
+            proyekId: proyek.id!
+          }
         }
-      }
-    })
+      })
+    }
+    if (proyek.type === TypeProyek.Kkp) {
+
+      updateMahasiswaMutation({
+        variables: {
+          id: user?.mahasiswa?.id!,
+          proyekId: proyek.id!
+        },
+        optimisticResponse: {
+          updateMahasiswa: {
+            __typename: 'Mahasiswa',
+            ...user?.mahasiswa,
+            proyekId: proyek.id
+          }
+        }
+      })
+      storeUser({
+        ...user!,
+        mahasiswa: {
+          ...user?.mahasiswa!,
+          proyekId: proyek.id
+        }
+      })
+    }
     refetch()
     navigation.navigate('UserProyek')
 
 
   }
+
 
   const titleDaftarBasedOnStatus = () => {
     if (proyek.bolehDimulai) {
@@ -113,7 +176,7 @@ const UserDetailsProyekScreen = ({ navigation, route }: DetailsProyekScreenProps
     if (proyek.telahSelesai) {
       return 'Proyek Telah Selesai'
     }
-    if (proyek.batasOrang === (proyek.kelompok?.length || proyek.mahasiswa?.length)) {
+    if (proyek.batasOrang === (proyek.kelompok?.length || proyek.mahasiswa?.length) && !isDosen) {
       return 'Proyek Penuh'
     }
     if (isMahasiswaHaveProyek === proyek.id) {
@@ -136,9 +199,12 @@ const UserDetailsProyekScreen = ({ navigation, route }: DetailsProyekScreenProps
     }
     if (isMahasiswaKetua) {
       return 'Daftar'
-    }
+    } ``
     if (!user) {
       return 'Login terlebih dahulu sebelum mendaftar'
+    }
+    if (!isProyekKkn) {
+      return 'Daftar'
     }
     return 'Ga masuk kondisi'
   }
@@ -175,10 +241,6 @@ const UserDetailsProyekScreen = ({ navigation, route }: DetailsProyekScreenProps
   }
 
 
-
-
-
-
   return (
     <ScrollView style={styles.container}>
       <Image source={{
@@ -196,10 +258,20 @@ const UserDetailsProyekScreen = ({ navigation, route }: DetailsProyekScreenProps
       {proyek.type === TypeProyek.Kkn && (
         <View style={styles.infoContainer}>
           <Text style={styles.infoLabel}>
-            {proyek.type === TypeProyek.Kkn ? 'Batas Kelompok' : 'Batas Orang'}:
+            Batas Kelompok
           </Text>
           <Text style={styles.infoValue}>{
             proyek.kelompok?.length
+          } / {proyek.batasOrang}   </Text>
+        </View>
+      )}
+      {proyek.type === TypeProyek.Kkp && (
+        <View style={styles.infoContainer}>
+          <Text style={styles.infoLabel}>
+            Batas Orang
+          </Text>
+          <Text style={styles.infoValue}>{
+            proyek.mahasiswa?.length
           } / {proyek.batasOrang}   </Text>
         </View>
       )}
@@ -266,13 +338,13 @@ const UserDetailsProyekScreen = ({ navigation, route }: DetailsProyekScreenProps
           </View>
         </View>
       )}
-
       {!user && (
         <Button
           title='Login terlebih dahulu sebelum mendaftar'
           disabled
         />
       )}
+      {/* KKN */}
       {(!isDosen && user?.mahasiswa?.proyek?.type === TypeProyek.Kkn && !user?.mahasiswa?.proyekId && user?.mahasiswa?.role === RoleMahasiswa.Anggota) && (
         <>
           <Picker>
@@ -285,7 +357,7 @@ const UserDetailsProyekScreen = ({ navigation, route }: DetailsProyekScreenProps
         </>
       )}
       {/*  */}
-      {isMahasiswaHaveProyek && proyek.id !== isMahasiswaHaveProyek && (
+      {isMahasiswaHaveProyek && proyek.id !== isMahasiswaHaveProyek && !isDosen && (
         <Button
           title='Sudah Terdaftar Di Proyek Lain'
           disabled
@@ -316,47 +388,61 @@ const UserDetailsProyekScreen = ({ navigation, route }: DetailsProyekScreenProps
         />
       )}
       {/*  */}
-      {isMahasiswaHaveProyek === proyek.id && (
+      {/* {isMahasiswaHaveProyek === proyek.id && (
         <Button
           title='Sudah Terdaftar Di Proyek ini'
           disabled
         />
-      )}
+      )} */}
       {/*  */}
-      {isDosen && !isDosenHaveProyek && (
-        <Button
-          title='Tunggu didaftarkan oleh admin'
-          disabled
-        />
-      )}
+
       {/*  */}
-      {isDosen && isDosenHaveProyek === proyek.id && (
-        <Button
-          title='Sudah terdaftar di proyek ini'
-          disabled
-        />
-      )}
-      {/*  */}
-      {isDosen && isDosenHaveProyek !== proyek.id && (
-        <Button
-          title='Sudah terdaftar di proyek lain'
-          disabled
-        />
-      )}
-      {/*  */}
-      {proyek.batasOrang === proyek.kelompok?.length && (
+      {proyek.batasOrang === proyek.kelompok?.length && !isDosen && (
         <Button
           title='Proyek Penuh'
           disabled
         />
       )}
-      <Text>
-        Kelompok Length: {proyek.kelompok?.length}
-      </Text>
-      <Text>
-        Kelompok Batas Orang:{proyek.batasOrang}
-      </Text>
+      {/* KKP */}
+      {proyek.type === TypeProyek.Kkp && (
+        <View style={{
+          gap: 8
+        }}>
+          <Text>
+            Mahasiswa
+          </Text>
+          <View
+            style={{
+              gap: 4,
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+            }}
+          >
+            {proyek.mahasiswa!.length > 0 ? proyek?.mahasiswa!.map((k, index) => (
+              <View key={index}
+                style={{
+                }}
+              >
+                <Text style={styles.infoValue}>{k?.fullname}</Text>
 
+              </View>
+            )) : (
+              <Text style={styles.infoValue}>
+                Belum ada Anggota
+              </Text>
+            )}
+          </View>
+        </View>
+      )}
+      {!isProyekKkn && (
+        <Button
+          title={titleDaftarBasedOnStatus()}
+          onPress={kelompokDaftarKeProyek}
+          disabled={
+            boolDaftarBasedOnStatus()
+          }
+        />
+      )}
 
     </ScrollView>
   );

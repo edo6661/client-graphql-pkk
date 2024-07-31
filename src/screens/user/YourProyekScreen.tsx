@@ -4,7 +4,7 @@ import { useQuery } from '@apollo/client';
 import { getProyek } from '../../api/query/proyek.query';
 import { useAuthContext } from '../../contexts/AuthContext';
 import dayjs from 'dayjs';
-import { Kelompok, Maybe, Proyek } from '../../__generated__/graphql';
+import { Kelompok, Mahasiswa, Maybe, Proyek, TypeProyek } from '../../__generated__/graphql';
 import { MahasiswaProyekNavigatorProps } from '../../types/navigator.type';
 import { parseDate } from '../../utils/date';
 
@@ -39,6 +39,7 @@ const MahasiswaProyekScreen = (
   const isDosen = user?.dosen;
 
   const isBolehDimulaiDanAdaPembimbing = proyek.bolehDimulai && proyek.pembimbing?.length;
+
 
 
   const renderHeader = () => (
@@ -106,6 +107,24 @@ const MahasiswaProyekScreen = (
     )
   );
 
+  const renderMahasiswaItem = ({ item }: { item: Maybe<Mahasiswa> }) => (
+    isMahasiswa ? (
+      <View style={styles.kelompokItem}>
+        {mahasiswa(item)}
+      </View>
+    ) : (
+      <TouchableOpacity style={styles.kelompokItem}
+        onPress={() => navigation.navigate('KelompokProyek', {
+          id: item!.id
+        })}
+      >
+        {mahasiswa(item)}
+      </TouchableOpacity>
+    )
+  );
+
+
+
   const kelompok = (item: Maybe<Kelompok>) => (
     <>
       <View style={styles.infoContainer}>
@@ -127,6 +146,17 @@ const MahasiswaProyekScreen = (
     </>
   );
 
+  const mahasiswa = (item: Maybe<Mahasiswa>) => (
+    <>
+      <View style={styles.infoContainer}>
+        <Text style={styles.infoLabel}>Mahasiswa:</Text>
+      </View>
+
+      <Text style={styles.infoValue}>Nama: {item?.fullname}</Text>
+      {/* <Text style={styles.infoValue}>NIM: {item?.nilai}</Text> */}
+    </>
+  );
+
   const renderFooter = () => (
     <Button
       title={
@@ -137,18 +167,30 @@ const MahasiswaProyekScreen = (
     />
   );
 
-  const optionalData = isMahasiswa ? proyek.kelompok?.filter((kel) => kel!.id === idKelompokMahasiswa) : proyek.kelompok;
+  const optionalDataKkn = isMahasiswa ? proyek.kelompok?.filter((kel) => kel!.id === idKelompokMahasiswa) : proyek.kelompok;
+  const optionalDataKKp = isMahasiswa ? proyek.mahasiswa!.filter((mhs) => mhs!.id === user.mahasiswa!.id) : proyek.mahasiswa
 
-  return (
+  return proyek.type === TypeProyek.Kkn ? (
     <FlatList
       ListHeaderComponent={renderHeader}
-      data={optionalData}
+      data={optionalDataKkn}
       keyExtractor={(item) => item!.id}
       renderItem={renderKelompokItem}
       ListFooterComponent={renderFooter}
       contentContainerStyle={styles.container}
     />
-  );
+  ) : (
+    <FlatList
+      ListHeaderComponent={renderHeader}
+      data={optionalDataKKp}
+      keyExtractor={(item) => item!.id}
+      renderItem={
+        renderMahasiswaItem
+      }
+      ListFooterComponent={renderFooter}
+      contentContainerStyle={styles.container}
+    />
+  )
 };
 
 export default MahasiswaProyekScreen;

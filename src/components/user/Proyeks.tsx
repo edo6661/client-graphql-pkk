@@ -11,7 +11,6 @@ const Proyeks = ({ navigation }: ProyeksScreenProps) => {
   const [typeProyek, setTypeProyek] = useState<TypeProyek>(TypeProyek.Kkn);
   const { data, loading } = useQuery<{ proyeks: Proyek[] }>(getProyeks);
 
-  console.log(data?.proyeks[0])
 
   return (
     <View style={styles.container}>

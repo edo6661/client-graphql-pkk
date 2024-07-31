@@ -3,11 +3,12 @@ import React from 'react'
 import { useMutation, useQuery } from '@apollo/client'
 import { getLaporanByProyekId } from '../../api/query/laporan.query'
 import { useAuthContext } from '../../contexts/AuthContext'
-import { Laporan, MutationDeleteLaporanArgs, RoleMahasiswa } from '../../__generated__/graphql'
+import { Laporan, MutationDeleteLaporanArgs, Proyek, RoleMahasiswa, TypeProyek } from '../../__generated__/graphql'
 import { defaultImage } from '../../utils/image'
 import { LaporanProyekScreenProps, MahasiswaProyekLaporanScreenProps } from '../../types/navigator.type'
 import { deleteLaporan } from '../../api/mutation/laporan.mutation'
 import ModalClose from '../../components/ModalClose'
+import { getProyek } from '../../api/query/proyek.query'
 
 const LaporanProyekScreen = (
   { navigation }: MahasiswaProyekLaporanScreenProps
@@ -18,6 +19,13 @@ const LaporanProyekScreen = (
     variables: { proyekId }
   })
 
+  const { data: proyek } = useQuery<{
+    getProyek: Proyek
+  }>(getProyek, {
+    variables: {
+      id: proyekId
+    }
+  })
 
 
 
@@ -91,8 +99,9 @@ const LaporanProyekScreen = (
         data={data.getLaporanByProyekId}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
+        ListEmptyComponent={<Text>Belum ada laporan</Text>}
       />
-      {isKetua && (
+      {(isKetua || proyek?.getProyek.type === TypeProyek.Kkp) && (
         <Button
           title='Create Laporan'
           onPress={() => navigation.navigate('CreateLaporanProyek')}

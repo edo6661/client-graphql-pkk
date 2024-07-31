@@ -21,9 +21,7 @@ const CreateLaporanProyekScreen = (
     mahasiswaId: user?.mahasiswa?.id!,
   })
 
-  if (user?.mahasiswa?.role !== RoleMahasiswa.Ketua) {
-    return <Text>Anda bukan ketua kelompok tidak dapat membuat laporan</Text>
-  }
+
 
   const [create, {
     error
