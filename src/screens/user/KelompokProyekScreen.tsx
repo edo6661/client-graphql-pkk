@@ -98,7 +98,7 @@ const KelompokProyekScreen = (
             key={key}
             value={form[key as keyof Kelompok] as string}
             onChangeText={(text) => setForm({ ...form, [key]: text })}
-            placeholder={`Masukkan ${key} untuk kelompok ${kelompok?.name}`}
+            placeholder={`Masukkan ${key}`}
             inputMode={
               key === 'nilai' ? 'numeric' : 'text'
             }

@@ -454,6 +454,18 @@ const UserDetailsProyekScreen = ({ navigation, route }: DetailsProyekScreenProps
           disabled
         />
       )}
+      {isProyekKkn && isDosen && isDosenHaveProyek === proyek.id && (
+        <Button
+          title='Sudah Terdaftar di Proyek ini'
+          disabled
+        />
+      )}
+      {isDosen && isDosenHaveProyek && isDosenHaveProyek !== proyek.id && (
+        <Button
+          title='Sudah Terdaftar di Proyek lain'
+          disabled
+        />
+      )}
 
     </ScrollView>
   );

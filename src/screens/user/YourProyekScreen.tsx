@@ -141,7 +141,7 @@ const YourProyekScreen = (
 
       <Text style={styles.infoValue}>Nama: {item?.name}</Text>
       <Text style={styles.infoValue}>Nilai: {item?.nilai || 'N/A'}</Text>
-      <Text style={styles.infoValue}>Feedback: {item?.feedback || 'N/A'}</Text>
+      {/* <Text style={styles.infoValue}>Feedback: {item?.feedback || 'N/A'}</Text> */}
 
       <Text style={[styles.infoLabel, { marginVertical: 10 }]}>Anggota Kelompok: {item?.mahasiswa?.length}</Text>
       <FlatList
