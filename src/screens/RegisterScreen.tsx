@@ -1,4 +1,4 @@
-import { Button, StyleSheet, Text, TextInput, View } from 'react-native'
+import { Button, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { Fragment, useState } from 'react'
 import { Angkatan, Fakultas, Kelas, Konsentrasi, MutationCreateDosenArgs, MutationCreateMahasiswaArgs, ProgramStudi, Role, RoleMahasiswa } from '../__generated__/graphql'
 import { Picker } from '@react-native-picker/picker'
@@ -16,8 +16,11 @@ import { getAngkatans } from '../api/query/angkatan.query'
 import { createAngkatan } from '../api/mutation/angkatan.mutation'
 import Toast from 'react-native-toast-message'
 import { signIn } from '../api/mutation/auth.mutation'
+import { RegisterScreenProps } from '../types/navigator.type'
 
-const RegisterScreen = () => {
+const RegisterScreen = (
+  { navigation }: RegisterScreenProps
+) => {
   const { storeUser } = useAuthContext()
   const [createUser, {
     error: errUser,
@@ -301,6 +304,17 @@ const RegisterScreen = () => {
         onPress={onSubmit}
         disabled={loading}
       />
+      <TouchableOpacity
+        onPress={() =>
+          // @ts-expect-error
+          navigation.navigate('Login')
+        }
+      >
+        <Text>
+          Have an account? Login
+        </Text>
+      </TouchableOpacity>
+
       {loading && <Text>Loading...</Text>}
       {error && <Text>Error: {error.message}</Text>}
     </View>

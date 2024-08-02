@@ -11,9 +11,12 @@ import { getKelompok } from '../../api/query/kelompok.query'
 import { Picker } from '@react-native-picker/picker'
 import { updateMahasiswa } from '../../api/mutation/mahasiswa.mutation'
 import Toast from 'react-native-toast-message'
+import { UserKelompokNavigatorProps } from '../../types/navigator.type'
 
-const UserKelompokScreen = () => {
-  const { user } = useAuthContext()
+const UserKelompokScreen = (
+  { navigation }: UserKelompokNavigatorProps
+) => {
+  const { user, storeUser } = useAuthContext()
   const { data } = useQuery<{
     mahasiswas: Array<Mahasiswa>
   }>(getMahasiswas)
@@ -97,6 +100,33 @@ const UserKelompokScreen = () => {
     }
   }
 
+  const keluarKelompok = async () => {
+    try {
+      await update({
+        variables: {
+          id: user?.mahasiswa?.id!,
+          kelompokId: null
+        }
+      })
+      storeUser({
+        ...user!,
+        mahasiswa: {
+          ...user?.mahasiswa!,
+          kelompokId: null
+        }
+      })
+      refetch()
+      Toast.show({
+        type: 'success',
+        text1: 'Success',
+        text2: 'Mahasiswa removed from Kelompok'
+      })
+
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
 
 
   return (
@@ -165,6 +195,13 @@ const UserKelompokScreen = () => {
           />
         </View>
       )}
+      {user?.mahasiswa?.kelompokId && (user?.mahasiswa!.role === RoleMahasiswa.Anggota) && user.mahasiswa.kelompok!.proyekId === null && (
+        <Button
+          title='Keluar Kelompok'
+          onPress={keluarKelompok}
+        />
+      )}
+
     </View>
   )
 }

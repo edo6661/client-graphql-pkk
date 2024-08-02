@@ -56,7 +56,7 @@ const BottomTabs = () => {
       />
       {user && (
         <>
-          {(user.mahasiswa || (user.mahasiswa!.proyek && user.mahasiswa!.proyek?.type === TypeProyek.Kkn)) && (
+          {(user.mahasiswa) && (
             <Tab.Screen
               name='UserKelompokNavigator'
               component={UserKelompokNavigator}

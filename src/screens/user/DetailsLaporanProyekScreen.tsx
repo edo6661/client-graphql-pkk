@@ -24,7 +24,6 @@ const DetailsLaporanProyekScreen = ({ route }: DetailsLaporanProyekScreenProps) 
     },
   });
 
-  console.log(user)
 
   const [addFeedback] = useMutation<{
     updateLaporan: Partial<Laporan>

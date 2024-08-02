@@ -40,6 +40,9 @@ export type HomeScreenProps ={
 export type AuthScreenProps ={
   navigation: NativeStackNavigationProp<BottomTabParamList, 'Auth'>;
 }
+export type ProfileScreenProps ={
+  navigation: NativeStackNavigationProp<BottomTabParamList, 'Profile'>;
+}
 
 export type UserProyekNavigatorParamList ={
   UserProyek: undefined;
