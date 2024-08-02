@@ -17,6 +17,8 @@ import MahasiswaKelompok from '../screens/user/UserKelompokScreen'
 import ProfileScreen from '../screens/user/ProfileScreen'
 import YourProyekNavigator from '../navigators/user/YourProyekNavigator'
 import UserKelompokNavigator from '../navigators/user/UserKelompokNavigator'
+import AuthenticationNavigator from '../navigators/AuthenticationNavigator'
+import { TypeProyek } from '../__generated__/graphql'
 
 
 const Tab = createBottomTabNavigator<BottomTabParamList>()
@@ -35,10 +37,11 @@ const BottomTabs = () => {
       />
       {!user && (
         <Tab.Screen
-          name='Auth'
-          component={AuthScreen}
+          name='AuthNavigator'
+          component={AuthenticationNavigator}
           options={{
             tabBarIcon: ({ focused, color, size }) => <Icon name='sign-in' size={size} color={color} />,
+            title: "Authentication"
           }}
         />
       )}
@@ -53,7 +56,7 @@ const BottomTabs = () => {
       />
       {user && (
         <>
-          {(user.mahasiswa) && (
+          {(user.mahasiswa || (user.mahasiswa!.proyek && user.mahasiswa!.proyek?.type === TypeProyek.Kkn)) && (
             <Tab.Screen
               name='UserKelompokNavigator'
               component={UserKelompokNavigator}

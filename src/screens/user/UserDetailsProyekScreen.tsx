@@ -10,6 +10,7 @@ import { updateKelompok } from '../../api/mutation/kelompok.mutation';
 import { updateMahasiswa } from '../../api/mutation/mahasiswa.mutation';
 import { getProyeks } from '../../api/query/proyek.query';
 import { parseDate } from '../../utils/date';
+import Toast from 'react-native-toast-message';
 
 const UserDetailsProyekScreen = ({ navigation, route }: DetailsProyekScreenProps) => {
   const { user, storeUser } = useAuthContext();
@@ -112,32 +113,69 @@ const UserDetailsProyekScreen = ({ navigation, route }: DetailsProyekScreenProps
 
 
 
-  const kelompokDaftarKeProyek = () => {
+  const onDaftar = async (kelompokId?: string) => {
     if (proyek.type === TypeProyek.Kkn) {
-      update({
-        variables: {
-          id: user?.mahasiswa?.kelompokId!,
-          proyekId: proyek.id!
-        },
-        optimisticResponse: {
-          updateKelompok: {
-            __typename: "Kelompok",
-            ...user?.mahasiswa?.kelompok,
-            id: user?.mahasiswa?.kelompokId!,
-            proyekId: proyek.id!
-          },
-        },
-      })
-      storeUser({
-        ...user!,
-        mahasiswa: {
-          ...user?.mahasiswa!,
-          kelompok: {
-            ...user?.mahasiswa?.kelompok!,
-            proyekId: proyek.id!
-          }
+      try {
+        if (isMahasiswaKetua) {
+          await update({
+            variables: {
+              id: user?.mahasiswa?.kelompokId!,
+              proyekId: proyek.id!
+            },
+            optimisticResponse: {
+              updateKelompok: {
+                __typename: "Kelompok",
+                ...user?.mahasiswa?.kelompok,
+                id: user?.mahasiswa?.kelompokId!,
+                proyekId: proyek.id!
+              },
+            },
+          })
+          storeUser({
+            ...user!,
+            mahasiswa: {
+              ...user?.mahasiswa!,
+              kelompok: {
+                ...user?.mahasiswa?.kelompok!,
+                proyekId: proyek.id!
+              }
+            }
+          })
+          Toast.show({
+            type: 'success',
+            text1: 'Berhasil mendaftar ke proyek',
+          })
+        } else {
+          await updateMahasiswaMutation({
+            variables: {
+              id: user?.mahasiswa?.id!,
+              kelompokId
+            },
+            optimisticResponse: {
+              updateMahasiswa: {
+                __typename: 'Mahasiswa',
+                ...user?.mahasiswa,
+                proyekId: proyek.id,
+                kelompokId
+              }
+            }
+          })
+          storeUser({
+            ...user!,
+            mahasiswa: {
+              ...user?.mahasiswa!,
+              proyekId: proyek.id,
+              kelompokId
+            }
+          })
+          Toast.show({
+            type: 'success',
+            text1: 'Berhasil mendaftar ke kelompok',
+          })
         }
-      })
+      } catch (err) {
+        console.error(err)
+      }
     }
     if (proyek.type === TypeProyek.Kkp) {
 
@@ -160,6 +198,10 @@ const UserDetailsProyekScreen = ({ navigation, route }: DetailsProyekScreenProps
           ...user?.mahasiswa!,
           proyekId: proyek.id
         }
+      })
+      Toast.show({
+        type: 'success',
+        text1: 'Berhasil mendaftar ke proyek',
       })
     }
     refetch()
@@ -197,14 +239,27 @@ const UserDetailsProyekScreen = ({ navigation, route }: DetailsProyekScreenProps
     if (isProyekKkn && !isMahasiswaHaveKelompok) {
       return 'Daftar Kelompok'
     }
-    if (isMahasiswaKetua) {
+    if (isProyekKkn && isMahasiswaKetua) {
       return 'Daftar'
     }
+
     if (!user) {
       return 'Login terlebih dahulu sebelum mendaftar'
     }
     if (isDosen && isDosenHaveProyek !== proyek.id) {
       return 'Sudah Terdaftar di Proyek lain'
+    }
+    if (isMahasiswaKetua && !isMahasiswaHaveKelompok && isProyekKkn) {
+      return 'Buatlah Kelompok terlebih dahulu'
+    }
+    if (isMahasiswaKetua && !isProyekKkn) {
+      return 'Daftar'
+    }
+    if (!isMahasiswaKetua && !isProyekKkn) {
+      return 'Daftar'
+    }
+    if (isMahasiswaHaveProyek === proyek.id) {
+      return 'Sudah Terdaftar di Proyek ini'
     }
     return 'Ga masuk kondisi'
   }
@@ -230,6 +285,7 @@ const UserDetailsProyekScreen = ({ navigation, route }: DetailsProyekScreenProps
     if (isMahasiswaHaveProyek) {
       return true
     }
+
     if (isProyekKkn && isMahasiswaHaveKelompok && !isMahasiswaKetua) {
       return true
     }
@@ -239,10 +295,18 @@ const UserDetailsProyekScreen = ({ navigation, route }: DetailsProyekScreenProps
     if (isDosen && isDosenHaveProyek !== proyek.id) {
       return true
     }
+    if (isMahasiswaKetua && !isMahasiswaHaveKelompok && isProyekKkn) {
+      return true
+    }
+    if (!isMahasiswaKetua && !isProyekKkn) {
+      return
+    }
 
 
     return false
   }
+
+
 
 
   return (
@@ -324,14 +388,19 @@ const UserDetailsProyekScreen = ({ navigation, route }: DetailsProyekScreenProps
                 style={{
                 }}
               >
+                <Text>
+                </Text>
                 <Text style={styles.infoValue}>{k?.name}</Text>
-                {!isMahasiswaKetua || isDosen && (
-                  <Button
-                    title={titleDaftarBasedOnStatus()}
-                    disabled={
-                      boolDaftarBasedOnStatus()
-                    }
-                  />
+                {(!isMahasiswaKetua || isDosen) && (
+                  <>
+                    <Button
+                      title={titleDaftarBasedOnStatus()}
+                      disabled={
+                        boolDaftarBasedOnStatus()
+                      }
+                      onPress={() => onDaftar(k?.id)}
+                    />
+                  </>
                 )}
               </View>
             )) : (
@@ -342,6 +411,7 @@ const UserDetailsProyekScreen = ({ navigation, route }: DetailsProyekScreenProps
           </View>
         </View>
       )}
+
       {!user && (
         <Button
           title='Login terlebih dahulu sebelum mendaftar'
@@ -361,12 +431,12 @@ const UserDetailsProyekScreen = ({ navigation, route }: DetailsProyekScreenProps
         </>
       )}
       {/*  */}
-      {isMahasiswaHaveProyek && proyek.id !== isMahasiswaHaveProyek && !isDosen && (
+      {/* {isMahasiswaHaveProyek && proyek.id !== isMahasiswaHaveProyek && !isDosen && (
         <Button
           title='Sudah Terdaftar Di Proyek Lain'
           disabled
         />
-      )}
+      )} */}
       {/*  */}
 
       {/*  */}
@@ -376,21 +446,37 @@ const UserDetailsProyekScreen = ({ navigation, route }: DetailsProyekScreenProps
         />
       )} */}
       {/*  */}
-      {isProyekKkn && isMahasiswaHaveKelompok && !isMahasiswaKetua && (
+      {/* {isProyekKkn && isMahasiswaHaveKelompok && !isMahasiswaKetua && (
         <Button
           title='Tunggu Ketua Kelompok untuk mendaftar'
           disabled
         />
-      )}
-      {isProyekKkn && isMahasiswaHaveKelompok && isMahasiswaKetua && !isMahasiswaHaveProyek && (
+      )} */}
+      {isProyekKkn && isMahasiswaHaveKelompok && isMahasiswaKetua && (
         <Button
           title={titleDaftarBasedOnStatus()}
-          onPress={kelompokDaftarKeProyek}
+          onPress={
+            () => onDaftar()
+          }
           disabled={
             boolDaftarBasedOnStatus()
           }
         />
       )}
+      {/*  */}
+      {isProyekKkn && !isMahasiswaHaveKelompok && isMahasiswaKetua && (
+        <Button
+          title='Buatlah Kelompok terlebih dahulu'
+          disabled
+        />
+      )}
+      {isProyekKkn && !isMahasiswaHaveKelompok && !isMahasiswaKetua && (
+        <Button
+          title='Join Kelompok terlebih dahulu'
+          disabled
+        />
+      )}
+      {/*  */}
       {/*  */}
       {/* {isMahasiswaHaveProyek === proyek.id && (
         <Button
@@ -441,7 +527,7 @@ const UserDetailsProyekScreen = ({ navigation, route }: DetailsProyekScreenProps
       {!isProyekKkn && (
         <Button
           title={titleDaftarBasedOnStatus()}
-          onPress={kelompokDaftarKeProyek}
+          onPress={() => onDaftar()}
           disabled={
             boolDaftarBasedOnStatus()
           }

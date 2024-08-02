@@ -52,27 +52,27 @@ const CreateForm = (
   const [selectedMahasiswa, setSelectedMahasiswa] = useState<string | null>();
 
 
-  const { data: programStudi } = useQuery<{
-    programStudis: Array<ProgramStudi>
-  }>(getProgramStudis)
   const { data: proyeks } = useQuery<{
     proyeks: Array<Proyek>
   }>(getProyeks)
+  const { data: programStudi } = useQuery<{
+    programStudis: Array<ProgramStudi>
+  }>(getProgramStudis)
   const { data: konsentrasi } = useQuery<{
     konsentrasis: Array<Konsentrasi>
   }>(getKonsentrasis)
   const { data: fakultas } = useQuery<{
     fakultas: Array<Fakultas>
   }>(getFakultas)
-  const { data: mahasiswa } = useQuery<{
-    mahasiswas: Array<Mahasiswa>
-  }>(getMahasiswas)
   const { data: kelas } = useQuery<{
     kelass: Array<Kelas>
   }>(getKelass);
   const { data: angkatan } = useQuery<{
     angkatans: Array<Angkatan>
   }>(getAngkatans)
+  const { data: mahasiswa } = useQuery<{
+    mahasiswas: Array<Mahasiswa>
+  }>(getMahasiswas)
 
   const { data: kelompok } = useQuery<{
     kelompoks: Array<Kelompok>

@@ -6,9 +6,19 @@ export const signUp = gql`
       id
       username
       password
-      email
-      role
       profilePhoto
+      role
+      email
+      mahasiswa {
+        ...MahasiswaFields
+      }
+      dosen {
+        ...DosenFields
+      }
+      admin {
+        id
+        fullname
+      }
     }
   }
 `

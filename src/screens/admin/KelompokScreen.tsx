@@ -70,8 +70,6 @@ const KelompokScreen = (
     }
   })
 
-  console.log(error)
-
   const onRemove = async (item: Kelompok) => {
     try {
       const res = await remove({

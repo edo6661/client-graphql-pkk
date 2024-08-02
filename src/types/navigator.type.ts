@@ -1,5 +1,6 @@
+import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
+import { CompositeNavigationProp, RouteProp } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "react-native-screens/lib/typescript/native-stack/types";
-import { RouteProp } from "@react-navigation/native";
 
 export type RootStackParamList = {
   BottomTab: undefined;
@@ -13,7 +14,26 @@ export type BottomTabParamList ={
   YourProyekNavigator: undefined;
   UserKelompokNavigator: undefined;
   Profile: undefined;
+  AuthNavigator: undefined;
 }
+export type AuthenticationNavigatorParamList = {
+  Register: undefined;
+  Login: undefined;
+}
+
+export type LoginScreenProps = {
+  navigation: CompositeNavigationProp<
+    NativeStackNavigationProp<AuthenticationNavigatorParamList, 'Login'>,
+    BottomTabNavigationProp<BottomTabParamList>
+  >;
+};
+export type RegisterScreenProps = {
+  navigation: CompositeNavigationProp<
+    NativeStackNavigationProp<AuthenticationNavigatorParamList, 'Register'>,
+    BottomTabNavigationProp<BottomTabParamList>
+  >;
+};
+
 export type HomeScreenProps ={
   navigation: NativeStackNavigationProp<BottomTabParamList, 'Home'>;
 }
