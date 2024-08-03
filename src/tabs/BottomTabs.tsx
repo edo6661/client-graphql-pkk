@@ -19,6 +19,7 @@ import YourProyekNavigator from '../navigators/user/YourProyekNavigator'
 import UserKelompokNavigator from '../navigators/user/UserKelompokNavigator'
 import AuthenticationNavigator from '../navigators/AuthenticationNavigator'
 import { TypeProyek } from '../__generated__/graphql'
+import PhotoScreen from '../screens/PhotoScreen'
 
 
 const Tab = createBottomTabNavigator<BottomTabParamList>()
@@ -52,6 +53,15 @@ const BottomTabs = () => {
           tabBarIcon: ({ focused, color, size }) => <Icon name='list' size={size} color={color} />,
           headerShown: false,
           title: 'Proyek'
+        }}
+      />
+      <Tab.Screen
+        name='Photo'
+        component={PhotoScreen}
+        options={{
+          tabBarIcon: ({ focused, color, size }) => <Icon name='list' size={size} color={color} />,
+          headerShown: false,
+          title: 'Photo'
         }}
       />
       {user && (

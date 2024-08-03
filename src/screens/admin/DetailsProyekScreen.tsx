@@ -125,7 +125,6 @@ const DetailsProyekScreen = ({
   return (
     <KeyboardAwareScrollView>
       <Text>{route.params.id}</Text>
-      <Text>{JSON.stringify(proyek)}</Text>
       {adminItemFields['Proyek'].map(field => (
         <Fragment key={field}>
           {(field.includes('id') || field.includes('Id')) || field.includes('tanggal') || field === 'verified' || field === 'type' || field.includes('mulai') || field === 'telahSelesai' ? null : (

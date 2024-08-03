@@ -111,7 +111,7 @@ const DetailsDosenScreen = (
       },
       optimisticResponse: {
         updateUser: {
-          ...dosen?.user,
+          id: dosen?.userId!,
           password: form.fullname,
           username: form.fullname,
 

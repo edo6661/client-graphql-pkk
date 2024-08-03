@@ -14,6 +14,7 @@ export type BottomTabParamList ={
   YourProyekNavigator: undefined;
   UserKelompokNavigator: undefined;
   Profile: undefined;
+  Photo: undefined;
   AuthNavigator: undefined;
 }
 export type AuthenticationNavigatorParamList = {
