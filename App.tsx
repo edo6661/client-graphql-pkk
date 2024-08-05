@@ -6,8 +6,10 @@ import { AuthContextProvider, } from './src/contexts/AuthContext';
 import Navigators from './src/components/Navigators';
 import Toast from 'react-native-toast-message';
 import { toastConfig } from './src/components/ToastConfig';
-
+import { initializeApp } from 'firebase/app';
 const App = () => {
+
+
 
   return (
     <AuthContextProvider>

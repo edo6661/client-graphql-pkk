@@ -23,6 +23,10 @@
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Need access to photo library to upload PDF files</string>
+	<key>NSDocumentsFolderUsageDescription</key>
+	<string>Need access to documents folder to upload PDF files</string>
 	<true/>
 	<key>NSAppTransportSecurity</key>
 	<dict>

@@ -4,12 +4,13 @@ import ImagePicker from 'react-native-image-crop-picker'
 import Toast from 'react-native-toast-message'
 import { uploadImage } from '../utils/uploadImage'
 import { request, PERMISSIONS, RESULTS } from 'react-native-permissions'
+import DocumentPicker from 'react-native-document-picker'
 
 const PhotoScreen = () => {
   const [image, setImage] = useState<string | null>(null)
   const [uploading, setUploading] = useState(false)
   const [transferred, setTransferred] = useState(0)
-  const [url, setUrl] = useState('')
+  const [url, setUrl] = useState<string | null>(null)
 
   const requestCameraPermission = async () => {
     try {
@@ -58,8 +59,14 @@ const PhotoScreen = () => {
       const imageUri = Platform.OS === 'ios' ? image.sourceURL : image.path
       if (!imageUri) return console.error('Image not found')
       setImage(imageUri)
+    }).catch((error) => {
+
+      console.log(error)
     })
   }
+
+
+
 
   const onUpload = async () => {
     if (!image) return console.error('Image not found')
@@ -80,6 +87,8 @@ const PhotoScreen = () => {
       })
     }
   }
+
+
 
   return (
     <View style={styles.container}>
@@ -111,6 +120,7 @@ const PhotoScreen = () => {
           <Text style={styles.uploadingText}>{`${transferred}% Uploaded`}</Text>
         </View>
       )}
+
     </View>
   )
 }
