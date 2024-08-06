@@ -10,7 +10,7 @@ const TemporaryError = (
 ) => {
   return (
     <Text
-      style={baseStyles.stateText}
+      style={baseStyles.errorText}
     >
       {err?.message}
     </Text>

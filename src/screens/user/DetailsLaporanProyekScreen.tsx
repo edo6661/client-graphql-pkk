@@ -90,6 +90,7 @@ const DetailsLaporanProyekScreen = ({ route }: DetailsLaporanProyekScreenProps) 
 
   const laporan = data?.getLaporan;
 
+
   return (
     <ScrollView style={styles.container}>
       {laporan ? (
@@ -102,7 +103,6 @@ const DetailsLaporanProyekScreen = ({ route }: DetailsLaporanProyekScreenProps) 
             }}
             style={styles.image}
           />
-          <Text style={styles.title}>File: {laporan.file}</Text>
           <Text style={styles.subtitle}>Dari: {laporan.mahasiswa.fullname}</Text>
           <Text style={styles.subtitle}>Proyek: {laporan.proyek.name}</Text>
           <Text style={styles.subtitle}>Feedback: {laporan.feedback || 'Tidak ada feedback'}</Text>

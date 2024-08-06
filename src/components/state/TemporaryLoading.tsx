@@ -5,7 +5,7 @@ import { baseStyles } from '../../styles'
 const TemporaryLoading = () => {
   return (
     <Text
-      style={baseStyles.stateText}
+      style={baseStyles.errorText}
     >TemporaryLoading...</Text>
   )
 }

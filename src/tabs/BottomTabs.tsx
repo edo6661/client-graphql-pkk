@@ -21,6 +21,7 @@ import AuthenticationNavigator from '../navigators/AuthenticationNavigator'
 import { TypeProyek } from '../__generated__/graphql'
 import PhotoScreen from '../screens/PhotoScreen'
 import PdfScreen from '../screens/PdfScreen'
+import ButtonProfile from '../components/ButtonProfile'
 
 
 const Tab = createBottomTabNavigator<BottomTabParamList>()
@@ -29,7 +30,17 @@ const Tab = createBottomTabNavigator<BottomTabParamList>()
 const BottomTabs = () => {
   const { user } = useAuthContext()
   return (
-    <Tab.Navigator>
+    <Tab.Navigator
+      screenOptions={{
+        headerRight: () => (
+          <>
+            {user && (
+              <ButtonProfile />
+            )}
+          </>
+        ),
+      }}
+    >
       <Tab.Screen
         name='Home'
         component={user?.role === "ADMIN" ? HomeAdminScreen : HomeScreen}
@@ -56,7 +67,7 @@ const BottomTabs = () => {
           title: 'Proyek'
         }}
       />
-      <Tab.Screen
+      {/* <Tab.Screen
         name='Photo'
         component={PhotoScreen}
         options={{
@@ -73,7 +84,7 @@ const BottomTabs = () => {
           headerShown: false,
           title: 'Pdf'
         }}
-      />
+      /> */}
       {user && (
         <>
           {(user.mahasiswa) && (
@@ -98,13 +109,13 @@ const BottomTabs = () => {
               }}
             />
           )}
-          <Tab.Screen
+          {/* <Tab.Screen
             name='Profile'
             component={ProfileScreen}
             options={{
               tabBarIcon: ({ focused, color, size }) => <Icon name='user' size={size} color={color} />,
             }}
-          />
+          /> */}
         </>
       )}
 
