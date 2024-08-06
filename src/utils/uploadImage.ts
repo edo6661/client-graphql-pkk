@@ -40,10 +40,10 @@ export const uploadImage :UploadImage = async (
   console.log("FILENAME + TIMESTAMP", filename)
 
   // Mengatur state uploading menjadi true
-  setUploading!(true);
+  // setUploading!(true);
 
   // Mengatur progress transfer awal menjadi 0
-  setTransferred!(0);
+  // setTransferred!(0);
 
   // Membuat referensi ke lokasi penyimpanan di Firebase Storage
   const storageRef = ref(storage, `profile/${filename}`);
@@ -65,10 +65,10 @@ export const uploadImage :UploadImage = async (
     );
 
     // Menghitung dan mengatur persentase progress upload
-    setTransferred!(
-      Math.round(snapshot.bytesTransferred / snapshot.totalBytes) *
-      100,
-    );
+    // setTransferred!(
+    //   Math.round(snapshot.bytesTransferred / snapshot.totalBytes) *
+    //   100,
+    // );
   })
 
 
@@ -79,7 +79,7 @@ export const uploadImage :UploadImage = async (
     // Mengambil URL download dari file yang telah diupload
     const url = await getDownloadURL(storageRef);
     console.log("URL", url)
-    setUploading!(false);
+    // setUploading!(false);
     Toast.show({
       type: 'success',
       text1: 'Upload Berhasil',

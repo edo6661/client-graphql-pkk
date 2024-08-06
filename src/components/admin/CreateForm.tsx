@@ -1,4 +1,4 @@
-import { Alert, Button, StyleSheet, Text, TextInput, View } from 'react-native'
+import { Alert, Button, Image, Platform, StyleSheet, Text, TextInput, View } from 'react-native'
 import React, { Fragment, useEffect, useState } from 'react'
 import { baseStyles } from '../../styles'
 import { gql, useMutation, useQuery } from '@apollo/client'
@@ -37,6 +37,9 @@ import { createProyek } from '../../api/mutation/proyek.mutation'
 import { getKelass } from '../../api/query/kelas.query'
 import { getAngkatans } from '../../api/query/angkatan.query'
 import { getKelompoks } from '../../api/query/kelompok.query'
+import ImageCropPicker from 'react-native-image-crop-picker'
+import { uploadImage } from '../../utils/uploadImage'
+import Icon from 'react-native-vector-icons/FontAwesome'
 interface CreateFormProps {
   selectedValue: AdminFields
 }
@@ -50,6 +53,7 @@ const CreateForm = (
   const [selectedProyek, setSelectedProyek] = useState<string | null>();
   const [selectedFakultas, setSelectedFakultas] = useState<string | null>();
   const [selectedMahasiswa, setSelectedMahasiswa] = useState<string | null>();
+  const [image, setImage] = useState<string | null>(null)
 
 
   const { data: proyeks } = useQuery<{
@@ -422,6 +426,49 @@ const CreateForm = (
 
   }, [selectedKonsentrasi, selectedProdi, selectedProyek, selectedFakultas, selectedMahasiswa])
 
+  const onUploadPhoto = async () => {
+    try {
+      const uploadedUrl = await uploadImage(image!);
+      handleInputChange('photo', uploadedUrl!);
+      Toast.show({
+        type: 'success',
+        text1: 'Success',
+        text2: 'Foto berhasil diupload'
+      });
+    } catch (error) {
+      console.error(error);
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Terjadi kesalahan saat mengupload foto'
+      });
+    }
+  };
+
+
+  const choosePhotoFromLibrary = () => {
+    ImageCropPicker.openPicker({
+      width: 1200,
+      height: 780,
+      cropping: true,
+    }).then((image) => {
+      const imageUri = Platform.OS === 'ios' ? image.sourceURL : image.path;
+      setImage(imageUri!);
+    }).catch((error) => {
+      console.error(error);
+    });
+  };
+
+  useEffect(() => {
+    if (image) {
+      onUploadPhoto();
+      console.log(formData)
+    }
+  }, [image]);
+
+
+
+
 
 
   return (
@@ -430,7 +477,7 @@ const CreateForm = (
     >
       {adminItemFields[selectedValue].map((field) => (
         <Fragment key={field}>
-          {(field !== 'userId' && field !== 'prodiId' && field !== "konsentrasiId" && field !== "proyekId" && field !== 'programStudiId' && field !== "fakultasId" && field !== 'mahasiswaId' && !field.includes('keterangan') && field !== 'verified' && field !== 'type' && !field.includes('tanggal') && field !== 'bolehDimulai' && field !== 'telahSelesai' && field !== 'angkatanId' && field !== 'kelasId' && field !== 'kelompokId' && field !== 'role') && (
+          {(field !== 'userId' && field !== 'prodiId' && field !== "konsentrasiId" && field !== "proyekId" && field !== 'programStudiId' && field !== "fakultasId" && field !== 'mahasiswaId' && !field.includes('keterangan') && field !== 'verified' && field !== 'type' && !field.includes('tanggal') && field !== 'bolehDimulai' && field !== 'telahSelesai' && field !== 'angkatanId' && field !== 'kelasId' && field !== 'kelompokId' && field !== 'role' && field !== 'photo') && (
             <TextInput
               placeholder={field}
               value={formData[field]}
@@ -439,6 +486,35 @@ const CreateForm = (
                 (field === 'tahun' || field === 'batasOrang' || field === 'nilai') && field ? 'numeric' : 'text'
               }
             />
+          )}
+          {field === 'photo' && (
+            <>
+              {!formData[field] && (
+                <Button
+                  title="Pilih foto"
+                  onPress={choosePhotoFromLibrary}
+                />
+              )}
+              {formData[field] && image && (
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                  }}
+                >
+                  <Image
+                    source={{ uri: formData[field] }}
+                    style={styles.image}
+                  />
+                  <Icon
+                    name="close"
+                    onPress={() => setFormData(prev => ({ ...prev, photo: '' }))}
+                  />
+                </View>
+              )}
+
+
+            </>
           )}
           {(field === 'prodiId' || field === 'programStudiId') && (
             <Picker
@@ -575,5 +651,12 @@ export default CreateForm
 
 const styles = StyleSheet.create({
   container: {
-  }
+  },
+  image: {
+    width: '100%',
+    height: 200,
+    resizeMode: 'contain',
+    marginVertical: 20,
+  },
+
 })

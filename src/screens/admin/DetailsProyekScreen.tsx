@@ -1,5 +1,5 @@
-import { Button, StyleSheet, Text, TextInput, View } from 'react-native';
-import React, { Fragment, useState } from 'react';
+import { Button, Image, Platform, StyleSheet, Text, TextInput, View } from 'react-native';
+import React, { Fragment, useEffect, useState } from 'react';
 import { gql, useApolloClient, useMutation } from '@apollo/client';
 import {
   Proyek,
@@ -17,7 +17,10 @@ import BouncyCheckbox from 'react-native-bouncy-checkbox'
 import DateTimePicker from 'react-native-ui-datepicker';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Picker } from '@react-native-picker/picker';
+import { uploadImage } from '../../utils/uploadImage';
+import ImageCropPicker from 'react-native-image-crop-picker';
 
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 const DetailsProyekScreen = ({
   navigation,
@@ -62,6 +65,7 @@ const DetailsProyekScreen = ({
     },
   });
 
+  const [image, setImage] = useState<string | null>(null);
 
   const [form, setForm] = useState<Partial<Proyek>>({
     ...proyek,
@@ -121,13 +125,56 @@ const DetailsProyekScreen = ({
     }
   };
 
+  const onUploadPhoto = async () => {
+    try {
+      console.log("IMAGE", image);
+      const uploadedUrl = await uploadImage(image!);
+      handleInputChange('photo', uploadedUrl!);
+      Toast.show({
+        type: 'success',
+        text1: 'Success',
+        text2: 'Foto berhasil diupload'
+      });
+    } catch (error) {
+      console.error(error);
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Terjadi kesalahan saat mengupload foto'
+      });
+    }
+  };
+
+
+  const choosePhotoFromLibrary = () => {
+    ImageCropPicker.openPicker({
+      width: 1200,
+      height: 780,
+      cropping: true,
+    }).then((image) => {
+      console.log("IMAGE FROM LIBRARY", image);
+      const imageUri = Platform.OS === 'ios' ? image.sourceURL : image.path;
+      console.log("IMAGE URI", imageUri);
+      setImage(imageUri!);
+    }).catch((error) => {
+      console.log(error);
+    });
+  };
+
+  useEffect(() => {
+    if (image) {
+      onUploadPhoto();
+      console.log(form)
+    }
+  }, [image]);
+
 
   return (
     <KeyboardAwareScrollView>
       <Text>{route.params.id}</Text>
       {adminItemFields['Proyek'].map(field => (
         <Fragment key={field}>
-          {(field.includes('id') || field.includes('Id')) || field.includes('tanggal') || field === 'verified' || field === 'type' || field.includes('mulai') || field === 'telahSelesai' ? null : (
+          {(field.includes('id') || field.includes('Id')) || field.includes('tanggal') || field === 'verified' || field === 'type' || field.includes('mulai') || field === 'telahSelesai' || field === 'photo' ? null : (
             <>
               <Text>
                 {field}
@@ -138,6 +185,35 @@ const DetailsProyekScreen = ({
                 value={form[field]?.toString()}
                 onChangeText={value => handleInputChange(field, value)}
               />
+            </>
+          )}
+          {field === 'photo' && (
+            <>
+              {!form[field] && (
+                <Button
+                  title="Pilih foto"
+                  onPress={choosePhotoFromLibrary}
+                />
+              )}
+              {form[field] && (
+                <View
+                  style={{
+                    flexDirection: 'row'
+                  }}
+                >
+                  <Image
+                    source={{ uri: form[field] }}
+                    style={styles.image}
+                  />
+                  <Icon
+                    name="close"
+                    color="red"
+                    onPress={() => setForm(prev => ({ ...prev, photo: '' }))}
+                  />
+                </View>
+              )}
+
+
             </>
           )}
           {(field === 'verified' || field === 'bolehDimulai' || field === 'telahSelesai') && (
@@ -187,4 +263,12 @@ const DetailsProyekScreen = ({
 
 export default DetailsProyekScreen;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  image: {
+    height: 200,
+    flex: 0.9,
+    resizeMode: 'contain',
+    marginVertical: 20,
+  },
+
+});
