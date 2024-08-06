@@ -15,6 +15,7 @@ export type BottomTabParamList ={
   UserKelompokNavigator: undefined;
   Profile: undefined;
   Photo: undefined;
+  Pdf: undefined;
   AuthNavigator: undefined;
 }
 export type AuthenticationNavigatorParamList = {

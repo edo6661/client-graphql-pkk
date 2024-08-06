@@ -8,9 +8,10 @@ import DocumentPicker from 'react-native-document-picker'
 
 const PhotoScreen = () => {
   const [image, setImage] = useState<string | null>(null)
+  const [file, setFile] = useState<any>(null)
   const [uploading, setUploading] = useState(false)
   const [transferred, setTransferred] = useState(0)
-  const [url, setUrl] = useState<string | null>(null)
+  const [url, setUrl] = useState('')
 
   const requestCameraPermission = async () => {
     try {
@@ -65,6 +66,33 @@ const PhotoScreen = () => {
     })
   }
 
+  const chooseFileFromLibrary = async () => {
+    try {
+      const res = await DocumentPicker.pick({
+        type: [DocumentPicker.types.pdf],
+        allowMultiSelection: false,
+      });
+      console.log(res);
+      setFile(res);
+    } catch (error) {
+      if (DocumentPicker.isCancel(error)) {
+        // User cancelled the picker
+        Toast.show({
+          type: 'error',
+          text1: 'Error',
+          text2: 'User cancelled',
+        });
+      } else {
+        console.log(error);
+        Toast.show({
+          type: 'error',
+          text1: 'Error',
+          text2: 'Error while picking file',
+        });
+      }
+    }
+  };
+
 
 
 
@@ -101,6 +129,10 @@ const PhotoScreen = () => {
         title="Choose a photo from library"
         onPress={choosePhotoFromLibrary}
       />
+      <Button
+        title="Choose a file from library"
+        onPress={chooseFileFromLibrary}
+      />
       {image && (
         <Image
           source={{ uri: image }}
@@ -120,7 +152,6 @@ const PhotoScreen = () => {
           <Text style={styles.uploadingText}>{`${transferred}% Uploaded`}</Text>
         </View>
       )}
-
     </View>
   )
 }

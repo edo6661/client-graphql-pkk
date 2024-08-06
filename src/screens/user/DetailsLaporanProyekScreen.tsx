@@ -7,6 +7,7 @@ import { DetailsLaporanProyekScreenProps } from '../../types/navigator.type';
 import { useAuthContext } from '../../contexts/AuthContext';
 import { updateLaporan } from '../../api/mutation/laporan.mutation';
 import Toast from 'react-native-toast-message';
+import { WebView } from 'react-native-webview'; // Import WebView
 
 const DetailsLaporanProyekScreen = ({ route }: DetailsLaporanProyekScreenProps) => {
   const { user } = useAuthContext();
@@ -17,13 +18,11 @@ const DetailsLaporanProyekScreen = ({ route }: DetailsLaporanProyekScreenProps) 
 
   const isUserDosen = user?.dosen !== null;
 
-
   const { data, loading, error } = useQuery<{ getLaporan: Laporan }>(getLaporan, {
     variables: {
       id: route.params.id,
     },
   });
-
 
   const [addFeedback] = useMutation<{
     updateLaporan: Partial<Laporan>
@@ -107,6 +106,16 @@ const DetailsLaporanProyekScreen = ({ route }: DetailsLaporanProyekScreenProps) 
           <Text style={styles.subtitle}>Dari: {laporan.mahasiswa.fullname}</Text>
           <Text style={styles.subtitle}>Proyek: {laporan.proyek.name}</Text>
           <Text style={styles.subtitle}>Feedback: {laporan.feedback || 'Tidak ada feedback'}</Text>
+
+          {/* Display PDF preview */}
+          {(laporan.file && laporan.file.includes('https')) && (
+            <WebView
+              source={{ uri: laporan.file }}
+              style={{ flex: 1, height: 600, marginTop: 20 }}
+              mediaPlaybackRequiresUserAction={false}
+            />
+          )}
+
           {user?.dosen && (
             <View style={{ marginTop: 12 }}>
               <TextInput
@@ -126,7 +135,6 @@ const DetailsLaporanProyekScreen = ({ route }: DetailsLaporanProyekScreenProps) 
 };
 
 export default DetailsLaporanProyekScreen;
-
 
 const styles = StyleSheet.create({
   container: {

@@ -70,6 +70,7 @@ const LaporanProyekScreen = (
   if (loading) return <Text>Loading...</Text>
   if (error) return <Text>Error: {error.message}</Text>
 
+
   const renderItem = ({ item }: {
     item: Laporan
   }) => (
@@ -78,7 +79,7 @@ const LaporanProyekScreen = (
         navigation.navigate('DetailsLaporanProyek', { id: item.id })
       }
     >
-      <Image source={{ uri: defaultImage(item.proyek.photo!) }} style={styles.image} />
+      <Image source={{ uri: defaultImage(item.photo!) }} style={styles.image} />
       <Text style={styles.title}>{item.proyek.name}</Text>
       <Text style={styles.subtitle}>Dari: {item.mahasiswa.fullname}</Text>
       <Text style={styles.subtitle}>Feedback: {item.feedback ?? 'N/A'}</Text>

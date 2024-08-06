@@ -20,6 +20,7 @@ import UserKelompokNavigator from '../navigators/user/UserKelompokNavigator'
 import AuthenticationNavigator from '../navigators/AuthenticationNavigator'
 import { TypeProyek } from '../__generated__/graphql'
 import PhotoScreen from '../screens/PhotoScreen'
+import PdfScreen from '../screens/PdfScreen'
 
 
 const Tab = createBottomTabNavigator<BottomTabParamList>()
@@ -62,6 +63,15 @@ const BottomTabs = () => {
           tabBarIcon: ({ focused, color, size }) => <Icon name='list' size={size} color={color} />,
           headerShown: false,
           title: 'Photo'
+        }}
+      />
+      <Tab.Screen
+        name='Pdf'
+        component={PdfScreen}
+        options={{
+          tabBarIcon: ({ focused, color, size }) => <Icon name='list' size={size} color={color} />,
+          headerShown: false,
+          title: 'Pdf'
         }}
       />
       {user && (
