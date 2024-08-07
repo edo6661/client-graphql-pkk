@@ -1,4 +1,4 @@
-import { Button, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, Button, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { Fragment, useState } from 'react'
 import { Angkatan, Fakultas, Kelas, Konsentrasi, MutationCreateDosenArgs, MutationCreateMahasiswaArgs, ProgramStudi, Role, RoleMahasiswa } from '../__generated__/graphql'
 import { Picker } from '@react-native-picker/picker'
@@ -17,6 +17,11 @@ import { createAngkatan } from '../api/mutation/angkatan.mutation'
 import Toast from 'react-native-toast-message'
 import { signIn } from '../api/mutation/auth.mutation'
 import { RegisterScreenProps } from '../types/navigator.type'
+import { baseStyles } from '../styles'
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import Separator from '../components/Separator'
+import { COLORS } from '../constants/colors'
+import { wordFirstUpper } from '../utils/wordFirstUpper'
 
 const RegisterScreen = (
   { navigation }: RegisterScreenProps
@@ -236,87 +241,256 @@ const RegisterScreen = (
   const error = errUser || errDosen || errMhs
 
   return (
-    <View>
-      <Text>Register</Text>
-      <Picker
-        selectedValue={registerAs}
-        onValueChange={(itemValue) =>
-          setRegisterAs(itemValue)
-        } >
-        {registerAsArr.map((item, index) => {
-          return <Picker.Item label={item} value={item} key={index} />
-        })}
-      </Picker>
-      {
-        registerAsObj[registerAs as 'Mahasiswa' | 'Dosen'].map((key) => <Fragment key={key}>
-          {(!key.includes('Id') && !key.includes('role')) && (
-            <TextInput
-              key={key}
-              placeholder={key}
-              onChangeText={(e) => {
-                onChange(key, e)
+    <View
+      style={baseStyles.centerContainer}
+    >
+      <View
+        style={
+          [
+            baseStyles.innerCenterContainer,
+            {
+              flex: 1,
+              borderRadius: 0,
+
+            }
+          ]
+        }>
+        {
+          loading && (
+            <ActivityIndicator
+              size='large'
+              color={COLORS.primaryBlue}
+              style={{
+                position: 'absolute',
+                top: 0,
+                bottom: 0,
+                left: 0,
+                right: 0,
+                zIndex: 1,
               }}
             />
-          )}
-          {(key === 'prodiId' || key === 'angkatanId' || key === 'konsentrasiId' || key === 'kelasId') && (
-            <Picker
-              selectedValue={form[key]}
-              onValueChange={(itemValue) =>
-                onChange(key, itemValue)
+          )
+        }
+
+        <KeyboardAwareScrollView style={[
+          baseStyles.innerCenterContainer,
+        ]
+        }
+        >
+          <View
+            style={{
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            {
+              loading && (
+                <ActivityIndicator
+                  size='large'
+                  color={COLORS.primaryBlue}
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    zIndex: 1,
+                  }}
+                />
+              )
+            }
+
+            <Image
+              source={require('../assets/images/logo.png')}
+              style={{
+                width: 200,
+                height: 200
+              }}
+              resizeMode='contain'
+            />
+          </View>
+
+          <View style={{
+            marginVertical: 10,
+          }}>
+
+            <Text
+              style={[
+                baseStyles.quaternaryTitle,
+                {
+                  textAlign: 'left',
+
+                }
+              ]}
+            >
+              Register As
+            </Text>
+            <View
+              style={
+                [
+                  baseStyles.primaryInput,
+                  {
+                    paddingLeft: 0,
+                  }
+                ]
+
               }
             >
-              <Picker.Item label={`Pilih ${key.slice(0, -2)}`} value='' />
-              {key === 'konsentrasiId' && konsentrasi?.konsentrasis.map((item, index) => {
-                return <Picker.Item label={item.name} value={item.id} key={index} />
-              })}
-              {key === 'prodiId' && programStudi?.programStudis.map((item, index) => {
-                return <Picker.Item label={item.name} value={item.id} key={index} />
-              })}
-              {key === 'angkatanId' && angkatan?.angkatans.map((item, index) => {
-                return <Picker.Item label={item.tahun.toString()} value={item.id} key={index} />
-              })}
-              {key === 'kelasId' && kelas?.kelass.map((item, index) => {
-                return <Picker.Item label={item.name} value={item.id} key={index} />
-              })}
-            </Picker>
-          )}
-          {key === 'role' && (
-            <Picker selectedValue={
-              form[key]
-            } onValueChange={(itemValue) => onChange(key, itemValue)}>
-              <Picker.Item label="Pilih Role di kelompok" value="" />
-              <Picker.Item label={RoleMahasiswa.Anggota} value={RoleMahasiswa.Anggota} />
-              <Picker.Item label={RoleMahasiswa.Ketua} value={RoleMahasiswa.Ketua} />
-            </Picker>
-          )}
+              <Picker
+                selectedValue={registerAs}
+                onValueChange={(itemValue) =>
+                  setRegisterAs(itemValue)
+                }
 
-        </Fragment>
-        )}
-      <TextInput
-        placeholder='password'
-        onChangeText={(e) => {
-          onChange('password', e)
-        }}
-        secureTextEntry={true}
-      />
-      <Button
-        title='Submit'
-        onPress={onSubmit}
-        disabled={loading}
-      />
-      <TouchableOpacity
-        onPress={() =>
-          // @ts-expect-error
-          navigation.navigate('Login')
-        }
-      >
-        <Text>
-          Have an account? Login
-        </Text>
-      </TouchableOpacity>
+              >
+                {registerAsArr.map((item, index) => {
+                  return <Picker.Item label={item} value={item} key={index} />
+                })}
+              </Picker>
 
-      {loading && <Text>Loading...</Text>}
-      {error && <Text>Error: {error.message}</Text>}
+
+            </View>
+          </View>
+          <Separator
+            color={COLORS.greyLight}
+            width='100%'
+            height={10}
+            orientation='horizontal'
+          />
+          <View
+            style={{
+              gap: 8,
+              marginTop: 8,
+            }}
+          >
+            {registerAsObj[registerAs as 'Mahasiswa' | 'Dosen'].map((key) => <Fragment key={key}>
+              {(!key.includes('Id') && !key.includes('role')) && (
+                <TextInput
+                  key={key}
+                  placeholder={wordFirstUpper(key)}
+                  onChangeText={(e) => {
+                    onChange(key, e)
+                  }}
+                  style={
+                    baseStyles.primaryInput
+                  }
+                  placeholderTextColor={COLORS.black}
+                />
+              )}
+              {(key === 'prodiId' || key === 'angkatanId' || key === 'konsentrasiId' || key === 'kelasId') && (
+                <View
+                  style={
+                    [
+                      baseStyles.primaryInput,
+                      {
+                        paddingLeft: 0,
+                      }
+                    ]
+                  }>
+                  <Picker
+                    selectedValue={form[key]}
+                    onValueChange={(itemValue) =>
+                      onChange(key, itemValue)
+                    }
+                  >
+                    <Picker.Item label={`Pilih ${key.slice(0, -2)}`} value='' />
+                    {key === 'konsentrasiId' && konsentrasi?.konsentrasis.map((item, index) => {
+                      return <Picker.Item label={item.name} value={item.id} key={index} />
+                    })}
+                    {key === 'prodiId' && programStudi?.programStudis.map((item, index) => {
+                      return <Picker.Item label={item.name} value={item.id} key={index} />
+                    })}
+                    {key === 'angkatanId' && angkatan?.angkatans.map((item, index) => {
+                      return <Picker.Item label={item.tahun.toString()} value={item.id} key={index} />
+                    })}
+                    {key === 'kelasId' && kelas?.kelass.map((item, index) => {
+                      return <Picker.Item label={item.name} value={item.id} key={index} />
+                    })}
+                  </Picker>
+                </View>
+              )}
+              {key === 'role' && (
+                <View
+                  style={[
+                    baseStyles.primaryInput,
+                    {
+                      paddingLeft: 0,
+                    }
+                  ]}
+                >
+                  <Picker selectedValue={
+                    form[key]
+                  } onValueChange={(itemValue) => onChange(key, itemValue)}
+
+                  >
+                    <Picker.Item label="Pilih Role di kelompok" value="" />
+                    <Picker.Item label={RoleMahasiswa.Anggota} value={RoleMahasiswa.Anggota} />
+                    <Picker.Item label={RoleMahasiswa.Ketua} value={RoleMahasiswa.Ketua} />
+                  </Picker>
+                </View>
+              )}
+
+            </Fragment>
+            )}
+
+            <TextInput
+              placeholder='Password'
+              onChangeText={(e) => {
+                onChange('password', e)
+              }}
+              secureTextEntry={true}
+              style={baseStyles.primaryInput}
+            />
+            <TouchableOpacity
+              onPress={() =>
+                // @ts-expect-error
+                navigation.navigate('Login')
+              }
+              style={{
+                width: '100%',
+                flexDirection: 'row',
+                justifyContent: 'flex-end',
+                gap: 4,
+              }}
+              disabled={
+                !form.password || !!error || loading
+              }
+
+            >
+              <Text
+                style={{
+                  color: COLORS.primaryBlue,
+                  fontWeight: '400',
+                  marginVertical: 4,
+                }}
+
+              >
+                Have an account? Login
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={onSubmit}
+              style={baseStyles.primaryButton}
+              disabled={
+                !form.password && !!error || loading
+              }
+            >
+              <Text
+                style={{
+                  color: 'white',
+                  fontWeight: '600',
+                  fontSize: 16,
+                }}
+              >Submit</Text>
+            </TouchableOpacity>
+
+
+            {error && <Text>Error: {error.message}</Text>}
+
+          </View>
+
+        </KeyboardAwareScrollView>
+
+      </View>
     </View>
   )
 }

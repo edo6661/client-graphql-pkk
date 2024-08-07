@@ -1,4 +1,4 @@
-import { Alert, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, Alert, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { useState } from 'react'
 import { useMutation } from '@apollo/client'
 import { signIn } from '../api/mutation/auth.mutation'
@@ -40,15 +40,15 @@ const AuthScreen = (
         }
       })
       storeUser(res.data.signIn);
-      if (res.data.signIn.role === "ADMIN") {
-        // @ts-expect-error
-        return navigation.navigate('Dashboard')
-      }
       Toast.show({
         type: 'success',
         text1: 'Login Success',
         text2: 'Welcome'
       })
+      if (res.data.signIn.role === "ADMIN") {
+        // @ts-expect-error
+        return navigation.navigate('Dashboard')
+      }
       // @ts-expect-error
       navigation.navigate('Home')
     } catch (err) {
@@ -68,6 +68,22 @@ const AuthScreen = (
           ]
         }
       >
+        {
+          loading && (
+            <ActivityIndicator
+              size='large'
+              color={COLORS.primaryBlue}
+              style={{
+                position: 'absolute',
+                top: 0,
+                bottom: 0,
+                left: 0,
+                right: 0,
+                zIndex: 1,
+              }}
+            />
+          )
+        }
         <Image
           source={require('../assets/images/logo.png')}
           style={{
@@ -128,7 +144,6 @@ const AuthScreen = (
             }}
           >Submit</Text>
         </TouchableOpacity>
-        {loading && <TemporaryLoading />}
         {error && <TemporaryError err={error} />}
 
       </View>

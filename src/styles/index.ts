@@ -13,8 +13,8 @@ export const baseStyles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 12,
-    gap: 12
+    padding: 12,
+    gap: 12,
   },
   innerCenterContainer: {
     width: "100%",
@@ -33,6 +33,35 @@ export const baseStyles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 10
   } ,
+  // title
+  primaryTitle : {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: COLORS.black,
+    textAlign: 'center',
+    marginBottom: 12
+  },
+  secondaryTitle : {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: COLORS.black,
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  tertiaryTitle : {
+    fontSize: 16,
+    fontWeight: 'semibold',
+    color: COLORS.black,
+    textAlign: 'center',
+    marginBottom: 6
+  },
+  quaternaryTitle : {
+    fontSize: 14,
+    fontWeight: 'semibold',
+    color: COLORS.black,
+    textAlign: 'center',
+    marginBottom: 4
+  },
 
   errorText: {
       textAlign: 'center',
