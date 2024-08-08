@@ -70,6 +70,13 @@ export const baseStyles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 4
   },
+  // image
+  profileImage: {
+    width: 100,
+    aspectRatio: 1,
+    borderRadius: 50,
+  },
+  // text
 
   errorText: {
       textAlign: 'center',

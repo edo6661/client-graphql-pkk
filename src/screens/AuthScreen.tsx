@@ -21,7 +21,15 @@ const AuthScreen = (
     username: '',
     password: ''
   })
-  const [login, { loading, error, data: res }] = useMutation(signIn)
+  const [login, { loading, error, data: res }] = useMutation(signIn, {
+    update(cache, { data }) {
+      if (!data) return console.error('Data not found')
+      if (!data.signIn) return console.error('Data signIn not found')
+      storeUser(data.signIn)
+      console.log(data.signIn)
+
+    }
+  })
 
   const onChange = (key: string, value: string) => {
     setForm({
@@ -36,10 +44,10 @@ const AuthScreen = (
         variables: {
           signInInput: {
             ...form
-          }
+          },
         }
       })
-      storeUser(res.data.signIn);
+      // storeUser(res.data.signIn);
       Toast.show({
         type: 'success',
         text1: 'Login Success',

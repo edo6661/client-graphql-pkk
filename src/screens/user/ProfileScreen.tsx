@@ -1,4 +1,4 @@
-import { Button, StyleSheet, Text, TextInput, View } from 'react-native'
+import { Button, Image, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { Fragment, useEffect, useState } from 'react'
 import { AdminNavigatorScreenProps, MahasiswaNavigatorScreenProps } from '../../types/adminNavigator.type'
 import { adminItemFields } from '../../types/admin.type'
@@ -17,6 +17,9 @@ import { getKelompoks } from '../../api/query/kelompok.query'
 import { ProfileScreenProps } from '../../types/navigator.type'
 import { useAuthContext } from '../../contexts/AuthContext'
 import { updateDosen } from '../../api/mutation/dosen.mutation'
+import { uploadImage } from '../../utils/uploadImage'
+import ImageCropPicker from 'react-native-image-crop-picker'
+import { baseStyles } from '../../styles'
 
 
 const ProfileScreen = (
@@ -112,7 +115,8 @@ const ProfileScreen = (
 
   const [form, setForm] = useState<Partial<
     Mahasiswa> & {
-      password: string
+      password: string,
+      profilePhoto: string
     }>({
       fullname: mahasiswa?.fullname || "",
       id: mahasiswa?.id || "",
@@ -127,8 +131,10 @@ const ProfileScreen = (
       role: mahasiswa?.role!,
       kelasId: mahasiswa?.kelasId || "",
       password: "",
+      profilePhoto: user?.profilePhoto || ""
 
     })
+
   const [formDosen, setFormDosen] = useState<Partial<Dosen & {
     userId: string;
     password: string;
@@ -153,6 +159,48 @@ const ProfileScreen = (
   const [selectedProyek, setSelectedProyek] = useState<string>(
     mahasiswa?.proyek?.id || ""
   );
+
+  const [image, setImage] = useState<string | null>(null);
+  const onUploadPhoto = async () => {
+    try {
+      const uploadedUrl = await uploadImage(
+        image!,
+      );
+      setForm(prev => (
+        {
+          ...prev,
+          profilePhoto: uploadedUrl!
+        }
+      ))
+      Toast.show({
+        type: 'success',
+        text1: 'Success',
+        text2: 'Foto berhasil diupload'
+      });
+    } catch (error) {
+      console.error(error);
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Terjadi kesalahan saat mengupload foto'
+      });
+    }
+  };
+
+
+  const choosePhotoFromLibrary = () => {
+    ImageCropPicker.openPicker({
+      width: 1200,
+      height: 780,
+      cropping: true,
+    }).then((image) => {
+      const imageUri = Platform.OS === 'ios' ? image.sourceURL : image.path;
+      setImage(imageUri!);
+    }).catch((error) => {
+      console.error(error);
+    });
+  };
+
 
 
 
@@ -217,6 +265,7 @@ const ProfileScreen = (
           data: {
             password: form.password,
             username: form.fullname,
+            profilePhoto: form.profilePhoto
           },
 
         },
@@ -225,12 +274,15 @@ const ProfileScreen = (
             id: mahasiswa?.userId!,
             password: form.password,
             username: form.fullname,
+            profilePhoto: form.profilePhoto
           }
         }
       })
       storeUser({
         ...user!,
         username: form.fullname!,
+        profilePhoto: form.profilePhoto!,
+
         mahasiswa: {
           ...user?.mahasiswa!,
           ...sendedData
@@ -270,6 +322,7 @@ const ProfileScreen = (
         data: {
           password: formDosen.password,
           username: formDosen.fullname,
+          profilePhoto: form.profilePhoto
 
         },
 
@@ -279,6 +332,7 @@ const ProfileScreen = (
           id: dosen?.userId!,
           password: formDosen.password,
           username: formDosen.fullname,
+          profilePhoto: form.profilePhoto
 
         }
       }
@@ -291,6 +345,7 @@ const ProfileScreen = (
     storeUser({
       ...user!,
       username: formDosen.fullname!,
+      profilePhoto: form.profilePhoto!,
 
       dosen: {
         ...user?.dosen!,
@@ -310,10 +365,38 @@ const ProfileScreen = (
   }, [selectedKonsentrasi, selectedProdi, selectedProyek])
   const mahasiswaHaveProyek = mahasiswa?.proyekId || mahasiswa?.kelompok?.proyekId
 
+  useEffect(() => {
+    if (image) {
+      onUploadPhoto()
+    }
+  }, [image])
+
+
+
+
+
+
   return (
     <View>
+      {form.profilePhoto ? (
+        <TouchableOpacity
+          onPress={choosePhotoFromLibrary}
+        >
+          <Image
+            source={{ uri: image || form.profilePhoto }}
+            style={baseStyles.profileImage}
+          />
+        </TouchableOpacity>
+      ) : (
+        <TouchableOpacity
+          onPress={choosePhotoFromLibrary}
+        >
+          <Text>Upload Foto</Text>
+        </TouchableOpacity>
+      )}
       {mahasiswa && adminItemFields["Mahasiswa"].map((field) => (
         <Fragment key={field}>
+
           {field.includes("id") || field.includes("Id") || field === 'role' ? null : (
             <TextInput
               key={field}
@@ -333,6 +416,7 @@ const ProfileScreen = (
               ))}
             </Picker>
           )}
+
 
           {field === 'konsentrasiId' && (
             <Picker
