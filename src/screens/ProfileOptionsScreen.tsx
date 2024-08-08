@@ -46,6 +46,9 @@ const ProfileOptionsScreen = (
           <Text>
             {user?.username}
           </Text>
+          <Text>
+            {user?.mahasiswa?.nim || user?.dosen?.nidn}
+          </Text>
           {user?.mahasiswa && (
             <View
               style={{
