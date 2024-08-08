@@ -452,9 +452,6 @@ const RegisterScreen = (
                 justifyContent: 'flex-end',
                 gap: 4,
               }}
-              disabled={
-                !form.password || !!error || loading
-              }
 
             >
               <Text

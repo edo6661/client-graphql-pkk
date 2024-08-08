@@ -13,7 +13,9 @@ export const baseStyles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 12,
+    // padding: 12,
+    paddingVertical: 20,
+    paddingHorizontal:16,
     gap: 12,
   },
   innerCenterContainer: {
@@ -33,6 +35,12 @@ export const baseStyles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 10
   } ,
+  textButton : {
+    color: 'white',
+    fontWeight: '600',
+    fontSize: 16,
+
+  },
   // title
   primaryTitle : {
     fontSize: 24,

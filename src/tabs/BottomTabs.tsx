@@ -22,6 +22,7 @@ import { TypeProyek } from '../__generated__/graphql'
 import PhotoScreen from '../screens/PhotoScreen'
 import PdfScreen from '../screens/PdfScreen'
 import ButtonProfile from '../components/ButtonProfile'
+import ProfileNavigator from '../navigators/ProfileNavigator'
 
 
 const Tab = createBottomTabNavigator<BottomTabParamList>()
@@ -109,13 +110,6 @@ const BottomTabs = () => {
               }}
             />
           )}
-          {/* <Tab.Screen
-            name='Profile'
-            component={ProfileScreen}
-            options={{
-              tabBarIcon: ({ focused, color, size }) => <Icon name='user' size={size} color={color} />,
-            }}
-          /> */}
         </>
       )}
 

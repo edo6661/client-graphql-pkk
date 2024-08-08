@@ -5,6 +5,9 @@ import { createStackNavigator } from '@react-navigation/stack'
 import { useAuthContext } from '../contexts/AuthContext'
 import BottomTabs from '../tabs/BottomTabs'
 import AdminStackScreen from '../screens/admin/AdminStackScreen'
+import ProfileNavigator from '../navigators/ProfileNavigator'
+import ButtonProfile from './ButtonProfile'
+import ButtonLogout from './ButtonLogout'
 
 
 const Stack = createStackNavigator<RootStackParamList>()
@@ -18,16 +21,32 @@ const Navigators = () => {
   return (
     <Stack.Navigator
       initialRouteName='BottomTab'
-      screenOptions={{
-        headerShown: false
-      }}
     >
       <Stack.Screen
         name='BottomTab'
         component={
           user ? conditionalTabs[user.role] : BottomTabs
         }
+        options={{
+          headerShown: false
+        }}
       />
+      {user && (
+        <Stack.Screen
+          name='Profile'
+          component={ProfileNavigator}
+          options={{
+            headerRight: () => (
+              <>
+                {user && (
+                  <ButtonLogout />
+                )}
+
+              </>
+            )
+          }}
+        />
+      )}
     </Stack.Navigator>
   )
 }

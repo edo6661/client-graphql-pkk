@@ -5,6 +5,7 @@ import { NativeStackNavigationProp } from "react-native-screens/lib/typescript/n
 export type RootStackParamList = {
   BottomTab: undefined;
   AdminStack: undefined;
+  Profile: undefined;
 }
 export type BottomTabParamList ={
   Home: undefined;
@@ -21,6 +22,19 @@ export type BottomTabParamList ={
 export type AuthenticationNavigatorParamList = {
   Register: undefined;
   Login: undefined;
+}
+
+export type ProfileOptionsNavigatorParamList = {
+  ProfileOptions: undefined;
+  EditProfile: undefined;
+}
+
+export type ProfileOptionsScreenProps = {
+  navigation: NativeStackNavigationProp<ProfileOptionsNavigatorParamList, 'ProfileOptions'>;
+}
+
+export type EditProfileScreenProps = {
+  navigation: NativeStackNavigationProp<ProfileOptionsNavigatorParamList, 'EditProfile'>;
 }
 
 export type LoginScreenProps = {
