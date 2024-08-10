@@ -20,6 +20,9 @@ import { updateDosen } from '../../api/mutation/dosen.mutation'
 import { uploadImage } from '../../utils/uploadImage'
 import ImageCropPicker from 'react-native-image-crop-picker'
 import { baseStyles } from '../../styles'
+import LoadingIndicator from '../../components/LoadingIndicator'
+import { COLORS } from '../../constants/colors'
+import { updateAdmin } from '../../api/mutation/admin.mutation'
 
 
 const ProfileScreen = (
@@ -44,7 +47,9 @@ const ProfileScreen = (
   }>(getAngkatans)
 
 
-  const [updateUserMahasiswa] = useMutation<{
+  const [updateUserMahasiswa, {
+    loading: loadingUpdateMahasiswa
+  }] = useMutation<{
     updateUser: Partial<User>
   }, MutationUpdateUserArgs>(updateUser)
 
@@ -83,7 +88,9 @@ const ProfileScreen = (
     }
   })
 
-  const [updateUserDosen] = useMutation<any, MutationUpdateUserArgs>(updateUser)
+  const [updateUserDosen, {
+    loading: loadingUpdateDosen
+  }] = useMutation<any, MutationUpdateUserArgs>(updateUser)
 
   const [updateDosenMutation] = useMutation<
     { updateDosen: Partial<Dosen> },
@@ -111,6 +118,43 @@ const ProfileScreen = (
         }
       })
     }
+  })
+
+  const [updateAdminMutation, {
+    loading: loadingUpdateAdmin
+  }] = useMutation(updateAdmin, {
+    update(cache, { data }) {
+      if (!data) return console.error('Data not found')
+      if (!data.updateAdmin) return console.error('Data updateAdmin not found')
+      cache.modify({
+        fields: {
+          admins(existingAdmins = [], { readField }) {
+            return existingAdmins.map((adminExist: Admin) => {
+              if (user?.admin?.id === undefined) return console.error('Id not found')
+
+              if (readField('id', adminExist) === user?.admin.id) {
+                return {
+                  ...adminExist,
+                  ...data.updateAdmin
+                }
+              } else {
+                return adminExist
+              }
+            })
+          }
+        }
+      })
+    }
+  })
+
+  const [formAdmin, setFormAdmin] = useState<Partial<Admin> & {
+    password: string,
+    profilePhoto: string
+  }>({
+    id: user?.admin?.id || "",
+    fullname: user?.admin?.fullname || "",
+    password: "",
+    profilePhoto: user?.profilePhoto || ""
   })
 
   const [form, setForm] = useState<Partial<
@@ -210,6 +254,11 @@ const ProfileScreen = (
         ...prevState,
         [field]: value
       }))
+    } else if (user?.admin) {
+      setFormAdmin(prevState => ({
+        ...prevState,
+        [field]: value
+      }))
     } else {
       setForm(prevState => ({
         ...prevState,
@@ -263,7 +312,7 @@ const ProfileScreen = (
         variables: {
           id: mahasiswa?.userId!,
           data: {
-            password: form.password,
+            ...form.password && { password: form.password },
             username: form.fullname,
             profilePhoto: form.profilePhoto
           },
@@ -272,7 +321,7 @@ const ProfileScreen = (
         optimisticResponse: {
           updateUser: {
             id: mahasiswa?.userId!,
-            password: form.password,
+            ...form.password && { password: form.password },
             username: form.fullname,
             profilePhoto: form.profilePhoto
           }
@@ -287,6 +336,7 @@ const ProfileScreen = (
           ...user?.mahasiswa!,
           ...sendedData
         }
+
       })
       Toast.show({
         swipeable: true,
@@ -320,7 +370,7 @@ const ProfileScreen = (
       variables: {
         id: dosen?.userId!,
         data: {
-          password: formDosen.password,
+          ...form.password && { password: form.password },
           username: formDosen.fullname,
           profilePhoto: form.profilePhoto
 
@@ -330,7 +380,7 @@ const ProfileScreen = (
       optimisticResponse: {
         updateUser: {
           id: dosen?.userId!,
-          password: formDosen.password,
+          ...form.password && { password: form.password },
           username: formDosen.fullname,
           profilePhoto: form.profilePhoto
 
@@ -355,6 +405,64 @@ const ProfileScreen = (
     navigation.navigate('Home')
   }
 
+
+  const onUpdateAdmin = () => {
+    updateAdminMutation({
+      variables: {
+        id: user?.admin?.id!,
+        fullname: formAdmin.fullname!,
+      },
+      optimisticResponse: {
+        updateAdmin: {
+          ...user?.admin,
+          fullname: formAdmin.fullname
+        }
+      }
+    })
+    updateUserDosen({
+      variables: {
+        id: user?.id!,
+        data: {
+          ...formAdmin.password && { password: formAdmin.password },
+          username: formAdmin.fullname,
+          profilePhoto: formAdmin.profilePhoto
+
+        },
+
+      },
+      optimisticResponse: {
+        updateUser: {
+          ...user,
+          id: user?.id,
+          ...formAdmin.password && { password: formAdmin.password },
+          username: formAdmin.fullname,
+          profilePhoto: formAdmin.profilePhoto
+
+        }
+      }
+    })
+    Toast.show({
+      swipeable: true,
+      type: 'success',
+      text1: `Sukses Update Admin ${formAdmin.fullname}`,
+    })
+    storeUser({
+      ...user!,
+      username: formAdmin.fullname!,
+      profilePhoto: formAdmin.profilePhoto!,
+
+      admin: {
+        ...user?.admin!,
+        fullname: formAdmin.fullname!
+      }
+    })
+    if (user?.admin) {
+      navigation.navigate('Dashboard')
+    } else {
+      navigation.navigate('Home')
+    }
+  }
+
   useEffect(() => {
     setForm(prev => ({
       ...prev,
@@ -374,114 +482,222 @@ const ProfileScreen = (
 
 
 
-
-
   return (
-    <View>
-      {form.profilePhoto ? (
-        <TouchableOpacity
-          onPress={choosePhotoFromLibrary}
-        >
-          <Image
-            source={{ uri: image || form.profilePhoto }}
-            style={baseStyles.profileImage}
-          />
-        </TouchableOpacity>
-      ) : (
-        <TouchableOpacity
-          onPress={choosePhotoFromLibrary}
-        >
-          <Text>Upload Foto</Text>
-        </TouchableOpacity>
-      )}
-      {mahasiswa && adminItemFields["Mahasiswa"].map((field) => (
-        <Fragment key={field}>
-
-          {field.includes("id") || field.includes("Id") || field === 'role' ? null : (
-            <TextInput
-              key={field}
-              placeholder={field}
-              value={form[field]?.toString()}
-              onChangeText={(value) => onChange(field, value)}
+    <View
+      style={baseStyles.centerContainer}
+    >
+      <View
+        style={[
+          baseStyles.innerCenterContainer,
+          {
+            padding: 10,
+            gap: 12,
+            flex: 1,
+          }
+        ]}
+      >
+        <LoadingIndicator
+          loading={
+            loadingUpdateMahasiswa || loadingUpdateDosen
+          }
+        />
+        {form.profilePhoto ? (
+          <TouchableOpacity
+            onPress={choosePhotoFromLibrary}
+            style={{
+              alignItems: 'center'
+            }}
+          >
+            <Image
+              source={{ uri: image || form.profilePhoto }}
+              style={baseStyles.profileImage}
             />
-          )}
-          {field === 'prodiId' && (
-            <Picker
-              selectedValue={selectedProdi}
-              onValueChange={(itemValue) => setSelectedProdi(itemValue)}
-            >
-              <Picker.Item label="Pilih Prodi" value="" />
-              {fakultas?.programStudis.map((prodi) => (
-                <Picker.Item key={prodi.id} label={prodi.name} value={prodi.id} />
-              ))}
-            </Picker>
-          )}
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity
+            onPress={choosePhotoFromLibrary}
+            style={{
+              alignItems: 'center'
+            }}
 
+          >
+            <Text>Upload Foto</Text>
+          </TouchableOpacity>
+        )}
+        <View
+          style={{
+            gap: 12
+          }}
+        >
+          {mahasiswa && adminItemFields["Mahasiswa"].map((field) => (
+            <Fragment key={field}>
 
-          {field === 'konsentrasiId' && (
-            <Picker
-              selectedValue={selectedKonsentrasi}
-              onValueChange={(itemValue) => setSelectedKonsentrasi(itemValue)}
-            >
-              <Picker.Item label="Pilih Konsentrasi" value="" />
-              {konsentrasi?.konsentrasis.map((konsentrasi) => (
-                <Picker.Item key={konsentrasi.id} label={konsentrasi.name} value={konsentrasi.id} />
-              ))}
-            </Picker>
-          )}
-          {(!user?.mahasiswa?.kelompokId && !mahasiswaHaveProyek) && field === 'role' && (
-            <Picker selectedValue={form.role} onValueChange={(itemValue) => onChange(field, itemValue as string)}>
-              <Picker.Item label="Pilih Role di kelompok" value="" />
-              <Picker.Item label={RoleMahasiswa.Anggota} value={RoleMahasiswa.Anggota} />
-              <Picker.Item label={RoleMahasiswa.Ketua} value={RoleMahasiswa.Ketua} />
-            </Picker>
-          )}
-
-          {(field === 'angkatanId' || field === 'kelasId') && (
-            <Picker
-              selectedValue={form[field]}
-              onValueChange={(itemValue) =>
-                onChange(field, itemValue!)
-              }
-            >
-              {form[field] === null && (
-                <Picker.Item label={`Pilih ${field}`} value={null} />
+              {field.includes("id") || field.includes("Id") || field === 'role' ? null : (
+                <TextInput
+                  key={field}
+                  placeholder={field}
+                  value={form[field]?.toString()}
+                  onChangeText={(value) => onChange(field, value)}
+                  style={
+                    baseStyles.primaryInput
+                  }
+                />
               )}
-              {field === 'angkatanId' && angkatan?.angkatans.map((angkatan) => (
-                <Picker.Item key={angkatan.id} label={angkatan.tahun.toString()} value={angkatan.id} />
-              ))}
-              {field === 'kelasId' && kelas?.kelass.map((kelas) => (
-                <Picker.Item key={kelas.id} label={kelas.name} value={kelas.id} />
-              ))}
-            </Picker>
-          )}
-        </Fragment>
-      ))}
-      {dosen && adminItemFields["Dosen"].map((field) => (
-        <Fragment key={field}>
-          {field.includes("userId") || field.includes("proyekId") ? null : (
+              {field === 'prodiId' && (
+                <View style={
+                  [
+                    baseStyles.primaryInput,
+                    {
+                      paddingLeft: 0,
+                    }
+                  ]
+
+                }
+                >
+                  <Picker
+                    selectedValue={selectedProdi}
+                    onValueChange={(itemValue) => setSelectedProdi(itemValue)}
+                  >
+                    <Picker.Item label="Pilih Prodi" value="" />
+                    {fakultas?.programStudis.map((prodi) => (
+                      <Picker.Item key={prodi.id} label={prodi.name} value={prodi.id} />
+                    ))}
+                  </Picker>
+                </View>
+              )}
+
+
+              {field === 'konsentrasiId' && (
+                <View style={
+                  [
+                    baseStyles.primaryInput,
+                    {
+                      paddingLeft: 0,
+                    }
+                  ]
+
+                }
+                >
+                  <Picker
+                    selectedValue={selectedKonsentrasi}
+                    onValueChange={(itemValue) => setSelectedKonsentrasi(itemValue)}
+                  >
+                    <Picker.Item label="Pilih Konsentrasi" value="" />
+                    {konsentrasi?.konsentrasis.map((konsentrasi) => (
+                      <Picker.Item key={konsentrasi.id} label={konsentrasi.name} value={konsentrasi.id} />
+                    ))}
+                  </Picker>
+                </View>
+              )}
+              {(!user?.mahasiswa?.kelompokId && !mahasiswaHaveProyek) && field === 'role' && (
+                <View style={
+                  [
+                    baseStyles.primaryInput,
+                    {
+                      paddingLeft: 0,
+                    }
+                  ]
+
+                }
+                >
+                  <Picker selectedValue={form.role} onValueChange={(itemValue) => onChange(field, itemValue as string)}>
+                    <Picker.Item label="Pilih Role di kelompok" value="" />
+                    <Picker.Item label={RoleMahasiswa.Anggota} value={RoleMahasiswa.Anggota} />
+                    <Picker.Item label={RoleMahasiswa.Ketua} value={RoleMahasiswa.Ketua} />
+                  </Picker>
+                </View>
+              )}
+
+              {(field === 'angkatanId' || field === 'kelasId') && (
+                <View style={
+                  [
+                    baseStyles.primaryInput,
+                    {
+                      paddingLeft: 0,
+                    }
+                  ]
+
+                }
+                >
+                  <Picker
+                    selectedValue={form[field]}
+                    onValueChange={(itemValue) =>
+                      onChange(field, itemValue!)
+                    }
+                  >
+                    {form[field] === null && (
+                      <Picker.Item label={`Pilih ${field}`} value={null} />
+                    )}
+                    {field === 'angkatanId' && angkatan?.angkatans.map((angkatan) => (
+                      <Picker.Item key={angkatan.id} label={angkatan.tahun.toString()} value={angkatan.id} />
+                    ))}
+                    {field === 'kelasId' && kelas?.kelass.map((kelas) => (
+                      <Picker.Item key={kelas.id} label={kelas.name} value={kelas.id} />
+                    ))}
+                  </Picker>
+                </View>
+              )}
+            </Fragment>
+          ))}
+        </View>
+        {dosen && adminItemFields["Dosen"].map((field) => (
+          <Fragment key={field}>
+            {field.includes("userId") || field.includes("proyekId") ? null : (
+              <TextInput
+                key={field}
+                placeholder={field}
+                value={formDosen[field]!}
+                onChangeText={(value) => onChange(field, value)}
+                style={
+                  baseStyles.primaryInput
+                }
+              />
+            )}
+
+          </Fragment>
+        ))}
+        {user?.admin && adminItemFields["Admin"].filter((field) => field !== 'userId').map((field) => (
+          <Fragment key={field}>
             <TextInput
               key={field}
               placeholder={field}
-              value={formDosen[field]!}
+              value={formAdmin[field]!}
               onChangeText={(value) => onChange(field, value)}
+              style={
+                baseStyles.primaryInput
+              }
             />
-          )}
+          </Fragment>
+        ))}
+        <TextInput
+          placeholder='Password'
+          onChangeText={(e) => {
+            onChange('password', e)
+          }}
+          secureTextEntry={true}
+          style={baseStyles.primaryInput}
+        />
 
-        </Fragment>
-      ))}
-      <TextInput
-        placeholder='password'
-        onChangeText={(e) => {
-          onChange('password', e)
-        }}
-        secureTextEntry={true}
-      />
-
-      <Button
-        title="Update"
-        onPress={() => mahasiswa ? onUpdate() : onUpdateDosen()}
-      />
+        {/* <Button
+          title="Update"
+          onPress={() => mahasiswa ? onUpdate() : onUpdateDosen()}
+        /> */}
+        <TouchableOpacity style={[
+          baseStyles.primaryButton,
+          loadingUpdateMahasiswa || loadingUpdateDosen ? {
+            backgroundColor: 'grey'
+          } : {
+            backgroundColor: COLORS.primaryBlue
+          }
+        ]}
+          onPress={() => mahasiswa ? onUpdate() : dosen ? onUpdateDosen() : onUpdateAdmin()}
+          disabled={loadingUpdateMahasiswa || loadingUpdateDosen || loadingUpdateAdmin}
+        >
+          <Text
+            style={baseStyles.textButton}
+          >Update</Text>
+        </TouchableOpacity>
+      </View>
 
     </View>
   )

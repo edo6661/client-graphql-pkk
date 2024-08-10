@@ -36,10 +36,13 @@ const AdminStackScreen = () => {
     <AdminStack.Navigator
       initialRouteName="AdminBottomTab"
       screenOptions={{
-        headerShown: false
+        headerShown: false,
+
       }}
     >
       <AdminStack.Screen name="AdminBottomTab" component={AdminBottomTabs}
+
+
       />
       <AdminStack.Screen name="Mahasiswa" component={MahasiswaNavigator} />
       <AdminStack.Screen name="Admin" component={AdminNavigator} />

@@ -6,13 +6,26 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons'
 import { AdminBottomTabParamList } from '../types/adminNavigator.type'
 import CreateScreen from '../screens/admin/CreateScreen'
+import { useAuthContext } from '../contexts/AuthContext'
+import ButtonProfile from '../components/ButtonProfile'
 
 
 const Tab = createBottomTabNavigator<AdminBottomTabParamList>()
 
 const AdminBottomTabs = () => {
+  const { user } = useAuthContext()
   return (
-    <Tab.Navigator>
+    <Tab.Navigator
+      screenOptions={{
+        headerRight: () => (
+          <>
+            {user && (
+              <ButtonProfile />
+            )}
+          </>
+        )
+      }}
+    >
       <Tab.Screen
         name="Dashboard"
         component={DashboardScreen}

@@ -466,9 +466,16 @@ const RegisterScreen = (
               </Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={onSubmit}
-              style={baseStyles.primaryButton}
+              style={[
+                baseStyles.primaryButton,
+                loading ? {
+                  backgroundColor: COLORS.grey,
+                } : {
+                  backgroundColor: COLORS.primaryBlue,
+                }
+              ]}
               disabled={
-                !form.password && !!error || loading
+                loading
               }
             >
               <Text
@@ -477,11 +484,15 @@ const RegisterScreen = (
                   fontWeight: '600',
                   fontSize: 16,
                 }}
-              >Submit</Text>
+              >Submit </Text>
             </TouchableOpacity>
 
 
-            {error && <Text>Error: {error.message}</Text>}
+            {error && <Text
+              style={
+                baseStyles.errorText
+              }
+            >Error: {error.message}</Text>}
 
           </View>
 

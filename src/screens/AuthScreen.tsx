@@ -139,10 +139,18 @@ const AuthScreen = (
           </Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={onSubmit}
-          style={baseStyles.primaryButton}
+          style={[
+            baseStyles.primaryButton,
+            !form.username || !form.password || loading ? {
+              backgroundColor: COLORS.grey,
+            } : {
+              backgroundColor: COLORS.primaryBlue,
+            }
+          ]}
           disabled={
             !form.username || !form.password || loading
           }
+
         >
           <Text
             style={{

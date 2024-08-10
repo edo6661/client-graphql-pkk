@@ -30,12 +30,6 @@ const DashboardScreen = (
     <View
       style={baseStyles.container}
     >
-      <Text>DashboardScreen</Text>
-
-
-      <TouchableOpacity onPress={logout}>
-        <Text>Logout</Text>
-      </TouchableOpacity>
       <FlatList
         data={listRouteDashboard}
         keyExtractor={(item) => item}

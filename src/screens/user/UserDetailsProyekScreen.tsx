@@ -412,7 +412,7 @@ const UserDetailsProyekScreen = ({ navigation, route }: DetailsProyekScreenProps
         </View>
       )}
 
-      {!user && (
+      {!user && !proyek.telahSelesai && (
         <Button
           title='Login terlebih dahulu sebelum mendaftar'
           disabled
@@ -470,7 +470,7 @@ const UserDetailsProyekScreen = ({ navigation, route }: DetailsProyekScreenProps
           disabled
         />
       )}
-      {isProyekKkn && !isMahasiswaHaveKelompok && !isMahasiswaKetua && (
+      {isProyekKkn && !isMahasiswaHaveKelompok && !isMahasiswaKetua && user && (
         <Button
           title='Join Kelompok terlebih dahulu'
           disabled

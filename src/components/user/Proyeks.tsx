@@ -1,4 +1,4 @@
-import { FlatList, StyleSheet, Text, View, Image } from 'react-native';
+import { FlatList, StyleSheet, Text, View, Image, ActivityIndicator } from 'react-native';
 import React, { useState } from 'react';
 import { useQuery } from '@apollo/client';
 import { getProyeks } from '../../api/query/proyek.query';
@@ -6,6 +6,7 @@ import { Proyek, TypeProyek } from '../../__generated__/graphql';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { ProyeksScreenProps } from '../../types/navigator.type';
 import { Picker } from '@react-native-picker/picker';
+import { COLORS } from '../../constants/colors';
 
 const Proyeks = ({ navigation }: ProyeksScreenProps) => {
   const [typeProyek, setTypeProyek] = useState<TypeProyek>(TypeProyek.Kkn);
@@ -14,7 +15,21 @@ const Proyeks = ({ navigation }: ProyeksScreenProps) => {
 
   return (
     <View style={styles.container}>
-      {loading && <Text>Loading...</Text>}
+      {loading && (
+        <ActivityIndicator
+          size='large'
+          color={COLORS.primaryBlue}
+          style={{
+            position: 'absolute',
+            top: 0,
+            bottom: 0,
+            left: 0,
+            right: 0,
+            zIndex: 1,
+          }}
+        />
+
+      )}
       <Picker
         selectedValue={typeProyek}
         onValueChange={(itemValue) => setTypeProyek(itemValue)}
@@ -81,7 +96,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    elevation: 3,
+    elevation: 4,
   },
   image: {
     width: 60,

@@ -1,13 +1,15 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { Image, StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import Icon from 'react-native-vector-icons/FontAwesome5'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { NavigationProp, useNavigation } from '@react-navigation/native'
 import { BottomTabParamList } from '../types/navigator.type'
+import { useAuthContext } from '../contexts/AuthContext'
 const ButtonProfile = () => {
   const navigation = useNavigation<
     NavigationProp<BottomTabParamList>
   >()
+  const { user } = useAuthContext()
   return (
     <TouchableOpacity
       onPress={() => navigation.navigate('Profile')}
@@ -15,10 +17,13 @@ const ButtonProfile = () => {
         padding: 12
       }}
     >
-      <Icon
-        name='user'
-        size={26}
-        color='black'
+      <Image
+        source={{ uri: user?.profilePhoto }}
+        style={{
+          width: 42,
+          height: 42,
+          borderRadius: 21
+        }}
       />
     </TouchableOpacity>
   )
