@@ -7,6 +7,9 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import { ProyeksScreenProps } from '../../types/navigator.type';
 import { Picker } from '@react-native-picker/picker';
 import { COLORS } from '../../constants/colors';
+import { baseStyles } from '../../styles';
+import Separator from '../Separator';
+import { wordFirstUpper } from '../../utils/wordFirstUpper';
 
 const Proyeks = ({ navigation }: ProyeksScreenProps) => {
   const [typeProyek, setTypeProyek] = useState<TypeProyek>(TypeProyek.Kkn);
@@ -14,7 +17,16 @@ const Proyeks = ({ navigation }: ProyeksScreenProps) => {
 
 
   return (
-    <View style={styles.container}>
+    <View
+      style={
+        [
+          baseStyles.innerCenterContainer, {
+            paddingVertical: 20,
+
+          }
+        ]
+      }
+    >
       {loading && (
         <ActivityIndicator
           size='large'
@@ -30,14 +42,34 @@ const Proyeks = ({ navigation }: ProyeksScreenProps) => {
         />
 
       )}
-      <Picker
-        selectedValue={typeProyek}
-        onValueChange={(itemValue) => setTypeProyek(itemValue)}
-        style={styles.proyekItem}
+      <View
+        style={{
+          gap: 20,
+        }}
       >
-        <Picker.Item label="KKN" value={TypeProyek.Kkn} />
-        <Picker.Item label="KKP" value={TypeProyek.Kkp} />
-      </Picker>
+        <View
+          style={
+            baseStyles.primaryInput
+          }
+        >
+          <Picker
+
+            selectedValue={typeProyek}
+            onValueChange={(itemValue) => setTypeProyek(itemValue)}
+
+          >
+            <Picker.Item label="KKN" value={TypeProyek.Kkn} />
+            <Picker.Item label="KKP" value={TypeProyek.Kkp} />
+          </Picker>
+        </View>
+        <Separator
+          color={COLORS.greyLight}
+          width='100%'
+          height={10}
+          orientation='horizontal'
+        />
+
+      </View>
       <FlatList
         data={data?.proyeks.filter((proyek) => proyek.type === typeProyek)}
         renderItem={({ item }) => (
@@ -63,7 +95,7 @@ const Proyeks = ({ navigation }: ProyeksScreenProps) => {
                   fontSize: 14,
                 }}
               >
-                {item.lokasi}
+                {item.lokasi ? wordFirstUpper(item.lokasi!) : ""}
               </Text>
             </View>
           </TouchableOpacity>
@@ -75,11 +107,6 @@ const Proyeks = ({ navigation }: ProyeksScreenProps) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-    backgroundColor: '#f8f8f8',
-  },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
@@ -89,14 +116,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginVertical: 10,
-    padding: 10,
-    backgroundColor: '#ffffff',
-    borderRadius: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 4,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    backgroundColor: COLORS.greyLight,
+    ...baseStyles.primaryShadow
+
   },
   image: {
     width: 60,

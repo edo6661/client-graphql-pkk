@@ -22,6 +22,7 @@ const Navigators = () => {
     <Stack.Navigator
       initialRouteName='BottomTab'
     >
+
       <Stack.Screen
         name='BottomTab'
         component={

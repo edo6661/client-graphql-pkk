@@ -6,7 +6,8 @@ export const baseStyles = StyleSheet.create({
     gap:20,
     flexDirection: 'column',
     paddingVertical: 20,
-    paddingHorizontal:16,
+    // paddingHorizontal:16,
+    paddingHorizontal: 0,
     flex:1
   },
   centerContainer :{ 
@@ -23,7 +24,11 @@ export const baseStyles = StyleSheet.create({
     backgroundColor: "white",
     flex: 1 / 1.2,
     borderRadius: 20,
-    paddingHorizontal: 20
+    paddingHorizontal: 20,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 4,
 
   },
   // button
@@ -46,7 +51,6 @@ export const baseStyles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     color: COLORS.black,
-    textAlign: 'center',
     marginBottom: 12
   },
   secondaryTitle : {
@@ -98,6 +102,13 @@ export const baseStyles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 4,
+  },
+  primaryShadow:{
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 4,
 
   }
+  
 });

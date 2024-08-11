@@ -1,5 +1,5 @@
 import React, { Fragment, useState } from 'react';
-import { StyleSheet, Text, View, Image, Button, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, Image, Button, ScrollView, TouchableOpacity } from 'react-native';
 import { DetailsProyekScreenProps } from '../../types/navigator.type';
 import { gql, useApolloClient, useMutation, useQuery } from '@apollo/client';
 import { Kelompok, Mahasiswa, MutationUpdateKelompokArgs, MutationUpdateMahasiswaArgs, Proyek, RoleMahasiswa, TypeProyek } from '../../__generated__/graphql';
@@ -11,6 +11,8 @@ import { updateMahasiswa } from '../../api/mutation/mahasiswa.mutation';
 import { getProyeks } from '../../api/query/proyek.query';
 import { parseDate } from '../../utils/date';
 import Toast from 'react-native-toast-message';
+import { baseStyles } from '../../styles';
+import { wordFirstUpper } from '../../utils/wordFirstUpper';
 
 const UserDetailsProyekScreen = ({ navigation, route }: DetailsProyekScreenProps) => {
   const { user, storeUser } = useAuthContext();
@@ -310,249 +312,298 @@ const UserDetailsProyekScreen = ({ navigation, route }: DetailsProyekScreenProps
 
 
   return (
-    <ScrollView style={styles.container}>
-      <Image source={{
-        uri: proyek.photo?.includes(
-          'http' || 'https'
-        ) ? proyek.photo : "https://i.pinimg.com/236x/42/92/f8/4292f8591dab26fcaa4b3ab213895e6f.jpg"
-      }} style={styles.image} />
-      <Text style={styles.title}>{proyek.name}</Text>
-      <Text style={styles.description}>{proyek.description}</Text>
-
-      <View style={styles.infoContainer}>
-        <Text style={styles.infoLabel}>Type:</Text>
-        <Text style={styles.infoValue}>{proyek.type}</Text>
-      </View>
-      {proyek.type === TypeProyek.Kkn && (
-        <View style={styles.infoContainer}>
-          <Text style={styles.infoLabel}>
-            Batas Kelompok
-          </Text>
-          <Text style={styles.infoValue}>{
-            proyek.kelompok?.length
-          } / {proyek.batasOrang}   </Text>
-        </View>
-      )}
-      {proyek.type === TypeProyek.Kkp && (
-        <View style={styles.infoContainer}>
-          <Text style={styles.infoLabel}>
-            Batas Orang
-          </Text>
-          <Text style={styles.infoValue}>{
-            proyek.mahasiswa?.length
-          } / {proyek.batasOrang}   </Text>
-        </View>
-      )}
-      <View style={styles.infoContainer}>
-        <Text style={styles.infoLabel}>Lokasi:</Text>
-        <Text style={styles.infoValue}>{proyek.lokasi || 'N/A'}</Text>
-      </View>
-      <View style={styles.infoContainer}>
-        <Text style={styles.infoLabel}>Pembimbing:</Text>
-        <Text style={styles.infoValue}>{proyek?.pembimbing![0]?.fullname || 'N/A'}</Text>
-      </View>
-      <View style={styles.infoContainer}>
-        <Text style={styles.infoLabel}>Tanggal mulai</Text>
-        <Text style={styles.infoValue}>
-          {
-            parseDate(+proyek.tanggalMulai!)
+    <ScrollView
+      contentContainerStyle={
+        baseStyles.centerContainer
+      }
+    >
+      <View
+        style={[
+          baseStyles.innerCenterContainer, {
+            paddingVertical: 20,
+            flex: 1
           }
-        </Text>
-      </View>
-      <View style={styles.infoContainer}>
-        <Text style={styles.infoLabel}>Tanggal selesai</Text>
-        <Text style={styles.infoValue}>
-          {parseDate(+proyek.tanggalSelesai!)}</Text>
-      </View>
-      <View style={{
-        ...styles.infoContainer,
-        justifyContent: 'center',
-      }}>
-      </View>
-      {proyek?.kelompok?.length! > 0 && (
-        <Text style={styles.infoLabel}>Kelompok</Text>
-      )}
-      {proyek.type === TypeProyek.Kkn && (
-        <View style={{
+        ]}
+      >
+        <Image source={{
+          uri: proyek.photo?.includes(
+            'http' || 'https'
+          ) ? proyek.photo : "https://i.pinimg.com/236x/42/92/f8/4292f8591dab26fcaa4b3ab213895e6f.jpg"
+        }} style={styles.image} />
+        <Text style={styles.title}>{proyek.name}</Text>
+        <Text style={styles.description}>{proyek.description}</Text>
 
+        <View style={styles.infoContainer}>
+          <Text style={styles.infoLabel}>Type:</Text>
+          <Text style={styles.infoValue}>{proyek.type}</Text>
+        </View>
+        {proyek.type === TypeProyek.Kkn && (
+          <View style={styles.infoContainer}>
+            <Text style={styles.infoLabel}>
+              Batas Kelompok
+            </Text>
+            <Text style={styles.infoValue}>{
+              proyek.kelompok?.length
+            } / {proyek.batasOrang}   </Text>
+          </View>
+        )}
+        {proyek.type === TypeProyek.Kkp && (
+          <View style={styles.infoContainer}>
+            <Text style={styles.infoLabel}>
+              Batas Orang
+            </Text>
+            <Text style={styles.infoValue}>{
+              proyek.mahasiswa?.length
+            } / {proyek.batasOrang}   </Text>
+          </View>
+        )}
+        <View style={styles.infoContainer}>
+          <Text style={styles.infoLabel}>Lokasi:</Text>
+          <Text style={styles.infoValue}>{proyek.lokasi || 'N/A'}</Text>
+        </View>
+        <View style={styles.infoContainer}>
+          <Text style={styles.infoLabel}>Pembimbing:</Text>
+          <Text style={styles.infoValue}>{proyek?.pembimbing![0]?.fullname || 'N/A'}</Text>
+        </View>
+        <View style={styles.infoContainer}>
+          <Text style={styles.infoLabel}>Tanggal mulai</Text>
+          <Text style={styles.infoValue}>
+            {
+              parseDate(+proyek.tanggalMulai!)
+            }
+          </Text>
+        </View>
+        <View style={styles.infoContainer}>
+          <Text style={styles.infoLabel}>Tanggal selesai</Text>
+          <Text style={styles.infoValue}>
+            {parseDate(+proyek.tanggalSelesai!)}</Text>
+        </View>
+        <View style={{
+          ...styles.infoContainer,
+          justifyContent: 'center',
         }}>
-          <View
-            style={{
-              gap: 4,
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-            }}
-          >
-            {proyek.kelompok!.length > 0 ? proyek?.kelompok!.map((k, index) => (
-              <View key={index}
+        </View>
+        <View
+          style={{
+            gap: 8
+          }}
+        >
+          {proyek?.kelompok?.length! > 0 && (
+            <Text style={styles.infoLabel}>Kelompok :</Text>
+          )}
+          {proyek.type === TypeProyek.Kkn && (
+            <View style={{
+              marginBottom: 16
+            }}>
+              <View
                 style={{
+                  gap: 4,
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
                 }}
               >
-                <Text>
-                </Text>
-                <Text style={styles.infoValue}>{k?.name}</Text>
-                {(!isMahasiswaKetua || isDosen) && (
-                  <>
-                    <Button
-                      title={titleDaftarBasedOnStatus()}
-                      disabled={
-                        boolDaftarBasedOnStatus()
-                      }
-                      onPress={() => onDaftar(k?.id)}
-                    />
-                  </>
+                {proyek.kelompok!.length > 0 ? proyek?.kelompok!.map((k, index) => (
+                  <View key={index}
+                    style={{
+                    }}
+                  >
+                    <Text
+
+                    >
+                      {k?.name ? wordFirstUpper(k?.name!) : ''}
+                    </Text>
+                    <Text style={styles.infoValue}>{k?.name}</Text>
+                    {(!isMahasiswaKetua || isDosen) && (
+                      <>
+                        {titleDaftarBasedOnStatus() === 'Daftar' && (
+                          // <Button
+                          //   title={
+                          //     titleDaftarBasedOnStatus()
+                          //   }
+                          //   disabled={
+                          //     boolDaftarBasedOnStatus()
+                          //   }
+                          //   onPress={() => onDaftar(k?.id)}
+                          // />
+                          <TouchableOpacity
+                            style={
+                              baseStyles.primaryButton
+                            }
+                            onPress={() =>
+                              onDaftar(k?.id)
+                            }
+                          >
+                            <Text style={baseStyles.textButton}>
+                              {boolDaftarBasedOnStatus()}
+                            </Text>
+                          </TouchableOpacity>
+                        )}
+                      </>
+                    )}
+                  </View>
+                )) : (
+                  <Text style={styles.infoValue}>
+                    Belum ada kelompok
+                  </Text>
                 )}
               </View>
-            )) : (
-              <Text style={styles.infoValue}>
-                Belum ada kelompok
-              </Text>
-            )}
-          </View>
+            </View>
+          )}
         </View>
-      )}
 
-      {!user && !proyek.telahSelesai && (
-        <Button
-          title='Login terlebih dahulu sebelum mendaftar'
-          disabled
-        />
-      )}
-      {/* KKN */}
-      {(!isDosen && user?.mahasiswa?.proyek?.type === TypeProyek.Kkn && !user?.mahasiswa?.proyekId && user?.mahasiswa?.role === RoleMahasiswa.Anggota) && (
-        <>
-          <Picker>
-            <Picker.Item label='Pilih Kelompok' value='' />
-            {proyek.kelompok!.map((k, index) => (
-              <Picker.Item key={index} label={k?.name} value={k?.id}
-              />
-            ))}
-          </Picker>
-        </>
-      )}
-      {/*  */}
-      {/* {isMahasiswaHaveProyek && proyek.id !== isMahasiswaHaveProyek && !isDosen && (
+
+        {!user && (
+          <Button
+            title='Login terlebih dahulu sebelum mendaftar'
+            disabled
+          />
+        )}
+        {/* {
+        proyek.telahSelesai && (
+          <Button
+            title='Proyek Telah Selesai'
+            disabled
+          />
+        )
+      } */}
+        {/* {
+        proyek.bolehDimulai && !proyek.telahSelesai && (
+          <Button
+            title='Proyek Telah Dimulai'
+            disabled
+          />
+        )
+      } */}
+        {/* KKN */}
+        {(!isDosen && user?.mahasiswa?.proyek?.type === TypeProyek.Kkn && !user?.mahasiswa?.proyekId && user?.mahasiswa?.role === RoleMahasiswa.Anggota) && (
+          <>
+            <Picker>
+              <Picker.Item label='Pilih Kelompok' value='' />
+              {proyek.kelompok!.map((k, index) => (
+                <Picker.Item key={index} label={k?.name} value={k?.id}
+                />
+              ))}
+            </Picker>
+          </>
+        )}
+        {/*  */}
+        {/* {isMahasiswaHaveProyek && proyek.id !== isMahasiswaHaveProyek && !isDosen && (
         <Button
           title='Sudah Terdaftar Di Proyek Lain'
           disabled
         />
       )} */}
-      {/*  */}
+        {/*  */}
 
-      {/*  */}
-      {/* {!isDosen && user && isProyekKkn && !isMahasiswaHaveKelompok && !isMahasiswaKetua && (
+        {/*  */}
+        {/* {!isDosen && user && isProyekKkn && !isMahasiswaHaveKelompok && !isMahasiswaKetua && (
         <Button
           title='Daftar Kelompok'
         />
       )} */}
-      {/*  */}
-      {/* {isProyekKkn && isMahasiswaHaveKelompok && !isMahasiswaKetua && (
+        {/*  */}
+        {/* {isProyekKkn && isMahasiswaHaveKelompok && !isMahasiswaKetua && (
         <Button
           title='Tunggu Ketua Kelompok untuk mendaftar'
           disabled
         />
       )} */}
-      {isProyekKkn && isMahasiswaHaveKelompok && isMahasiswaKetua && (
-        <Button
-          title={titleDaftarBasedOnStatus()}
-          onPress={
-            () => onDaftar()
-          }
-          disabled={
-            boolDaftarBasedOnStatus()
-          }
-        />
-      )}
-      {/*  */}
-      {isProyekKkn && !isMahasiswaHaveKelompok && isMahasiswaKetua && (
-        <Button
-          title='Buatlah Kelompok terlebih dahulu'
-          disabled
-        />
-      )}
-      {isProyekKkn && !isMahasiswaHaveKelompok && !isMahasiswaKetua && user && (
-        <Button
-          title='Join Kelompok terlebih dahulu'
-          disabled
-        />
-      )}
-      {/*  */}
-      {/*  */}
-      {/* {isMahasiswaHaveProyek === proyek.id && (
+        {isProyekKkn && isMahasiswaHaveKelompok && isMahasiswaKetua && (
+          <Button
+            title={titleDaftarBasedOnStatus()}
+            onPress={
+              () => onDaftar()
+            }
+            disabled={
+              boolDaftarBasedOnStatus()
+            }
+          />
+        )}
+        {/*  */}
+        {isProyekKkn && !isMahasiswaHaveKelompok && isMahasiswaKetua && (
+          <Button
+            title='Buatlah Kelompok terlebih dahulu'
+            disabled
+          />
+        )}
+        {isProyekKkn && !isMahasiswaHaveKelompok && !isMahasiswaKetua && user && (
+          <Button
+            title='Join Kelompok terlebih dahulu'
+            disabled
+          />
+        )}
+        {/*  */}
+        {/*  */}
+        {/* {isMahasiswaHaveProyek === proyek.id && (
         <Button
           title='Sudah Terdaftar Di Proyek ini'
           disabled
         />
       )} */}
-      {/*  */}
+        {/*  */}
 
-      {/*  */}
-      {proyek.batasOrang === proyek.kelompok?.length && !isDosen && (
-        <Button
-          title='Proyek Penuh'
-          disabled
-        />
-      )}
-      {/* KKP */}
-      {proyek.type === TypeProyek.Kkp && (
-        <View style={{
-          gap: 8
-        }}>
-          <Text>
-            Mahasiswa
-          </Text>
-          <View
-            style={{
-              gap: 4,
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-            }}
-          >
-            {proyek.mahasiswa!.length > 0 ? proyek?.mahasiswa!.map((k, index) => (
-              <View key={index}
-                style={{
-                }}
-              >
-                <Text style={styles.infoValue}>{k?.fullname}</Text>
+        {/*  */}
+        {/* KKP */}
+        {proyek.type === TypeProyek.Kkp && proyek.mahasiswa?.length! > 0 && (
+          <View style={{
+            gap: 8
+          }}>
+            <Text>
+              Mahasiswa
+            </Text>
+            <View
+              style={{
+                gap: 4,
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+              }}
+            >
+              {proyek.mahasiswa!.length > 0 ? proyek?.mahasiswa!.map((k, index) => (
+                <View key={index}
+                  style={{
+                  }}
+                >
+                  <Text style={styles.infoValue}>{k?.fullname}</Text>
 
-              </View>
-            )) : (
-              <Text style={styles.infoValue}>
-                Belum ada Anggota
-              </Text>
-            )}
+                </View>
+              )) : (
+                <Text style={styles.infoValue}>
+                  Belum ada Anggota
+                </Text>
+              )}
+            </View>
           </View>
-        </View>
-      )}
-      {!isProyekKkn && (
-        <Button
-          title={titleDaftarBasedOnStatus()}
-          onPress={() => onDaftar()}
-          disabled={
-            boolDaftarBasedOnStatus()
-          }
-        />
-      )}
-      {/* DOSEN */}
-      {isDosen && !isDosenHaveProyek && isProyekKkn && (
-        <Button
-          title='Tunggu didaftarkan oleh admin'
-          disabled
-        />
-      )}
-      {isProyekKkn && isDosen && isDosenHaveProyek === proyek.id && (
-        <Button
-          title='Sudah Terdaftar di Proyek ini'
-          disabled
-        />
-      )}
-      {isDosen && isDosenHaveProyek && isDosenHaveProyek !== proyek.id && (
-        <Button
-          title='Sudah Terdaftar di Proyek lain'
-          disabled
-        />
-      )}
+        )}
+        {!isProyekKkn && (
+          <Button
+            title={titleDaftarBasedOnStatus()}
+            onPress={() => onDaftar()}
+            disabled={
+              boolDaftarBasedOnStatus()
+            }
+          />
+        )}
+        {/* DOSEN */}
+        {isDosen && !isDosenHaveProyek && isProyekKkn && (
+          <Button
+            title='Tunggu didaftarkan oleh admin'
+            disabled
+          />
+        )}
+        {isProyekKkn && isDosen && isDosenHaveProyek === proyek.id && (
+          <Button
+            title='Sudah Terdaftar di Proyek ini'
+            disabled
+          />
+        )}
+        {isDosen && isDosenHaveProyek && isDosenHaveProyek !== proyek.id && (
+          <Button
+            title='Sudah Terdaftar di Proyek lain'
+            disabled
+          />
+        )}
 
+      </View>
     </ScrollView>
   );
 };

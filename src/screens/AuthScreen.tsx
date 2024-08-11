@@ -71,8 +71,11 @@ const AuthScreen = (
       <View
         style={
           [
-            baseStyles.centerContainer,
             baseStyles.innerCenterContainer,
+            {
+              gap: 12,
+              paddingVertical: 20,
+            }
           ]
         }
       >
@@ -96,7 +99,8 @@ const AuthScreen = (
           source={require('../assets/images/logo.png')}
           style={{
             width: 200,
-            height: 200
+            height: 200,
+            alignSelf: 'center'
           }}
           resizeMode='contain'
         />

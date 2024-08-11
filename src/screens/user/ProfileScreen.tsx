@@ -210,12 +210,22 @@ const ProfileScreen = (
       const uploadedUrl = await uploadImage(
         image!,
       );
-      setForm(prev => (
-        {
-          ...prev,
+      if (dosen) {
+        setFormDosen(prevState => ({
+          ...prevState,
+          profilePhoto: uploadedUrl
+        }))
+      } else if (user?.admin) {
+        setFormAdmin(prevState => ({
+          ...prevState,
           profilePhoto: uploadedUrl!
-        }
-      ))
+        }))
+      } else {
+        setForm(prevState => ({
+          ...prevState,
+          profilePhoto: uploadedUrl!
+        }))
+      }
       Toast.show({
         type: 'success',
         text1: 'Success',
