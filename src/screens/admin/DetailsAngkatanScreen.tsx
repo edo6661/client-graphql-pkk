@@ -1,16 +1,15 @@
-import { Button, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Button, StyleSheet, Text, TextInput, View, TouchableOpacity } from 'react-native';
 import React, { Fragment, useState } from 'react';
 import { gql, useApolloClient, useMutation } from '@apollo/client';
 import {
   Angkatan,
   MutationUpdateAngkatanArgs,
-  MutationUpdateUserArgs,
 } from '../../__generated__/graphql';
 import { updateAngkatan } from '../../api/mutation/angkatan.mutation';
-import { updateUser } from '../../api/mutation/user.mutation';
 import Toast from 'react-native-toast-message';
 import { AngkatanNavigatorScreenProps } from '../../types/adminNavigator.type';
 import { adminItemFields } from '../../types/admin.type';
+import { baseStyles } from '../../styles';
 
 const DetailsAngkatanScreen = ({
   navigation,
@@ -29,6 +28,7 @@ const DetailsAngkatanScreen = ({
       }
     `,
   });
+
   const [update] = useMutation<
     { updateAngkatan: Partial<Angkatan> },
     MutationUpdateAngkatanArgs
@@ -40,8 +40,7 @@ const DetailsAngkatanScreen = ({
         fields: {
           angkatans(existingAngkatans = [], { readField }) {
             return existingAngkatans.map((angkatanExist: Angkatan) => {
-              if (route.params?.id === undefined)
-                return <Text>Id not found</Text>;
+              if (route.params?.id === undefined) return <Text>Id not found</Text>;
 
               if (readField('id', angkatanExist) === route.params.id) {
                 return {
@@ -96,22 +95,28 @@ const DetailsAngkatanScreen = ({
   };
 
   return (
-    <View>
-      <Text>{route.params.id}</Text>
-      <Text>{JSON.stringify(angkatan)}</Text>
-      {adminItemFields['Angkatan'].map(field => (
-        <Fragment key={field}>
-          {field.includes('id') || field.includes('Id') ? null : (
-            <TextInput
-              key={field}
-              placeholder={field}
-              value={form[field]?.toString()}
-              onChangeText={value => onChange(field, value)}
-            />
-          )}
-        </Fragment>
-      ))}
-      <Button title="Update" onPress={onUpdate} />
+    <View style={baseStyles.centerContainer}>
+      <View style={[baseStyles.innerCenterContainer, { paddingVertical: 20, gap: 12 }]}>
+        {adminItemFields['Angkatan'].map(field => (
+          <Fragment key={field}>
+            {field.includes('id') || field.includes('Id') ? null : (
+              <TextInput
+                key={field}
+                placeholder={field}
+                value={form[field]?.toString()}
+                onChangeText={value => onChange(field, value)}
+                style={baseStyles.primaryInput}
+              />
+            )}
+          </Fragment>
+        ))}
+        <TouchableOpacity
+          style={baseStyles.primaryButton}
+          onPress={onUpdate}
+        >
+          <Text style={baseStyles.textButton}>Update</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };

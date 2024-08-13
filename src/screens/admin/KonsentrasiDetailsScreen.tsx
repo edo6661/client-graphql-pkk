@@ -1,22 +1,18 @@
-import { Button, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Button, StyleSheet, Text, TextInput, View, TouchableOpacity } from 'react-native';
 import React, { Fragment, useEffect, useState } from 'react';
-import { AdminNavigatorScreenProps, KonsentrasiNavigatorScreenProps } from '../../types/adminNavigator.type';
+import { KonsentrasiNavigatorScreenProps } from '../../types/adminNavigator.type';
 import { adminItemFields } from '../../types/admin.type';
 import { gql, useApolloClient, useMutation, useQuery } from '@apollo/client';
 import {
-  Admin,
   Konsentrasi,
-  MutationUpdateAdminArgs,
   MutationUpdateKonsentrasiArgs,
-  MutationUpdateUserArgs,
   ProgramStudi,
 } from '../../__generated__/graphql';
-import { updateAdmin } from '../../api/mutation/admin.mutation';
-import { updateUser } from '../../api/mutation/user.mutation';
-import Toast from 'react-native-toast-message';
 import { updateKonsentrasi } from '../../api/mutation/konsentrasi.mutation';
 import { getProgramStudis } from '../../api/query/programStudi.query';
 import { Picker } from '@react-native-picker/picker';
+import Toast from 'react-native-toast-message';
+import { baseStyles } from '../../styles';
 
 const KonsentrasiDetailsScreen = ({
   navigation,
@@ -27,7 +23,7 @@ const KonsentrasiDetailsScreen = ({
 
   const { data: programStudi } = useQuery<{
     programStudis: Array<ProgramStudi>
-  }>(getProgramStudis)
+  }>(getProgramStudis);
 
   const konsentrasi = client.readFragment<Konsentrasi & {
     programStudiId: string;
@@ -46,10 +42,6 @@ const KonsentrasiDetailsScreen = ({
     konsentrasi?.programStudiId || ""
   );
 
-
-
-
-
   const [update] = useMutation<
     { updateKonsentrasi: Partial<Konsentrasi> },
     MutationUpdateKonsentrasiArgs
@@ -61,8 +53,7 @@ const KonsentrasiDetailsScreen = ({
         fields: {
           konsentrasis(existingKonsentrasis = [], { readField }) {
             return existingKonsentrasis.map((konsentrasiExist: Konsentrasi) => {
-              if (route.params?.id === undefined)
-                return <Text>Id not found</Text>;
+              if (route.params?.id === undefined) return <Text>Id not found</Text>;
 
               if (readField('id', konsentrasiExist) === route.params.id) {
                 return {
@@ -123,39 +114,49 @@ const KonsentrasiDetailsScreen = ({
     setForm(prev => ({
       ...prev,
       ...(selectedProdi && { programStudiId: selectedProdi }),
-    }))
-  }, [selectedProdi])
-
+    }));
+  }, [selectedProdi]);
 
   return (
-    <View>
-      <Text>{route.params.id}</Text>
-      <Text>{konsentrasi?.name}</Text>
-      {adminItemFields['Konsentrasi'].map(field => (
-        <Fragment key={field}>
-          {field.includes('id') || field.includes('Id') ? null : (
-            <TextInput
-              key={field}
-              placeholder={field}
-              value={form[field]}
-              onChangeText={value => onChange(field, value)}
-            />
-          )}
-          {field === 'programStudiId' && (
-            <Picker
-              selectedValue={selectedProdi}
-              onValueChange={(itemValue) => setSelectedProdi(itemValue)}
-            >
-              <Picker.Item label="Pilih Prodi" value="" />
-              {programStudi?.programStudis.map((prodi) => (
-                <Picker.Item key={prodi.id} label={prodi.name} value={prodi.id} />
-              ))}
-            </Picker>
-
-          )}
-        </Fragment>
-      ))}
-      <Button title="Update" onPress={onUpdate} />
+    <View style={baseStyles.centerContainer}>
+      <View style={[baseStyles.innerCenterContainer, { paddingVertical: 20, gap: 12 }]}>
+        {adminItemFields['Konsentrasi'].map(field => (
+          <Fragment key={field}>
+            {field.includes('id') || field.includes('Id') ? null : (
+              <TextInput
+                key={field}
+                placeholder={field}
+                value={form[field]}
+                onChangeText={value => onChange(field, value)}
+                style={baseStyles.primaryInput}
+              />
+            )}
+            {field === 'programStudiId' && (
+              <View style={[
+                baseStyles.primaryInput, {
+                  paddingLeft: 0
+                }
+              ]}>
+                <Picker
+                  selectedValue={selectedProdi}
+                  onValueChange={(itemValue) => setSelectedProdi(itemValue)}
+                >
+                  <Picker.Item label="Pilih Prodi" value="" />
+                  {programStudi?.programStudis.map((prodi) => (
+                    <Picker.Item key={prodi.id} label={prodi.name} value={prodi.id} />
+                  ))}
+                </Picker>
+              </View>
+            )}
+          </Fragment>
+        ))}
+        <TouchableOpacity
+          style={baseStyles.primaryButton}
+          onPress={onUpdate}
+        >
+          <Text style={baseStyles.textButton}>Update</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };

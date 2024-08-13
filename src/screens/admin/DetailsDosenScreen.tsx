@@ -1,4 +1,4 @@
-import { Button, StyleSheet, Text, TextInput, View } from 'react-native'
+import { Button, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { Fragment, useState } from 'react'
 import { DosenNavigatorScreenProps } from '../../types/adminNavigator.type'
 import { adminItemFields } from '../../types/admin.type'
@@ -9,6 +9,7 @@ import Toast from 'react-native-toast-message'
 import { updateDosen } from '../../api/mutation/dosen.mutation'
 import { Picker } from '@react-native-picker/picker'
 import { getProyeks } from '../../api/query/proyek.query'
+import { baseStyles } from '../../styles'
 
 
 const DetailsDosenScreen = (
@@ -129,36 +130,65 @@ const DetailsDosenScreen = (
 
 
   return (
-    <View>
-      {adminItemFields["Dosen"].map((field) => (
-        <Fragment key={field}>
-          {field.includes("userId") || field.includes("proyekId") ? null : (
-            <TextInput
-              key={field}
-              placeholder={field}
-              value={form[field]!}
-              onChangeText={(value) => onChange(field, value)}
-            />
-          )}
-          {field === 'proyekId' && (
+    <View
+      style={[
+        baseStyles.centerContainer
+      ]}
+    >
+      <View style={[
+        baseStyles.innerCenterContainer,
+        {
+          paddingVertical: 20,
+          gap: 12
+        }
+      ]}>
+        {adminItemFields["Dosen"].map((field) => (
+          <Fragment key={field}>
+            {field.includes("userId") || field.includes("proyekId") ? null : (
+              <TextInput
+                key={field}
+                placeholder={field}
+                value={form[field]!}
+                onChangeText={(value) => onChange(field, value)}
+                style={baseStyles.primaryInput}
+              />
+            )}
+            {field === 'proyekId' && (
 
-            <Picker
-              selectedValue={selectedProyek}
-              onValueChange={(itemValue) => setSelectedProyek(itemValue)}
-            >
-              <Picker.Item label="Pilih Proyek" value={null} />
-              {proyeks?.proyeks.map((proyek) => (
-                <Picker.Item key={proyek.id} label={proyek.name!} value={proyek.id} />
-              ))}
-            </Picker>
-          )}
+              <View
+                style={[
+                  baseStyles.primaryInput,
+                  {
+                    paddingLeft: 0
+                  }
+                ]}
+              >
+                <Picker
+                  selectedValue={selectedProyek}
+                  onValueChange={(itemValue) => setSelectedProyek(itemValue)}
+                >
+                  <Picker.Item label="Pilih Proyek" value={null} />
+                  {proyeks?.proyeks.map((proyek) => (
+                    <Picker.Item key={proyek.id} label={proyek.name!} value={proyek.id} />
+                  ))}
+                </Picker>
+              </View>
+            )}
 
-        </Fragment>
-      ))}
-      <Button
-        title="Update"
-        onPress={onUpdate}
-      />
+          </Fragment>
+        ))}
+        <TouchableOpacity
+          style={baseStyles.primaryButton}
+          onPress={onUpdate}
+        >
+          <Text
+            style={baseStyles.textButton}
+          >
+            Update
+          </Text>
+        </TouchableOpacity>
+      </View>
+
 
     </View>
   )

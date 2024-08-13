@@ -1,4 +1,4 @@
-import { Button, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Button, StyleSheet, Text, TextInput, View, TouchableOpacity } from 'react-native';
 import React, { Fragment, useState } from 'react';
 import { AdminNavigatorScreenProps } from '../../types/adminNavigator.type';
 import { adminItemFields } from '../../types/admin.type';
@@ -11,6 +11,7 @@ import {
 import { updateAdmin } from '../../api/mutation/admin.mutation';
 import { updateUser } from '../../api/mutation/user.mutation';
 import Toast from 'react-native-toast-message';
+import { baseStyles } from '../../styles';
 
 const DetailsAdminScreen = ({
   navigation,
@@ -42,8 +43,7 @@ const DetailsAdminScreen = ({
         fields: {
           admins(existingAdmins = [], { readField }) {
             return existingAdmins.map((adminExist: Admin) => {
-              if (route.params?.id === undefined)
-                return <Text>Id not found</Text>;
+              if (route.params?.id === undefined) return <Text>Id not found</Text>;
 
               if (readField('id', adminExist) === route.params.id) {
                 return {
@@ -111,22 +111,28 @@ const DetailsAdminScreen = ({
   };
 
   return (
-    <View>
-      <Text>{route.params.id}</Text>
-      <Text>{JSON.stringify(admin)}</Text>
-      {adminItemFields['Admin'].map(field => (
-        <Fragment key={field}>
-          {field.includes('id') || field.includes('Id') ? null : (
-            <TextInput
-              key={field}
-              placeholder={field}
-              value={form[field]}
-              onChangeText={value => onChange(field, value)}
-            />
-          )}
-        </Fragment>
-      ))}
-      <Button title="Update" onPress={onUpdate} />
+    <View style={baseStyles.centerContainer}>
+      <View style={[baseStyles.innerCenterContainer, { paddingVertical: 20, gap: 12 }]}>
+        {adminItemFields['Admin'].map(field => (
+          <Fragment key={field}>
+            {field.includes('id') || field.includes('Id') ? null : (
+              <TextInput
+                key={field}
+                placeholder={field}
+                value={form[field]}
+                onChangeText={value => onChange(field, value)}
+                style={baseStyles.primaryInput}
+              />
+            )}
+          </Fragment>
+        ))}
+        <TouchableOpacity
+          style={baseStyles.primaryButton}
+          onPress={onUpdate}
+        >
+          <Text style={baseStyles.textButton}>Update</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };

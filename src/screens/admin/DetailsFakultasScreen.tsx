@@ -1,4 +1,4 @@
-import { Button, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Button, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import React, { Fragment, useState } from 'react';
 import { AdminNavigatorScreenProps, FakultasNavigatorScreenProps } from '../../types/adminNavigator.type';
 import { adminItemFields } from '../../types/admin.type';
@@ -14,6 +14,7 @@ import { updateAdmin } from '../../api/mutation/admin.mutation';
 import { updateUser } from '../../api/mutation/user.mutation';
 import Toast from 'react-native-toast-message';
 import { updateFakultas } from '../../api/mutation/fakultas.mutation';
+import { baseStyles } from '../../styles';
 
 const DetailsFakultasScreen = ({
   navigation,
@@ -97,22 +98,38 @@ const DetailsFakultasScreen = ({
   };
 
   return (
-    <View>
-      <Text>{route.params.id}</Text>
-      <Text>{fakultas?.name}</Text>
-      {adminItemFields['Fakultas'].map(field => (
-        <Fragment key={field}>
-          {field.includes('id') || field.includes('Id') ? null : (
-            <TextInput
-              key={field}
-              placeholder={field}
-              value={form[field]}
-              onChangeText={value => onChange(field, value)}
-            />
-          )}
-        </Fragment>
-      ))}
-      <Button title="Update" onPress={onUpdate} />
+    <View
+      style={baseStyles.centerContainer}
+    >
+      <View style={[
+        baseStyles.innerCenterContainer, {
+          paddingVertical: 20,
+          gap: 12,
+        }
+      ]}>
+        {adminItemFields['Fakultas'].map(field => (
+          <Fragment key={field}>
+            {field.includes('id') || field.includes('Id') ? null : (
+              <TextInput
+                key={field}
+                placeholder={field}
+                value={form[field]}
+                onChangeText={value => onChange(field, value)}
+                style={baseStyles.primaryInput}
+              />
+            )}
+          </Fragment>
+        ))}
+        <TouchableOpacity
+          style={baseStyles.primaryButton}
+        >
+          <Text
+            style={baseStyles.textButton}
+          >
+            Update
+          </Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };

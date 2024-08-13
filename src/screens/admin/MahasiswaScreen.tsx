@@ -1,4 +1,4 @@
-import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import { useMutation, useQuery } from '@apollo/client'
 import { getMahasiswas } from '../../api/query/mahasiswa.query'
@@ -63,7 +63,22 @@ const MahasiswaScreen = (
           paddingVertical: 20,
         }
       ]}>
-        {loading && <TemporaryLoading />}
+        {
+          loading && (
+            <ActivityIndicator
+              size='large'
+              color={COLORS.primaryBlue}
+              style={{
+                position: 'absolute',
+                top: 0,
+                bottom: 0,
+                left: 0,
+                right: 0,
+                zIndex: 1,
+              }}
+            />
+          )
+        }
         {error && <TemporaryError err={error} />}
         <FlatList
           data={data?.mahasiswas}

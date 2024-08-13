@@ -1,4 +1,4 @@
-import { Button, StyleSheet, Text, TextInput, View } from 'react-native'
+import { Button, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { Fragment, useEffect, useState } from 'react'
 import { AdminNavigatorScreenProps, MahasiswaNavigatorScreenProps } from '../../types/adminNavigator.type'
 import { adminItemFields } from '../../types/admin.type'
@@ -14,6 +14,8 @@ import { getKonsentrasis } from '../../api/query/konsentrasi.query'
 import { getKelass } from '../../api/query/kelas.query'
 import { getAngkatans } from '../../api/query/angkatan.query'
 import { getKelompoks } from '../../api/query/kelompok.query'
+import { baseStyles } from '../../styles'
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 
 const DetailsMahasiswaScreen = (
@@ -207,89 +209,145 @@ const DetailsMahasiswaScreen = (
   }, [selectedKonsentrasi, selectedProdi, selectedProyek])
 
   return (
-    <View>
-      {adminItemFields["Mahasiswa"].map((field) => (
-        <Fragment key={field}>
-          {field.includes("id") || field.includes("Id") || field === 'role' ? null : (
-            <TextInput
-              key={field}
-              placeholder={field}
-              value={form[field]?.toString()}
-              onChangeText={(value) => onChange(field, value)}
-            />
-          )}
-          {field === 'prodiId' && (
-            <Picker
-              selectedValue={selectedProdi}
-              onValueChange={(itemValue) => setSelectedProdi(itemValue)}
-            >
-              <Picker.Item label="Pilih Prodi" value="" />
-              {fakultas?.programStudis.map((prodi) => (
-                <Picker.Item key={prodi.id} label={prodi.name} value={prodi.id} />
-              ))}
-            </Picker>
-          )}
+    <View
+      style={baseStyles.centerContainer}
+    >
+      <KeyboardAwareScrollView contentContainerStyle={[
+        baseStyles.innerCenterContainer, {
+          paddingVertical: 20,
+          gap: 12,
+          flex: 1
+        }
+      ]}
+        style={{
+          width: '100%'
+        }}
+      >
+        {adminItemFields["Mahasiswa"].map((field) => (
+          <Fragment key={field}>
+            {field.includes("id") || field.includes("Id") || field === 'role' ? null : (
+              <TextInput
+                key={field}
+                placeholder={field}
+                value={form[field]?.toString()}
+                onChangeText={(value) => onChange(field, value)}
+                style={baseStyles.primaryInput}
+              />
+            )}
+            {field === 'prodiId' && (
+              <View style={[
+                baseStyles.primaryInput, {
+                  paddingLeft: 0
+                }
+              ]}>
+                <Picker
+                  selectedValue={selectedProdi}
+                  onValueChange={(itemValue) => setSelectedProdi(itemValue)}
+                >
+                  <Picker.Item label="Pilih Prodi" value="" />
+                  {fakultas?.programStudis.map((prodi) => (
+                    <Picker.Item key={prodi.id} label={prodi.name} value={prodi.id} />
+                  ))}
+                </Picker>
 
-          {field === 'konsentrasiId' && (
-            <Picker
-              selectedValue={selectedKonsentrasi}
-              onValueChange={(itemValue) => setSelectedKonsentrasi(itemValue)}
-            >
-              <Picker.Item label="Pilih Konsentrasi" value="" />
-              {konsentrasi?.konsentrasis.map((konsentrasi) => (
-                <Picker.Item key={konsentrasi.id} label={konsentrasi.name} value={konsentrasi.id} />
-              ))}
-            </Picker>
-          )}
+              </View>
+            )}
 
-          {field === 'proyekId' && (
-            <Picker
-              selectedValue={selectedProyek}
-              onValueChange={(itemValue) => setSelectedProyek(itemValue)}
-            >
-              <Picker.Item label="Pilih Proyek" value={null} />
-              {proyeks?.proyeks.map((proyek) => (
-                <Picker.Item key={proyek.id} label={proyek.name!} value={proyek.id} />
-              ))}
-            </Picker>
-          )}
-          {field === 'role' && (
-            <Picker selectedValue={form.role} onValueChange={(itemValue) => onChange(field, itemValue as string)}>
-              <Picker.Item label="Pilih Role di kelompok" value="" />
-              <Picker.Item label={RoleMahasiswa.Anggota} value={RoleMahasiswa.Anggota} />
-              <Picker.Item label={RoleMahasiswa.Ketua} value={RoleMahasiswa.Ketua} />
-            </Picker>
-          )}
+            {field === 'konsentrasiId' && (
+              <View style={[
+                baseStyles.primaryInput, {
+                  paddingLeft: 0
+                }
+              ]}>
 
-          {(field === 'angkatanId' || field === 'kelasId' || field === 'kelompokId') && (
-            <Picker
-              selectedValue={form[field]}
-              onValueChange={(itemValue) =>
-                onChange(field, itemValue!)
-              }
-            >
-              {form[field] === null && (
-                <Picker.Item label={`Pilih ${field}`} value={null} />
-              )}
-              {field === 'angkatanId' && angkatan?.angkatans.map((angkatan) => (
-                <Picker.Item key={angkatan.id} label={angkatan.tahun.toString()} value={angkatan.id} />
-              ))}
-              {field === 'kelasId' && kelas?.kelass.map((kelas) => (
-                <Picker.Item key={kelas.id} label={kelas.name} value={kelas.id} />
-              ))}
+                <Picker
+                  selectedValue={selectedKonsentrasi}
+                  onValueChange={(itemValue) => setSelectedKonsentrasi(itemValue)}
+                >
+                  <Picker.Item label="Pilih Konsentrasi" value="" />
+                  {konsentrasi?.konsentrasis.map((konsentrasi) => (
+                    <Picker.Item key={konsentrasi.id} label={konsentrasi.name} value={konsentrasi.id} />
+                  ))}
+                </Picker>
+              </View>
+            )}
 
-              {field === 'kelompokId' && kelompok?.kelompoks.map((kelompok) => (
-                <Picker.Item key={kelompok.id} label={kelompok.name} value={kelompok.id} />
-              ))}
-            </Picker>
-          )}
-        </Fragment>
-      ))}
+            {field === 'proyekId' && (
+              <View style={[
+                baseStyles.primaryInput, {
+                  paddingLeft: 0
+                }
+              ]}>
 
-      <Button
-        title="Update"
-        onPress={onUpdate}
-      />
+                <Picker
+                  selectedValue={selectedProyek}
+                  onValueChange={(itemValue) => setSelectedProyek(itemValue)}
+                >
+                  <Picker.Item label="Pilih Proyek" value={null} />
+                  {proyeks?.proyeks.map((proyek) => (
+                    <Picker.Item key={proyek.id} label={proyek.name!} value={proyek.id} />
+                  ))}
+                </Picker>
+              </View>
+            )}
+            {field === 'role' && (
+              <View style={[
+                baseStyles.primaryInput, {
+                  paddingLeft: 0
+                }
+              ]}>
+
+                <Picker selectedValue={form.role} onValueChange={(itemValue) => onChange(field, itemValue as string)}>
+                  <Picker.Item label="Pilih Role di kelompok" value="" />
+                  <Picker.Item label={RoleMahasiswa.Anggota} value={RoleMahasiswa.Anggota} />
+                  <Picker.Item label={RoleMahasiswa.Ketua} value={RoleMahasiswa.Ketua} />
+                </Picker>
+              </View>
+            )}
+
+            {(field === 'angkatanId' || field === 'kelasId' || field === 'kelompokId') && (
+              <View style={[
+                baseStyles.primaryInput, {
+                  paddingLeft: 0
+                }
+              ]}>
+
+                <Picker
+                  selectedValue={form[field]}
+                  onValueChange={(itemValue) =>
+                    onChange(field, itemValue!)
+                  }
+                >
+                  {form[field] === null && (
+                    <Picker.Item label={`Pilih ${field}`} value={null} />
+                  )}
+                  {field === 'angkatanId' && angkatan?.angkatans.map((angkatan) => (
+                    <Picker.Item key={angkatan.id} label={angkatan.tahun.toString()} value={angkatan.id} />
+                  ))}
+                  {field === 'kelasId' && kelas?.kelass.map((kelas) => (
+                    <Picker.Item key={kelas.id} label={kelas.name} value={kelas.id} />
+                  ))}
+
+                  {field === 'kelompokId' && kelompok?.kelompoks.map((kelompok) => (
+                    <Picker.Item key={kelompok.id} label={kelompok.name} value={kelompok.id} />
+                  ))}
+                </Picker>
+              </View>
+            )}
+          </Fragment>
+        ))}
+
+        <TouchableOpacity
+          style={baseStyles.primaryButton}
+          onPress={onUpdate}
+        >
+          <Text
+            style={baseStyles.textButton}
+          >
+            Update
+          </Text>
+        </TouchableOpacity>
+      </KeyboardAwareScrollView>
 
     </View>
   )
