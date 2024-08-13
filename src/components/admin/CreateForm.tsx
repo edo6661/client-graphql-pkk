@@ -1,4 +1,4 @@
-import { Alert, Button, Image, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, Alert, Button, Image, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { Fragment, useEffect, useState } from 'react'
 import { baseStyles } from '../../styles'
 import { gql, useMutation, useQuery } from '@apollo/client'
@@ -41,6 +41,7 @@ import ImageCropPicker from 'react-native-image-crop-picker'
 import { uploadImage } from '../../utils/uploadImage'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { wordFirstUpper } from '../../utils/wordFirstUpper'
+import { COLORS } from '../../constants/colors'
 interface CreateFormProps {
   selectedValue: AdminFields
 }
@@ -84,7 +85,10 @@ const CreateForm = (
   }>(getKelompoks)
 
 
-  const [createAdminMutation] = useMutation<any, MutationCreateAdminArgs>(createAdmin, {
+  const [createAdminMutation, {
+    error: createAdminError,
+    loading: createAdminLoading
+  }] = useMutation<any, MutationCreateAdminArgs>(createAdmin, {
     update(cache, { data }) {
       cache.modify({
         fields: {
@@ -100,7 +104,10 @@ const CreateForm = (
       })
     }
   })
-  const [createFakultasMutation] = useMutation<any, MutationCreateFakultasArgs>(createFakultas, {
+  const [createFakultasMutation, {
+    error: createFakultasError,
+    loading: createFakultasLoading
+  }] = useMutation<any, MutationCreateFakultasArgs>(createFakultas, {
     update(cache, { data }) {
       if (!data?.createFakultas) return console.error('Data not found')
       cache.modify({
@@ -122,7 +129,10 @@ const CreateForm = (
     }
   })
   // TODO: createKelompokMutation
-  const [createKelompokMutation] = useMutation<any, MutationCreateKelompokArgs>(createKelompok, {
+  const [createKelompokMutation, {
+    error: createKelompokError,
+    loading: createKelompokLoading
+  }] = useMutation<any, MutationCreateKelompokArgs>(createKelompok, {
     update(cache, { data }) {
       if (!data?.createKelompok) return console.error('Data not found')
       cache.modify({
@@ -146,7 +156,10 @@ const CreateForm = (
       })
     }
   })
-  const [createAngkatanMutation] = useMutation<any, MutationCreateAngkatanArgs>(createAngkatan, {
+  const [createAngkatanMutation, {
+    error: createAngkatanError,
+    loading: createAngkatanLoading
+  }] = useMutation<any, MutationCreateAngkatanArgs>(createAngkatan, {
     update(cache, { data }) {
       if (!data?.createAngkatan) return console.error('Data not found')
       cache.modify({
@@ -167,7 +180,10 @@ const CreateForm = (
       })
     }
   })
-  const [createPersyaratanMutation] = useMutation<any, MutationCreatePersyaratanArgs>(createPersyaratan, {
+  const [createPersyaratanMutation, {
+    error: createPersyaratanError,
+    loading: createPersyaratanLoading
+  }] = useMutation<any, MutationCreatePersyaratanArgs>(createPersyaratan, {
     update(cache, { data }) {
       if (!data?.createPersyaratan) return console.error('Data not found')
       cache.modify({
@@ -192,7 +208,10 @@ const CreateForm = (
       })
     }
   })
-  const [createProgramStudiMutation] = useMutation<any, MutationCreateProgramStudiArgs>(createProgramStudi, {
+  const [createProgramStudiMutation, {
+    error: createProgramStudiError,
+    loading: createProgramStudiLoading
+  }] = useMutation<any, MutationCreateProgramStudiArgs>(createProgramStudi, {
     update(cache, { data }) {
       if (!data?.createProgramStudi) return console.error('Data not found')
       cache.modify({
@@ -214,7 +233,10 @@ const CreateForm = (
       })
     }
   })
-  const [createKonsentrasiMutation] = useMutation<any, MutationCreateKonsentrasiArgs>(createKonsentrasi, {
+  const [createKonsentrasiMutation, {
+    error: createKonsentrasiError,
+    loading: createKonsentrasiLoading
+  }] = useMutation<any, MutationCreateKonsentrasiArgs>(createKonsentrasi, {
     update(cache, { data }) {
       if (!data?.createKonsentrasi) return console.error('Data not found')
       cache.modify({
@@ -235,7 +257,10 @@ const CreateForm = (
       })
     }
   })
-  const [createKelasMutation] = useMutation<any, MutationCreateKelasArgs>(createKelas, {
+  const [createKelasMutation, {
+    error: createKelasError,
+    loading: createKelasLoading
+  }] = useMutation<any, MutationCreateKelasArgs>(createKelas, {
     update(cache, { data }) {
       if (!data?.createKelas) return console.error('Data not found')
       cache.modify({
@@ -256,7 +281,10 @@ const CreateForm = (
       })
     }
   })
-  const [createProyekMutation] = useMutation<any, MutationCreateProyekArgs>(createProyek, {
+  const [createProyekMutation, {
+    error: createProyekError,
+    loading: createProyekLoading
+  }] = useMutation<any, MutationCreateProyekArgs>(createProyek, {
     update(cache, { data }) {
       if (!data?.createProyek) return console.error('Data not found')
       cache.modify({
@@ -278,7 +306,10 @@ const CreateForm = (
   })
 
 
-  const [createDosenMutation] = useMutation<any, MutationCreateDosenArgs>(createDosen, {
+  const [createDosenMutation, {
+    error: createDosenError,
+    loading: createDosenLoading
+  }] = useMutation<any, MutationCreateDosenArgs>(createDosen, {
     update(cache, { data }) {
       cache.modify({
         fields: {
@@ -302,7 +333,10 @@ const CreateForm = (
       })
     }
   })
-  const [createMahasiswaMutation, { error }] = useMutation<any, MutationCreateMahasiswaArgs>(createMahasiswa, {
+  const [createMahasiswaMutation, {
+    error: createMahasiswaError,
+    loading: createMahasiswaLoading
+  }] = useMutation<any, MutationCreateMahasiswaArgs>(createMahasiswa, {
     update(cache, { data }) {
       cache.modify({
         fields: {
@@ -325,7 +359,9 @@ const CreateForm = (
   })
 
 
-  const [createUser, { loading }] = useMutation<MutationSignUpArgs>(signUp)
+  const [createUser, { loading,
+
+  }] = useMutation<MutationSignUpArgs>(signUp)
 
   useEffect(() => {
     const initialFormData = adminItemFields[selectedValue].reduce((acc, field) => {
@@ -402,14 +438,17 @@ const CreateForm = (
         text2: "Terjadi kesalahan",
         swipeable: true
       })
-      Toast.show({
-        swipeable: true,
-        type: 'success',
-        text1: res.message,
-        text2: 'Test text 2'
-      })
-      resetForm()
-      navigation.navigate(selectedValue as any)
+      if (!allErr) {
+        Toast.show({
+          swipeable: true,
+          type: 'success',
+          text1: res.message,
+          text2: 'Test text 2'
+        })
+        navigation.navigate(selectedValue as any)
+        resetForm()
+      }
+
     } catch (err) {
       console.error(err)
     }
@@ -469,6 +508,8 @@ const CreateForm = (
 
 
 
+  const allErr = createAdminError || createDosenError || createFakultasError || createKonsentrasiError || createMahasiswaError || createPersyaratanError || createProgramStudiError || createProyekError || createAngkatanError || createKelasError || createKelompokError
+  const allLoading = createAdminLoading || createDosenLoading || createFakultasLoading || createKonsentrasiLoading || createMahasiswaLoading || createPersyaratanLoading || createProgramStudiLoading || createProyekLoading || createAngkatanLoading || createKelasLoading || createKelompokLoading
 
 
 
@@ -478,6 +519,23 @@ const CreateForm = (
         gap: 20,
       }}
     >
+      {
+        allLoading && (
+          <ActivityIndicator
+            size='large'
+            color={COLORS.primaryBlue}
+            style={{
+              position: 'absolute',
+              top: 0,
+              bottom: 0,
+              left: 0,
+              right: 0,
+              zIndex: 1,
+            }}
+
+          />
+        )
+      }
       {adminItemFields[selectedValue].map((field) => (
         <Fragment key={field}>
           {(field !== 'userId' && field !== 'prodiId' && field !== "konsentrasiId" && field !== "proyekId" && field !== 'programStudiId' && field !== "fakultasId" && field !== 'mahasiswaId' && !field.includes('keterangan') && field !== 'verified' && field !== 'type' && !field.includes('tanggal') && field !== 'bolehDimulai' && field !== 'telahSelesai' && field !== 'angkatanId' && field !== 'kelasId' && field !== 'kelompokId' && field !== 'role' && field !== 'photo') && (
@@ -742,7 +800,11 @@ const CreateForm = (
           Submit
         </Text>
       </TouchableOpacity>
-      {loading && <TemporaryLoading />}
+      {allErr && (
+        <Text style={baseStyles.errorText}>
+          {allErr.message}
+        </Text>
+      )}
     </View>
   )
 }

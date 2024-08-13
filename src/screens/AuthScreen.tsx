@@ -11,6 +11,7 @@ import { useAuthContext } from '../contexts/AuthContext'
 import { COLORS } from '../constants/colors'
 import { baseStyles } from '../styles'
 import Toast from 'react-native-toast-message'
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 const AuthScreen = (
   { navigation }: LoginScreenProps
@@ -104,67 +105,73 @@ const AuthScreen = (
           }}
           resizeMode='contain'
         />
-        <TextInput
-          style={baseStyles.primaryInput}
-          placeholder='Username'
-          onChange={(e) => {
-            onChange('username', e.nativeEvent.text)
-          }}
-          placeholderTextColor={COLORS.black}
-        />
-        <TextInput placeholder='Password'
-          onChange={(e) => {
-            onChange('password', e.nativeEvent.text)
-          }}
-          secureTextEntry={true}
-          style={baseStyles.primaryInput}
-          placeholderTextColor={COLORS.black}
-
-        />
-        <TouchableOpacity
-          onPress={() =>
-            // @ts-expect-error
-            navigation.navigate('Register')
-          }
-          style={{
-            width: '100%',
-            flexDirection: 'row',
-            justifyContent: 'flex-end',
-            gap: 4,
+        <KeyboardAwareScrollView
+          contentContainerStyle={{
+            gap: 12,
           }}
         >
-          <Text
+          <TextInput
+            style={baseStyles.primaryInput}
+            placeholder='Username'
+            onChange={(e) => {
+              onChange('username', e.nativeEvent.text)
+            }}
+            placeholderTextColor={COLORS.black}
+          />
+          <TextInput placeholder='Password'
+            onChange={(e) => {
+              onChange('password', e.nativeEvent.text)
+            }}
+            secureTextEntry={true}
+            style={baseStyles.primaryInput}
+            placeholderTextColor={COLORS.black}
+
+          />
+          <TouchableOpacity
+            onPress={() =>
+              // @ts-expect-error
+              navigation.navigate('Register')
+            }
             style={{
-              color: COLORS.primaryBlue,
-              fontWeight: '400'
+              width: '100%',
+              flexDirection: 'row',
+              justifyContent: 'flex-end',
+              gap: 4,
             }}
           >
-            Register
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={onSubmit}
-          style={[
-            baseStyles.primaryButton,
-            !form.username || !form.password || loading ? {
-              backgroundColor: COLORS.grey,
-            } : {
-              backgroundColor: COLORS.primaryBlue,
+            <Text
+              style={{
+                color: COLORS.primaryBlue,
+                fontWeight: '400'
+              }}
+            >
+              Register
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={onSubmit}
+            style={[
+              baseStyles.primaryButton,
+              !form.username || !form.password || loading ? {
+                backgroundColor: COLORS.grey,
+              } : {
+                backgroundColor: COLORS.primaryBlue,
+              }
+            ]}
+            disabled={
+              !form.username || !form.password || loading
             }
-          ]}
-          disabled={
-            !form.username || !form.password || loading
-          }
 
-        >
-          <Text
-            style={{
-              color: 'white',
-              fontWeight: '600',
-              fontSize: 16,
-            }}
-          >Submit</Text>
-        </TouchableOpacity>
-        {error && <TemporaryError err={error} />}
+          >
+            <Text
+              style={{
+                color: 'white',
+                fontWeight: '600',
+                fontSize: 16,
+              }}
+            >Submit</Text>
+          </TouchableOpacity>
+          {error && <TemporaryError err={error} />}
+        </KeyboardAwareScrollView>
 
       </View>
     </View>

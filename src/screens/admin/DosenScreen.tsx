@@ -1,4 +1,4 @@
-import { Button, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, Button, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { Fragment } from 'react'
 import { AdminStackScreenProps, DosenNavigatorScreenProps } from '../../types/adminNavigator.type'
 import { useMutation, useQuery } from '@apollo/client'
@@ -7,6 +7,9 @@ import { Dosen, MutationDeleteDosenArgs, MutationDeleteUserArgs } from '../../__
 import ModalClose from '../../components/ModalClose'
 import { removeDosen } from '../../api/mutation/dosen.mutation'
 import { deleteUser } from '../../api/mutation/user.mutation'
+import { COLORS } from '../../constants/colors'
+import { baseStyles } from '../../styles'
+import Separator from '../../components/Separator'
 
 const DosenScreen = (
   { navigation }: DosenNavigatorScreenProps<"Dosens">
@@ -55,34 +58,95 @@ const DosenScreen = (
       console.log(err)
     }
   }
-  return (
-    <View>
-      <Text>DosenScreen</Text>
 
-      {loading && <Text>Loading...</Text>}
-      <FlatList
-        data={data?.dosens}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <View style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between'
-          }}>
-            <TouchableOpacity
-              onPress={() => navigation.navigate('DetailsDosens', { id: item.id })}
-            >
-              <Text>{
-                item.fullname
-              }</Text>
-            </TouchableOpacity>
-            <ModalClose
-              trigger='Delete'
-              action={onRemove}
-              item={item}
+
+  return (
+    <View
+      style={[
+        baseStyles.centerContainer
+      ]}
+    >
+      <View style={[
+        baseStyles.innerCenterContainer,
+        {
+          paddingVertical: 20,
+        }
+      ]}>
+
+        {
+          loading && (
+            <ActivityIndicator
+              size='large'
+              color={COLORS.primaryBlue}
+              style={{
+                position: 'absolute',
+                top: 0,
+                bottom: 0,
+                left: 0,
+                right: 0,
+                zIndex: 1,
+              }}
             />
-          </View>
-        )}
-      />
+          )
+        }
+        <FlatList
+          data={data?.dosens}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={{
+            gap: 16
+          }}
+          ListHeaderComponent={
+            <View>
+              <Text
+                style={[
+                  baseStyles.secondaryTitle,
+                ]}
+              >
+                Daftar Dosen
+              </Text>
+              <Separator
+                color={COLORS.grey}
+                height={2}
+                orientation='horizontal'
+                width={'100%'}
+              />
+            </View>
+          }
+
+          renderItem={({ item }) => (
+            <View style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between'
+            }}>
+              <TouchableOpacity
+                onPress={() => navigation.navigate('DetailsDosens', { id: item.id })}
+
+              >
+                <View
+                  style={{
+                    flexDirection: 'column',
+                    gap: 4,
+                  }}
+                >
+                  <Text>Nama: {
+                    item.fullname
+                  }</Text>
+                  <Text>
+                    NIDN: {
+                      item.nidn
+                    }</Text>
+
+                </View>
+              </TouchableOpacity>
+              <ModalClose
+                trigger='Delete'
+                action={onRemove}
+                item={item}
+              />
+            </View>
+          )}
+        />
+      </View>
     </View>
   )
 }

@@ -247,7 +247,6 @@ const RegisterScreen = (
       <View
         style={
           [
-            baseStyles.innerCenterContainer,
             {
               flex: 1,
               borderRadius: 0,
@@ -276,6 +275,10 @@ const RegisterScreen = (
           baseStyles.innerCenterContainer,
         ]
         }
+          contentContainerStyle={{
+            paddingVertical: 20,
+          }}
+
         >
           <View
             style={{
@@ -359,7 +362,7 @@ const RegisterScreen = (
           />
           <View
             style={{
-              gap: 8,
+              gap: 12,
               marginTop: 8,
             }}
           >

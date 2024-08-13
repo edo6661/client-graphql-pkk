@@ -1,5 +1,7 @@
 import { Button, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
+import { baseStyles } from '../styles';
+import { COLORS } from '../constants/colors';
 
 
 interface ModalCloseProps<T> {
@@ -24,13 +26,27 @@ const ModalClose = <T extends Record<string, any>>(
   }
 
   return (
-    <View>
-      <Button
-        title={trigger}
+    <View
+      style={{ paddingHorizontal: 12 }}
+    >
+      <TouchableOpacity
         onPress={() => {
           setIsVisible(true)
         }}
-      />
+        style={[
+          baseStyles.primaryButton,
+          {
+            width: 80,
+            backgroundColor: COLORS.error
+          }
+        ]}
+      >
+        <Text
+          style={baseStyles.textButton}
+        >
+          {trigger}
+        </Text>
+      </TouchableOpacity>
       <Modal
         animationType='slide'
         transparent={true}
@@ -62,20 +78,24 @@ const ModalClose = <T extends Record<string, any>>(
             }}>
               <TouchableOpacity
                 style={{
-                  backgroundColor: 'pink',
+                  backgroundColor: COLORS.error,
                   padding: 10,
                   borderRadius: 5,
                   flex: 0.5
                 }}
                 onPress={onDelete}
               >
-                <Text>
+                <Text
+                  style={{
+                    color: 'white'
+                  }}
+                >
                   Delete
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={{
-                  backgroundColor: 'aqua',
+                  backgroundColor: COLORS.primaryBlue,
                   padding: 10,
                   borderRadius: 5,
                   flex: 0.5
@@ -84,7 +104,11 @@ const ModalClose = <T extends Record<string, any>>(
                   setIsVisible(false)
                 }}
               >
-                <Text>
+                <Text
+                  style={{
+                    color: 'white'
+                  }}
+                >
                   Cancel
                 </Text>
               </TouchableOpacity>

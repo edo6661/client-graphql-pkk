@@ -9,14 +9,14 @@ import ModalClose from '../../components/ModalClose'
 import { MahasiswaNavigatorScreenProps } from '../../types/adminNavigator.type'
 import { Mahasiswa, MutationDeleteUserArgs } from '../../__generated__/graphql'
 import { deleteUser } from '../../api/mutation/user.mutation'
+import { COLORS } from '../../constants/colors'
+import Separator from '../../components/Separator'
 
 const MahasiswaScreen = (
   { navigation, route }: MahasiswaNavigatorScreenProps<"Mahasiswas">
 ) => {
-  const { data, loading, error, } = useQuery(getMahasiswas)
+  const { data, loading, error } = useQuery(getMahasiswas)
   const [remove] = useMutation<any, MutationDeleteUserArgs>(deleteUser, {
-
-
     update(cache, { data }) {
       cache.modify({
         fields: {
@@ -30,8 +30,6 @@ const MahasiswaScreen = (
     }
   })
 
-
-
   const onRemove = async (item: Mahasiswa) => {
     try {
       const res = await remove({
@@ -43,7 +41,7 @@ const MahasiswaScreen = (
             __typename: "User",
             id: item.userId,
             username: item.fullname,
-            dosen: {
+            mahasiswa: {
               ...item,
             }
           }
@@ -57,35 +55,60 @@ const MahasiswaScreen = (
 
   return (
     <View
-      style={
-        baseStyles.container
-      }
+      style={baseStyles.centerContainer}
     >
-      <Text>MahasiswaScreen</Text>
-      {loading && <TemporaryLoading />}
-      {error && <TemporaryError err={error} />}
-      <FlatList
-        data={data?.mahasiswas}
-        renderItem={({ item }) => (
-          <View style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between'
-          }}>
-            <TouchableOpacity
-              onPress={() => navigation.navigate('DetailsMahasiswas', { id: item.id })}
-            >
-              <Text>{
-                item.fullname
-              }</Text>
-            </TouchableOpacity>
-            <ModalClose
-              trigger='Delete'
-              action={onRemove}
-              item={item}
-            />
-          </View>
-        )}
-        keyExtractor={(item) => item.id} />
+      <View style={[
+        baseStyles.innerCenterContainer,
+        {
+          paddingVertical: 20,
+        }
+      ]}>
+        {loading && <TemporaryLoading />}
+        {error && <TemporaryError err={error} />}
+        <FlatList
+          data={data?.mahasiswas}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={{
+            gap: 16,
+          }}
+          ListHeaderComponent={
+            <View>
+              <Text style={baseStyles.secondaryTitle}>
+                Daftar Mahasiswa
+              </Text>
+              <Separator
+                color={COLORS.grey}
+                height={2}
+                orientation='horizontal'
+                width={'100%'}
+              />
+            </View>
+          }
+          renderItem={({ item }) => (
+            <View style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between'
+            }}>
+              <TouchableOpacity
+                onPress={() => navigation.navigate('DetailsMahasiswas', { id: item.id })}
+              >
+                <View style={{
+                  flexDirection: 'column',
+                  gap: 4,
+                }}>
+                  <Text>Nama: {item.fullname}</Text>
+                  <Text>NIM: {item.nim}</Text>
+                </View>
+              </TouchableOpacity>
+              <ModalClose
+                trigger='Delete'
+                action={onRemove}
+                item={item}
+              />
+            </View>
+          )}
+        />
+      </View>
     </View>
   )
 }

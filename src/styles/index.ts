@@ -1,5 +1,8 @@
 import { StyleSheet } from "react-native";
 import { COLORS } from "../constants/colors";
+import { BottomTabBarHeightContext } from '@react-navigation/bottom-tabs';
+
+const bottomTabBarHeight = BottomTabBarHeightContext;
 
 export const baseStyles = StyleSheet.create({
   container:{
@@ -29,6 +32,7 @@ export const baseStyles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 4,
+    
 
   },
   // button
