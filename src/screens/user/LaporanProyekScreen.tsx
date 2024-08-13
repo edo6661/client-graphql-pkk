@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image, FlatList, TouchableOpacity, Button } from 'react-native'
+import { StyleSheet, Text, View, Image, FlatList, TouchableOpacity, Button, ActivityIndicator } from 'react-native'
 import React from 'react'
 import { useMutation, useQuery } from '@apollo/client'
 import { getLaporanByProyekId } from '../../api/query/laporan.query'
@@ -9,6 +9,8 @@ import { LaporanProyekScreenProps, MahasiswaProyekLaporanScreenProps } from '../
 import { deleteLaporan } from '../../api/mutation/laporan.mutation'
 import ModalClose from '../../components/ModalClose'
 import { getProyek } from '../../api/query/proyek.query'
+import { COLORS } from '../../constants/colors'
+import { baseStyles } from '../../styles'
 
 const LaporanProyekScreen = (
   { navigation }: MahasiswaProyekLaporanScreenProps
@@ -16,10 +18,13 @@ const LaporanProyekScreen = (
   const { user } = useAuthContext()
   const proyekId = user?.mahasiswa?.proyekId ?? (user?.mahasiswa?.kelompok?.proyekId || user?.dosen?.proyekId)
   const { data, error, loading, refetch } = useQuery(getLaporanByProyekId, {
-    variables: { proyekId }
+    variables: { proyekId },
+    skip: !proyekId
   })
 
-  const { data: proyek } = useQuery<{
+  const { data: proyek,
+    loading: loadingProyek
+  } = useQuery<{
     getProyek: Proyek
   }>(getProyek, {
     variables: {
@@ -29,7 +34,10 @@ const LaporanProyekScreen = (
 
 
 
-  const [remove] = useMutation<{
+
+  const [remove, {
+    loading: loadingRemove
+  }] = useMutation<{
     deleteLaporan: Laporan
   }, MutationDeleteLaporanArgs>(deleteLaporan, {
     update(cache, { data }) {
@@ -67,7 +75,6 @@ const LaporanProyekScreen = (
 
   const isKetua = user?.mahasiswa?.role === RoleMahasiswa.Ketua
 
-  if (loading) return <Text>Loading...</Text>
   if (error) return <Text>Error: {error.message}</Text>
 
 
@@ -79,35 +86,75 @@ const LaporanProyekScreen = (
         navigation.navigate('DetailsLaporanProyek', { id: item.id })
       }
     >
-      <Image source={{ uri: defaultImage(item.photo!) }} style={styles.image} />
-      <Text style={styles.title}>{item.proyek.name}</Text>
-      <Text style={styles.subtitle}>Dari: {item.mahasiswa.fullname}</Text>
-      <Text style={styles.subtitle}>Feedback: {item.feedback ?? 'N/A'}</Text>
+      <View style={{
+        gap: 4
+      }}>
+        <Image source={{ uri: defaultImage(item.photo!) }} style={styles.image} />
+        <Text style={styles.title}>{item.proyek.name}</Text>
+        <Text style={styles.subtitle}>Dari: {item.mahasiswa.fullname}</Text>
+        <Text style={styles.subtitle}>Feedback: {item.feedback ?? 'N/A'}</Text>
+
+      </View>
       {isKetua && (
-        <ModalClose
-          action={onRemove}
-          item={item}
-          trigger='Delete'
-        />
-      )}
+        <View
+          style={{
+            alignItems: 'stretch'
+          }}
+        >
+          <ModalClose
+            action={onRemove}
+            item={item}
+            trigger='Delete'
+          />
+
+        </View>)}
     </TouchableOpacity>
   )
 
+  const allLoading = loading || loadingProyek || loadingRemove
+
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Laporan Proyek</Text>
-      <FlatList
-        data={data.getLaporanByProyekId}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-        ListEmptyComponent={<Text>Belum ada laporan</Text>}
-      />
-      {(isKetua || proyek?.getProyek.type === TypeProyek.Kkp) && (
-        <Button
-          title='Create Laporan'
-          onPress={() => navigation.navigate('CreateLaporanProyek')}
-        />
-      )}
+      <View style={[
+        baseStyles.innerCenterContainer, {
+          paddingVertical: 20,
+          gap: 16,
+          flex: 1
+        }
+      ]}>
+        {
+          allLoading && (
+            <ActivityIndicator
+              size='large'
+              color={COLORS.primaryBlue}
+              style={{
+                position: 'absolute',
+                top: 0,
+                bottom: 0,
+                left: 0,
+                right: 0,
+                zIndex: 1,
+              }}
+            />
+          )
+        }
+        {!allLoading && (
+          <FlatList
+            data={data.getLaporanByProyekId}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.id}
+            ListEmptyComponent={<Text>Belum ada laporan</Text>}
+          />
+        )}
+        {!allLoading && (isKetua || proyek?.getProyek.type === TypeProyek.Kkp) && (
+
+          <TouchableOpacity style={baseStyles.primaryButton}
+            onPress={() => navigation.navigate('CreateLaporanProyek')}
+          >
+            <Text style={baseStyles.textButton}>Create Laporan</Text>
+          </TouchableOpacity>
+        )}
+      </View>
     </View>
   )
 }
@@ -128,10 +175,7 @@ const styles = StyleSheet.create({
   itemContainer: {
     marginBottom: 16,
     borderRadius: 8,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    padding: 16,
-    backgroundColor: '#f9f9f9'
+    gap: 8
   },
   image: {
     width: '100%',

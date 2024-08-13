@@ -8,6 +8,7 @@ import { useAuthContext } from '../../contexts/AuthContext';
 import { updateLaporan } from '../../api/mutation/laporan.mutation';
 import Toast from 'react-native-toast-message';
 import { WebView } from 'react-native-webview'; // Import WebView
+import { baseStyles } from '../../styles';
 
 const DetailsLaporanProyekScreen = ({ route }: DetailsLaporanProyekScreenProps) => {
   const { user } = useAuthContext();
@@ -85,52 +86,58 @@ const DetailsLaporanProyekScreen = ({ route }: DetailsLaporanProyekScreenProps) 
     }
   };
 
-  if (loading) return <Text>Loading...</Text>;
   if (error) return <Text>Error: {error.message}</Text>;
 
   const laporan = data?.getLaporan;
 
 
   return (
-    <ScrollView style={styles.container}>
-      {laporan ? (
-        <View>
-          <Image
-            source={{
-              uri: laporan.photo?.includes('http') || laporan.photo?.includes('https')
-                ? laporan.photo
-                : "https://i.pinimg.com/236x/42/92/f8/4292f8591dab26fcaa4b3ab213895e6f.jpg"
-            }}
-            style={styles.image}
-          />
-          <Text style={styles.subtitle}>Dari: {laporan.mahasiswa.fullname}</Text>
-          <Text style={styles.subtitle}>Proyek: {laporan.proyek.name}</Text>
-          <Text style={styles.subtitle}>Feedback: {laporan.feedback || 'Tidak ada feedback'}</Text>
-
-          {/* Display PDF preview */}
-          {(laporan.file && laporan.file.includes('https')) && (
-            <WebView
-              source={{ uri: laporan.file }}
-              style={{ flex: 1, height: 600, marginTop: 20 }}
-              mediaPlaybackRequiresUserAction={false}
+    <View style={baseStyles.centerContainer}>
+      <View style={[
+        baseStyles.innerCenterContainer,
+        {
+          gap: 12,
+          paddingVertical: 20,
+        }
+      ]}>
+        {laporan ? (
+          <View>
+            <Image
+              source={{
+                uri: laporan.photo?.includes('http') || laporan.photo?.includes('https')
+                  ? laporan.photo
+                  : "https://i.pinimg.com/236x/42/92/f8/4292f8591dab26fcaa4b3ab213895e6f.jpg"
+              }}
+              style={styles.image}
             />
-          )}
+            <Text style={styles.subtitle}>Dari: {laporan.mahasiswa.fullname}</Text>
+            <Text style={styles.subtitle}>Proyek: {laporan.proyek.name}</Text>
+            <Text style={styles.subtitle}>Feedback: {laporan.feedback || 'Tidak ada feedback'}</Text>
 
-          {user?.dosen && (
-            <View style={{ marginTop: 12 }}>
-              <TextInput
-                value={form.feedback || ''}
-                onChangeText={(text) => setForm((prev) => ({ ...prev, feedback: text }))}
-                placeholder="Feedback"
+            {(laporan.file && laporan.file.includes('https')) && (
+              <WebView
+                source={{ uri: laporan.file }}
+                style={{ flex: 1, height: 600, marginTop: 20 }}
+                mediaPlaybackRequiresUserAction={false}
               />
-              <Button title="Submit" onPress={onSubmit} />
-            </View>
-          )}
-        </View>
-      ) : (
-        <Text>No data available</Text>
-      )}
-    </ScrollView>
+            )}
+
+            {user?.dosen && (
+              <View style={{ marginTop: 12 }}>
+                <TextInput
+                  value={form.feedback || ''}
+                  onChangeText={(text) => setForm((prev) => ({ ...prev, feedback: text }))}
+                  placeholder="Feedback"
+                />
+                <Button title="Submit" onPress={onSubmit} />
+              </View>
+            )}
+          </View>
+        ) : (
+          <Text>No data available</Text>
+        )}
+      </View>
+    </View>
   );
 };
 

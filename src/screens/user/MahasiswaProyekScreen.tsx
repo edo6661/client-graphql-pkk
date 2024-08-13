@@ -1,4 +1,4 @@
-import { Button, StyleSheet, Text, TextInput, View } from 'react-native'
+import { ActivityIndicator, Button, StyleSheet, Text, TextInput, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { KelompokProyekScreenProps } from '../../types/navigator.type'
 import { useAuthContext } from '../../contexts/AuthContext'
@@ -8,6 +8,7 @@ import { getProyek } from '../../api/query/proyek.query'
 import Toast from 'react-native-toast-message'
 import { getMahasiswa } from '../../api/query/mahasiswa.query'
 import { updateMahasiswa } from '../../api/mutation/mahasiswa.mutation'
+import { COLORS } from '../../constants/colors'
 
 const MahasiswaProyekScreen = (
   { navigation, route }: KelompokProyekScreenProps
@@ -22,7 +23,9 @@ const MahasiswaProyekScreen = (
       id: route.params.id
     },
   })
-  const { refetch: refetchProyek } = useQuery<{
+  const { refetch: refetchProyek,
+    loading: loadingProyek,
+  } = useQuery<{
     getProyek: Proyek
   }>(getProyek, {
     variables: {
@@ -30,7 +33,9 @@ const MahasiswaProyekScreen = (
     }
   });
 
-  const [update] = useMutation<
+  const [update, {
+    loading: loadingUpdate
+  }] = useMutation<
     { updateMahasiswa: Partial<Mahasiswa> },
     MutationUpdateKelompokArgs
   >(updateMahasiswa, {
@@ -79,10 +84,28 @@ const MahasiswaProyekScreen = (
     }
   }, [mahasiswa])
 
+  const allLoading = loading || loadingUpdate || loadingProyek
+
 
 
   return (
     <View>
+      {
+        allLoading && (
+          <ActivityIndicator
+            size='large'
+            color={COLORS.primaryBlue}
+            style={{
+              position: 'absolute',
+              top: 0,
+              bottom: 0,
+              left: 0,
+              right: 0,
+              zIndex: 1,
+            }}
+          />
+        )
+      }
       {Object.keys(form).filter(field => field === 'nilai' || field === 'feedback').map((key) => (
         <View key={key}>
           <TextInput

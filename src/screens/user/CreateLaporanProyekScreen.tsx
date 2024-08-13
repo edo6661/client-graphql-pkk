@@ -11,6 +11,8 @@ import ImageCropPicker from 'react-native-image-crop-picker'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import DocumentPicker, { DocumentPickerResponse } from 'react-native-document-picker'
 import { uploadPdf } from '../../utils/uploadPdf'
+import { baseStyles } from '../../styles'
+import { COLORS } from '../../constants/colors'
 const CreateLaporanProyekScreen = (
   { navigation }: CreateLaporanProyekScreenProps
 ) => {
@@ -34,7 +36,8 @@ const CreateLaporanProyekScreen = (
 
 
   const [create, {
-    error
+    error,
+    loading: loadingCreate
   }] = useMutation<{
     createLaporan: Partial<Laporan>
   }, MutationCreateLaporanArgs>(createLaporan, {
@@ -176,64 +179,83 @@ const CreateLaporanProyekScreen = (
     }
   }, [image]);
 
+  const allLoading = loadingCreate || uploading
+
   return (
-    <View>
-      {Object.keys(form).filter(field =>
-        !field.includes('Id')
-      ).map((key) => (
-        <Fragment key={key}>
+    <View
+      style={
+        baseStyles.centerContainer
+      }
+    >
+      <View style={[
+        baseStyles.innerCenterContainer, {
+          paddingVertical: 20,
+          gap: 12,
+        }
+      ]}>
 
-          {key === 'file' && (
-            <Fragment>
-              <Button title="Select PDF" onPress={selectPdf} />
-              {file && <Text>{file.name}</Text>}
-              {file && (
-                <Button title="Upload" onPress={onUpload} disabled={uploading} />
-              )}
-              {uploading && (
-                <View style={styles.uploadingContainer}>
-                  <ActivityIndicator size="large" color="#0000ff" />
-                  <Text style={styles.uploadingText}>{`${transferred}% Uploaded`}</Text>
-                </View>
-              )}
 
-            </Fragment>
-          )}
-          {key === 'photo' && (
-            <>
-              {!form[key] && (
+        {Object.keys(form).filter(field =>
+          !field.includes('Id')
+        ).map((key) => (
+          <Fragment key={key}>
+
+            {key === 'file' && (
+              <Fragment>
                 <Button
-                  title="Pilih Foto"
-                  onPress={choosePhotoFromLibrary}
-                />
-              )}
-              {form[key] && image && (
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                  }}
-                >
-                  <Image
-                    source={{ uri: form[key] }}
-                    style={styles.image}
+                  title="Select PDF" onPress={selectPdf} />
+                {file && <Text>{file.name}</Text>}
+                {file && (
+                  <Button
+                    title="Upload" onPress={onUpload} disabled={uploading} />
+                )}
+                {uploading && (
+                  <View style={styles.uploadingContainer}>
+                    <ActivityIndicator size="large" color="#0000ff" />
+                    <Text style={styles.uploadingText}>{`${transferred}% Uploaded`}</Text>
+                  </View>
+                )}
+
+              </Fragment>
+            )}
+            {key === 'photo' && (
+              <>
+                {!form[key] && (
+                  <Button
+
+                    title="Pilih Foto"
+                    onPress={choosePhotoFromLibrary}
                   />
-                  <Icon
-                    name="close"
-                    onPress={() => setForm(prev => ({ ...prev, photo: '' }))}
-                  />
-                </View>
-              )}
+                )}
+                {form[key] && image && (
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <Image
+                      source={{ uri: form[key] }}
+                      style={styles.image}
+                    />
+                    <Icon
+                      name="close"
+                      onPress={() => setForm(prev => ({ ...prev, photo: '' }))}
+                    />
+                  </View>
+                )}
 
 
-            </>
-          )}
-        </Fragment>
-      ))}
-      <Button
-        title='Create Laporan'
-        onPress={onSubmit}
-      />
+              </>
+            )}
+          </Fragment>
+        ))}
+        <Button
+
+          title='Create Laporan'
+          onPress={onSubmit}
+        />
+      </View>
 
     </View>
   )

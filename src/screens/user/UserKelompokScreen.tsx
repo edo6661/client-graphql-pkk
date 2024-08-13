@@ -1,4 +1,4 @@
-import { Button, FlatList, StyleSheet, Text, View } from 'react-native'
+import { ActivityIndicator, Button, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useState } from 'react'
 import { useAuthContext } from '../../contexts/AuthContext'
 import CreateKelompok from './CreateKelompok'
@@ -12,12 +12,16 @@ import { Picker } from '@react-native-picker/picker'
 import { updateMahasiswa } from '../../api/mutation/mahasiswa.mutation'
 import Toast from 'react-native-toast-message'
 import { UserKelompokNavigatorProps } from '../../types/navigator.type'
+import { baseStyles } from '../../styles'
+import { COLORS } from '../../constants/colors'
 
 const UserKelompokScreen = (
   { navigation }: UserKelompokNavigatorProps
 ) => {
   const { user, storeUser } = useAuthContext()
-  const { data } = useQuery<{
+  const { data,
+    loading: loadingMahasiswa,
+  } = useQuery<{
     mahasiswas: Array<Mahasiswa>
   }>(getMahasiswas)
   const { data: currentKelompok, error, loading, refetch } = useQuery<{
@@ -42,7 +46,9 @@ const UserKelompokScreen = (
   })
 
 
-  const [update] = useMutation<
+  const [update, {
+    loading: loadingUpdate
+  }] = useMutation<
     {
       updateMahasiswa: Partial<Mahasiswa> & {
       }
@@ -81,7 +87,7 @@ const UserKelompokScreen = (
       await update({
         variables: {
           id: form.id!,
-          kelompokId: form.kelompokId!
+          kelompokId: form.kelompokId!,
         }
       })
       setForm({
@@ -105,7 +111,7 @@ const UserKelompokScreen = (
       await update({
         variables: {
           id: user?.mahasiswa?.id!,
-          kelompokId: null
+          kelompokId: null,
         }
       })
       storeUser({
@@ -127,81 +133,154 @@ const UserKelompokScreen = (
     }
   }
 
+  const allLoading = loading || loadingMahasiswa || loadingUpdate
 
+  const isKelompokFull = currentKelompok?.kelompok?.mahasiswa?.length! > 3
 
   return (
     <View
-      style={{
-        flex: 1,
-        padding: 10,
-        gap: 10
-      }}
+      style={baseStyles.centerContainer}
     >
-      {loading && <Text>Loading...</Text>}
-      {!user?.mahasiswa?.kelompokId && (
-        <CreateKelompok />
-      )}
-      {user?.mahasiswa?.kelompokId && (
-        <View>
-          <Text>
-            Anggota Kelompok: {currentKelompok?.kelompok.mahasiswa?.length}
-          </Text>
-          {currentKelompok?.kelompok.mahasiswa && (
-            <FlatList
-              data={currentKelompok.kelompok.mahasiswa}
-              renderItem={({ item }) => (
-                <Text>
-                  {item?.fullname}
-                </Text>
-              )}
-              keyExtractor={(item) => item!.id}
+      <View style={[
+        baseStyles.innerCenterContainer,
+        {
+          paddingVertical: 20,
+          gap: 16
+        }
+      ]}>
+        {
+          allLoading && (
+            <ActivityIndicator
+              size='large'
+              color={COLORS.primaryBlue}
+              style={{
+                position: 'absolute',
+                top: 0,
+                bottom: 0,
+                left: 0,
+                right: 0,
+                zIndex: 1,
+              }}
             />
-          )}
-        </View>
-      )}
-
-      {(user?.mahasiswa?.kelompokId && user.mahasiswa.role === RoleMahasiswa.Ketua) && (
-        <View>
-          <Picker
-            selectedValue={form.id}
-            onValueChange={(value) => {
-              if (value === null) return
-              onChange('id', value)
-            }}
+          )
+        }
+        {!loadingMahasiswa && !user?.mahasiswa?.kelompokId && (
+          <CreateKelompok />
+        )}
+        {!loadingMahasiswa && user?.mahasiswa?.kelompokId && (
+          <View
 
           >
-            <Picker.Item label='Select Mahasiswa' value={null} />
-            {data?.mahasiswas.filter((mhs) =>
-              mhs.kelompokId === null && mhs.role === RoleMahasiswa.Anggota && mhs.proyekId === null
-            ).map((mahasiswa) => (
-              <Picker.Item
-                key={mahasiswa.id}
-                label={mahasiswa.fullname}
-                value={mahasiswa.id}
+            <Text
+              style={baseStyles.tertiaryTitle}
+            >
+              Anggota Kelompok: {currentKelompok?.kelompok.mahasiswa?.length}
+            </Text>
+            {currentKelompok?.kelompok.mahasiswa && (
+              <FlatList
+                data={currentKelompok.kelompok.mahasiswa}
+                contentContainerStyle={{
+                  gap: 4,
+                }}
+                renderItem={({ item }) => (
+                  <Text
 
+                  >
+                    {item?.fullname}
+                  </Text>
+                )}
+                keyExtractor={(item) => item!.id}
               />
-            ))}
-          </Picker>
-          <Button
-            title={
-              currentKelompok?.kelompok?.mahasiswa?.length! > 3
-                ? 'Anggota Kelompok Penuh'
-                : 'Tambah Anggota'
-            }
-            onPress={onUpdate}
-            disabled={
-              currentKelompok?.kelompok?.mahasiswa?.length! > 3
-            }
-          />
-        </View>
-      )}
-      {user?.mahasiswa?.kelompokId && (user?.mahasiswa!.role === RoleMahasiswa.Anggota) && user.mahasiswa.kelompok!.proyekId === null && (
-        <Button
-          title='Keluar Kelompok'
-          onPress={keluarKelompok}
-        />
-      )}
+            )}
+          </View>
+        )}
+        <View style={{
+          gap: 8
+        }}>
 
+          {!loadingMahasiswa && (user?.mahasiswa?.kelompokId && user.mahasiswa.role === RoleMahasiswa.Ketua) && (
+            <View
+              style={{
+                gap: 16
+              }}
+            >
+              <View
+                style={[
+                  baseStyles.primaryInput,
+                  {
+                    paddingLeft: 0,
+                  }
+                ]}
+              >
+                <Picker
+                  selectedValue={form.id}
+                  onValueChange={(value) => {
+                    if (value === null) return
+                    onChange('id', value)
+                  }}
+
+                >
+                  {isKelompokFull ? (
+                    <Picker.Item
+                      label="Anggota Kelompok Penuh"
+                      value={null}
+                    />
+                  ) : (
+                    <Picker.Item
+                      label="Pilih Anggota"
+                      value={null}
+                    />
+                  )}
+                  {!isKelompokFull && data?.mahasiswas.filter((mhs) =>
+                    mhs.kelompokId === null && mhs.role === RoleMahasiswa.Anggota && mhs.proyekId === null
+                  ).map((mahasiswa) => (
+                    <Picker.Item
+                      key={mahasiswa.id}
+                      label={mahasiswa.fullname}
+                      value={mahasiswa.id}
+
+                    />
+                  ))}
+                </Picker>
+
+              </View>
+
+              <TouchableOpacity
+                style={[
+                  baseStyles.primaryButton, {
+                    backgroundColor: isKelompokFull ? COLORS.grey : COLORS.primaryBlue
+                  }
+                ]}
+                onPress={isKelompokFull ? (
+                  () => Toast.show({
+                    type: 'error',
+                    text1: 'Error',
+                    text2: 'Anggota Kelompok Penuh'
+                  })
+                ) : onUpdate}
+                disabled={isKelompokFull}
+              >
+                <Text
+                  style={baseStyles.textButton}
+                >
+                  {isKelompokFull
+                    ? 'Anggota Kelompok Penuh'
+                    : 'Tambah Anggota'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
+          {user?.mahasiswa?.kelompokId && (user?.mahasiswa!.role === RoleMahasiswa.Anggota) && user.mahasiswa.kelompok!.proyekId === null && (
+
+            <TouchableOpacity style={baseStyles.primaryButton}
+              onPress={keluarKelompok}>
+              <Text style={baseStyles.textButton}>Keluar Kelompok</Text>
+            </TouchableOpacity>
+          )}
+
+        </View>
+
+      </View>
     </View>
   )
 }
