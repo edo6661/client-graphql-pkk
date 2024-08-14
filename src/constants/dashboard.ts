@@ -34,5 +34,9 @@ export const listRouteDashboardAdmin =[
   {
     name: "Kelas",
     image: require('../assets/images/kelas.png')
+  },
+  {
+    name: "Proyek",
+    image: require('../assets/images/proyek.png')
   }
 ]

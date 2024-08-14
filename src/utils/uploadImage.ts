@@ -78,7 +78,6 @@ export const uploadImage :UploadImage = async (
 
     // Mengambil URL download dari file yang telah diupload
     const url = await getDownloadURL(storageRef);
-    console.log("URL", url)
     // setUploading!(false);
     Toast.show({
       type: 'success',

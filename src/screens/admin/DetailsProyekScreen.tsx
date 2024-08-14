@@ -1,4 +1,4 @@
-import { Button, Image, Platform, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Button, Image, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import React, { Fragment, useEffect, useState } from 'react';
 import { gql, useApolloClient, useMutation } from '@apollo/client';
 import {
@@ -21,6 +21,7 @@ import { uploadImage } from '../../utils/uploadImage';
 import ImageCropPicker from 'react-native-image-crop-picker';
 
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { baseStyles } from '../../styles';
 
 const DetailsProyekScreen = ({
   navigation,
@@ -170,94 +171,112 @@ const DetailsProyekScreen = ({
 
 
   return (
-    <KeyboardAwareScrollView>
-      <Text>{route.params.id}</Text>
-      {adminItemFields['Proyek'].map(field => (
-        <Fragment key={field}>
-          {(field.includes('id') || field.includes('Id')) || field.includes('tanggal') || field === 'verified' || field === 'type' || field.includes('mulai') || field === 'telahSelesai' || field === 'photo' ? null : (
-            <>
-              <Text>
-                {field}
-              </Text>
-              <TextInput
-                key={field}
-                placeholder={field}
-                value={form[field]?.toString()}
-                onChangeText={value => handleInputChange(field, value)}
-              />
-            </>
-          )}
-          {field === 'photo' && (
-            <>
-              {!form[field] && (
-                <Button
-                  title="Pilih foto"
-                  onPress={choosePhotoFromLibrary}
+    <View
+      style={baseStyles.centerContainer}
+    >
+      <View style={{
+        flex: 1,
+
+      }}>
+        <KeyboardAwareScrollView
+          style={[
+            baseStyles.innerCenterContainer, {
+            }
+          ]}
+          contentContainerStyle={{
+            gap: 12,
+            paddingVertical: 20,
+          }}
+        >
+          {adminItemFields['Proyek'].map(field => (
+            <Fragment key={field}>
+              {(field.includes('id') || field.includes('Id')) || field.includes('tanggal') || field === 'verified' || field === 'type' || field.includes('mulai') || field === 'telahSelesai' || field === 'photo' ? null : (
+                <>
+
+                  <TextInput
+                    key={field}
+                    placeholder={field}
+                    value={form[field]?.toString()}
+                    onChangeText={value => handleInputChange(field, value)}
+                    style={baseStyles.primaryInput}
+                  />
+                </>
+              )}
+              {field === 'photo' && (
+                <>
+                  {!form[field] && (
+                    <Button
+                      title="Pilih foto"
+                      onPress={choosePhotoFromLibrary}
+                    />
+                  )}
+                  {form[field] && (
+                    <View
+                      style={{
+                        flexDirection: 'row'
+                      }}
+                    >
+                      <Image
+                        source={{ uri: form[field] }}
+                        style={styles.image}
+                      />
+                      <Icon
+                        name="close"
+                        color="red"
+                        onPress={() => setForm(prev => ({ ...prev, photo: '' }))}
+                      />
+                    </View>
+                  )}
+
+
+                </>
+              )}
+              {(field === 'verified' || field === 'bolehDimulai' || field === 'telahSelesai') && (
+                <BouncyCheckbox
+                  size={25}
+                  fillColor="cyan"
+                  unFillColor="#FFFFFF"
+                  iconStyle={{ borderColor: "red" }}
+                  innerIconStyle={{ borderWidth: 2 }}
+                  onPress={(checked) =>
+                    handleInputChange(field, checked ? "Checked" : "Unchecked")
+                  }
+                  text={field}
+                  isChecked={form[field] === true}
                 />
               )}
-              {form[field] && (
-                <View
-                  style={{
-                    flexDirection: 'row'
-                  }}
-                >
-                  <Image
-                    source={{ uri: form[field] }}
-                    style={styles.image}
+              {field === 'type' && (
+
+                <Picker selectedValue={form[field]} onValueChange={(itemValue) => handleInputChange(field, itemValue)}>
+                  <Picker.Item label="Pilih Type" value="" />
+                  <Picker.Item label={TypeProyek.Kkn} value={TypeProyek.Kkn} />
+                  <Picker.Item label={TypeProyek.Kkp} value={TypeProyek.Kkp} />
+                </Picker>
+
+              )}
+              {field.includes('tanggal') && (
+                <>
+                  <Text>
+                    {field}
+                  </Text>
+                  <DateTimePicker
+                    minDate={new Date()}
+                    date={form[field]?.toString() ? dayjs(form[field].toString()) : dayjs()}
+                    onChange={(params) => handleInputChange(field, params.date as string)}
+                    mode="single"
                   />
-                  <Icon
-                    name="close"
-                    color="red"
-                    onPress={() => setForm(prev => ({ ...prev, photo: '' }))}
-                  />
-                </View>
+
+                </>
               )}
 
-
-            </>
-          )}
-          {(field === 'verified' || field === 'bolehDimulai' || field === 'telahSelesai') && (
-            <BouncyCheckbox
-              size={25}
-              fillColor="cyan"
-              unFillColor="#FFFFFF"
-              iconStyle={{ borderColor: "red" }}
-              innerIconStyle={{ borderWidth: 2 }}
-              onPress={(checked) =>
-                handleInputChange(field, checked ? "Checked" : "Unchecked")
-              }
-              text={field}
-              isChecked={form[field] === true}
-            />
-          )}
-          {field === 'type' && (
-
-            <Picker selectedValue={form[field]} onValueChange={(itemValue) => handleInputChange(field, itemValue)}>
-              <Picker.Item label="Pilih Type" value="" />
-              <Picker.Item label={TypeProyek.Kkn} value={TypeProyek.Kkn} />
-              <Picker.Item label={TypeProyek.Kkp} value={TypeProyek.Kkp} />
-            </Picker>
-
-          )}
-          {field.includes('tanggal') && (
-            <>
-              <Text>
-                {field}
-              </Text>
-              <DateTimePicker
-                minDate={new Date()}
-                date={form[field]?.toString() ? dayjs(form[field].toString()) : dayjs()}
-                onChange={(params) => handleInputChange(field, params.date as string)}
-                mode="single"
-              />
-
-            </>
-          )}
-
-        </Fragment>
-      ))}
-      <Button title="Update" onPress={onUpdate} />
-    </KeyboardAwareScrollView>
+            </Fragment>
+          ))}
+          <TouchableOpacity style={baseStyles.primaryButton} onPress={onUpdate}>
+            <Text style={baseStyles.textButton}>Update</Text>
+          </TouchableOpacity>
+        </KeyboardAwareScrollView>
+      </View>
+    </View>
   );
 };
 

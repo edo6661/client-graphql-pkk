@@ -11,6 +11,7 @@ import { Mahasiswa, MutationDeleteUserArgs } from '../../__generated__/graphql'
 import { deleteUser } from '../../api/mutation/user.mutation'
 import { COLORS } from '../../constants/colors'
 import Separator from '../../components/Separator'
+import Toast from 'react-native-toast-message'
 
 const MahasiswaScreen = (
   { navigation, route }: MahasiswaNavigatorScreenProps<"Mahasiswas">
@@ -47,7 +48,11 @@ const MahasiswaScreen = (
           }
         }
       })
-      console.log(res)
+      Toast.show({
+        type: 'success',
+        text1: 'Success',
+        text2: 'Data mahasiswa berhasil dihapus'
+      })
     } catch (err) {
       console.log(err)
     }

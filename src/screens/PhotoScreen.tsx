@@ -72,7 +72,6 @@ const PhotoScreen = () => {
         type: [DocumentPicker.types.pdf],
         allowMultiSelection: false,
       });
-      console.log(res);
       setFile(res);
     } catch (error) {
       if (DocumentPicker.isCancel(error)) {

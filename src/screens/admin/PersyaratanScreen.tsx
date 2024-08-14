@@ -18,7 +18,6 @@ const PersyaratanScreen = (
     persyaratans: Persyaratan[]
   }>(getPersyaratans)
 
-  console.log(data)
 
   const [remove, { error }] = useMutation<any, MutationDeletePersyaratanArgs>(deletePersyaratan, {
     update(cache, { data }) {
