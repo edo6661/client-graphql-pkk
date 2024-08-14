@@ -49,7 +49,11 @@ const Proyeks = ({ navigation }: ProyeksScreenProps) => {
       >
         <View
           style={
-            baseStyles.primaryInput
+            [
+              baseStyles.primaryInput, {
+                paddingLeft: 10,
+              }
+            ]
           }
         >
           <Picker

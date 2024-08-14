@@ -165,14 +165,34 @@ const YourProyekScreen = (
   );
 
   const renderFooter = () => (
-    <Button
-      title={
-        isBolehDimulaiDanAdaPembimbing ? 'Lihat Laporan Proyek' : 'Belum Dimulaikan atau Belum Ada Pembimbing'
-      }
-      disabled={!isBolehDimulaiDanAdaPembimbing || loading}
+    // <Button
+    //   title={
+    //     isBolehDimulaiDanAdaPembimbing ? 'Lihat Laporan Proyek' : 'Belum Dimulaikan atau Belum Ada Pembimbing'
+    //   }
+    //   disabled={!isBolehDimulaiDanAdaPembimbing || loading}
+    //   onPress={() => navigation.navigate('LaporanProyekNavigator')}
+    // />
+    <TouchableOpacity
+      style={[
+        baseStyles.primaryButton,
+        {
 
+        },
+        (!isBolehDimulaiDanAdaPembimbing || loading) && {
+          backgroundColor: COLORS.grey,
+        }
+      ]}
+      disabled={!isBolehDimulaiDanAdaPembimbing || loading}
       onPress={() => navigation.navigate('LaporanProyekNavigator')}
-    />
+    >
+      <Text style={[
+        baseStyles.textButton, {
+          textAlign: 'center'
+        }
+      ]}>
+        {isBolehDimulaiDanAdaPembimbing ? 'Lihat Laporan Proyek' : 'Belum Dimulaikan atau Belum Ada Pembimbing'}
+      </Text>
+    </TouchableOpacity>
   );
 
   const optionalDataKkn = isMahasiswa ? proyek?.kelompok?.filter((kel) => kel!.id === idKelompokMahasiswa) : proyek?.kelompok;

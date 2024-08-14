@@ -17,9 +17,6 @@ const KelompokScreen = (
     kelompoks: Kelompok[]
   }>(getKelompoks)
 
-  console.log(data)
-  console.log(errKel)
-
   const [remove, { error }] = useMutation<any, MutationDeleteKelompokArgs>(deleteKelompok, {
 
     update(cache, { data }) {

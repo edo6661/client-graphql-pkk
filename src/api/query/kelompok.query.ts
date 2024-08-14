@@ -31,6 +31,7 @@ export const getKelompok = gql`
       mahasiswa {
         id
         fullname
+        role
       }
     }
   }

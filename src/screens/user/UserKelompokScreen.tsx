@@ -32,6 +32,7 @@ const UserKelompokScreen = (
     },
 
   })
+  const proyekId = user?.mahasiswa?.proyekId || user?.mahasiswa?.kelompok?.proyekId || user?.dosen?.proyekId
 
 
 
@@ -172,7 +173,7 @@ const UserKelompokScreen = (
 
           >
             <Text
-              style={baseStyles.tertiaryTitle}
+              style={baseStyles.secondaryTitle}
             >
               Anggota Kelompok: {currentKelompok?.kelompok.mahasiswa?.length}
             </Text>
@@ -232,7 +233,7 @@ const UserKelompokScreen = (
                     />
                   )}
                   {!isKelompokFull && data?.mahasiswas.filter((mhs) =>
-                    mhs.kelompokId === null && mhs.role === RoleMahasiswa.Anggota && mhs.proyekId === null
+                    mhs.kelompokId === null && mhs.role === RoleMahasiswa.Anggota && proyekId === null
                   ).map((mahasiswa) => (
                     <Picker.Item
                       key={mahasiswa.id}
@@ -270,7 +271,7 @@ const UserKelompokScreen = (
               </TouchableOpacity>
             </View>
           )}
-          {user?.mahasiswa?.kelompokId && (user?.mahasiswa!.role === RoleMahasiswa.Anggota) && user.mahasiswa.kelompok!.proyekId === null && (
+          {user?.mahasiswa?.kelompokId && (user?.mahasiswa!.role === RoleMahasiswa.Anggota) && proyekId === null && (
 
             <TouchableOpacity style={baseStyles.primaryButton}
               onPress={keluarKelompok}>

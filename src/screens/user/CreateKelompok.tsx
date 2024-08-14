@@ -1,4 +1,4 @@
-import { Button, StyleSheet, Text, TextInput, View } from 'react-native'
+import { Button, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { Fragment, useState } from 'react'
 import { adminItemFields } from '../../types/admin.type'
 import { Kelompok, Mahasiswa, MutationCreateKelompokArgs, MutationUpdateMahasiswaArgs, Proyek, RoleMahasiswa } from '../../__generated__/graphql'
@@ -9,6 +9,10 @@ import { Picker } from '@react-native-picker/picker'
 import { createKelompok } from '../../api/mutation/kelompok.mutation'
 import Toast from 'react-native-toast-message'
 import { updateMahasiswa } from '../../api/mutation/mahasiswa.mutation'
+import { baseStyles } from '../../styles'
+import { ActivityIndicator } from 'react-native'
+import { COLORS } from '../../constants/colors'
+import { wordFirstUpper } from '../../utils/wordFirstUpper'
 
 const CreateKelompok = () => {
   const { user, storeUser } = useAuthContext()
@@ -22,7 +26,9 @@ const CreateKelompok = () => {
   }
 
 
-  const [createKelompokMutation] = useMutation<any, MutationCreateKelompokArgs>(createKelompok, {
+  const [createKelompokMutation, {
+    loading
+  }] = useMutation<any, MutationCreateKelompokArgs>(createKelompok, {
     update(cache, { data }) {
       if (!data?.createKelompok) return console.error('Data not found')
       cache.modify({
@@ -120,8 +126,30 @@ const CreateKelompok = () => {
     }
   }
   return (
-    <View>
-      <Text>
+    <View
+      style={{ gap: 12 }}
+    >
+
+      {
+        loading && (
+          <ActivityIndicator
+            size='large'
+            color={COLORS.primaryBlue}
+            style={{
+              position: 'absolute',
+              top: 0,
+              bottom: 0,
+              left: 0,
+              right: 0,
+              zIndex: 1,
+            }}
+          />
+        )
+      }
+
+      <Text
+        style={baseStyles.tertiaryTitle}
+      >
         {user?.mahasiswa?.role === RoleMahasiswa.Ketua ? 'Buatlah kelompok jika anda ingin KKN' : 'Join kelompok jika anda ingin KKN'}
       </Text>
       {user?.mahasiswa?.role === RoleMahasiswa.Ketua &&
@@ -132,17 +160,35 @@ const CreateKelompok = () => {
             >
               {(!field.includes('Id') && field !== 'feedback' && field !== 'nilai') && (
                 <TextInput
-                  placeholder={field}
+                  placeholder={wordFirstUpper(field)}
                   value={form[field]!}
                   onChangeText={(value) => onChange(field, value)}
+                  style={baseStyles.primaryInput}
                 />
               )}
             </Fragment>
           ))}
-          <Button
-            title='Submit'
-            onPress={onSubmit}
-          />
+
+          <TouchableOpacity
+            style={[
+              baseStyles.primaryButton,
+              loading ? {
+                backgroundColor: COLORS.grey
+              } : {
+                backgroundColor: COLORS.primaryBlue
+              }
+            ]}
+            onPress={
+              onSubmit
+            }
+          >
+            <Text
+              style={baseStyles.textButton}
+            >
+
+              {loading ? 'Loading...' : 'Buat Kelompok'}
+            </Text>
+          </TouchableOpacity>
         </Fragment>
       }
     </View>

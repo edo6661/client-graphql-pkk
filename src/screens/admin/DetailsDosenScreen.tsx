@@ -37,6 +37,7 @@ const DetailsDosenScreen = (
 
 
 
+
   const [updateUserDosen] = useMutation<any, MutationUpdateUserArgs>(updateUser)
 
   const [update] = useMutation<
@@ -107,6 +108,7 @@ const DetailsDosenScreen = (
         data: {
           password: form.fullname,
           username: form.fullname,
+
         },
 
       },

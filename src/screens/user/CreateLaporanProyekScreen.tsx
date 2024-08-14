@@ -1,4 +1,4 @@
-import { ActivityIndicator, Button, Image, Platform, StyleSheet, Text, TextInput, View } from 'react-native'
+import { ActivityIndicator, Button, Image, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { Fragment, useEffect, useState } from 'react'
 import { CreateLaporanProyekScreenProps, LaporanProyekScreenProps } from '../../types/navigator.type'
 import { Laporan, MutationCreateLaporanArgs, RoleMahasiswa } from '../../__generated__/graphql'
@@ -202,12 +202,33 @@ const CreateLaporanProyekScreen = (
 
             {key === 'file' && (
               <Fragment>
-                <Button
-                  title="Select PDF" onPress={selectPdf} />
+                {/* <Button
+                  title="Select PDF" onPress={selectPdf} /> */}
+                <TouchableOpacity
+                  onPress={selectPdf}
+                  style={baseStyles.primaryButton}>
+                  <Text style={baseStyles.textButton}>
+                    Pilih PDF
+                  </Text>
+                </TouchableOpacity>
                 {file && <Text>{file.name}</Text>}
                 {file && (
-                  <Button
-                    title="Upload" onPress={onUpload} disabled={uploading} />
+                  // <Button
+                  //   title="Upload" onPress={onUpload} disabled={uploading} />
+                  <TouchableOpacity
+                    onPress={onUpload}
+                    style={[
+                      baseStyles.primaryButton,
+                      {
+                        backgroundColor: uploading ? COLORS.grey : COLORS.primaryBlue
+                      }
+                    ]}
+                    disabled={uploading}
+                  >
+                    <Text style={baseStyles.textButton}>
+                      Upload
+                    </Text>
+                  </TouchableOpacity>
                 )}
                 {uploading && (
                   <View style={styles.uploadingContainer}>
@@ -221,11 +242,18 @@ const CreateLaporanProyekScreen = (
             {key === 'photo' && (
               <>
                 {!form[key] && (
-                  <Button
+                  // <Button
 
-                    title="Pilih Foto"
+                  //   title="Pilih Foto"
+                  //   onPress={choosePhotoFromLibrary}
+                  // />
+                  <TouchableOpacity
                     onPress={choosePhotoFromLibrary}
-                  />
+                    style={baseStyles.primaryButton}>
+                    <Text style={baseStyles.textButton}>
+                      Pilih Foto
+                    </Text>
+                  </TouchableOpacity>
                 )}
                 {form[key] && image && (
                   <View
@@ -250,11 +278,18 @@ const CreateLaporanProyekScreen = (
             )}
           </Fragment>
         ))}
-        <Button
+        {/* <Button
 
           title='Create Laporan'
           onPress={onSubmit}
-        />
+        /> */}
+        <TouchableOpacity
+          onPress={onSubmit}
+          style={baseStyles.primaryButton}>
+          <Text style={baseStyles.textButton}>
+            Buat Laporan
+          </Text>
+        </TouchableOpacity>
       </View>
 
     </View>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, Image, ScrollView, TextInput, Button, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View, Image, ScrollView, TextInput, Button, ActivityIndicator, KeyboardAvoidingView } from 'react-native';
 import { useMutation, useQuery } from '@apollo/client';
 import { getLaporan } from '../../api/query/laporan.query';
 import { Laporan, MutationUpdateLaporanArgs } from '../../__generated__/graphql';
@@ -10,6 +10,7 @@ import Toast from 'react-native-toast-message';
 import { WebView } from 'react-native-webview'; // Import WebView
 import { baseStyles } from '../../styles';
 import { COLORS } from '../../constants/colors';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 const DetailsLaporanProyekScreen = ({ route }: DetailsLaporanProyekScreenProps) => {
   const { user } = useAuthContext();
@@ -93,14 +94,28 @@ const DetailsLaporanProyekScreen = ({ route }: DetailsLaporanProyekScreenProps) 
 
 
   return (
-    <View style={baseStyles.centerContainer}>
+    <KeyboardAwareScrollView
+      scrollEnabled
+      contentContainerStyle={
+        [
+          baseStyles.centerContainer,
+          baseStyles.innerCenterContainer,
+        ]
+      }
+      style={{
+        flex: 1,
+        padding: 20
+      }}
+    >
       <View style={[
-        baseStyles.innerCenterContainer,
         {
           gap: 12,
           paddingVertical: 20,
+          width: '100%',
         }
-      ]}>
+      ]}
+
+      >
         {
           loading && (
             <ActivityIndicator
@@ -153,7 +168,7 @@ const DetailsLaporanProyekScreen = ({ route }: DetailsLaporanProyekScreenProps) 
           </View>
         )}
       </View>
-    </View>
+    </KeyboardAwareScrollView>
   );
 };
 

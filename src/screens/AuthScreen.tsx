@@ -27,7 +27,6 @@ const AuthScreen = (
       if (!data) return console.error('Data not found')
       if (!data.signIn) return console.error('Data signIn not found')
       storeUser(data.signIn)
-      console.log(data.signIn)
 
     }
   })
