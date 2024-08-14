@@ -97,9 +97,7 @@ const LaporanProyekScreen = (
       </View>
       {isKetua && (
         <View
-          style={{
-            alignItems: 'stretch'
-          }}
+
         >
           <ModalClose
             action={onRemove}

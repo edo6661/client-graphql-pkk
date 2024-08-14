@@ -526,7 +526,7 @@ const UserDetailsProyekScreen = ({ navigation, route }: DetailsProyekScreenProps
             disabled
           />
         )}
-        {isProyekKkn && !isMahasiswaHaveKelompok && !isMahasiswaKetua && user && (
+        {isProyekKkn && !isMahasiswaHaveKelompok && !isMahasiswaKetua && !isDosen && user && (
           <Button
             title='Join Kelompok terlebih dahulu'
             disabled

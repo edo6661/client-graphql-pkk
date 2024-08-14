@@ -236,6 +236,8 @@ export const proyekFragments = gql`
       createdAt
       updatedAt
       nilai
+      nim
+      role
     }
     laporans {
       id

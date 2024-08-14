@@ -23,6 +23,7 @@ import PhotoScreen from '../screens/PhotoScreen'
 import PdfScreen from '../screens/PdfScreen'
 import ButtonProfile from '../components/ButtonProfile'
 import ProfileNavigator from '../navigators/ProfileNavigator'
+import YourPdfScreen from '../screens/YourPdfScreen'
 
 
 const Tab = createBottomTabNavigator<BottomTabParamList>()
@@ -68,6 +69,15 @@ const BottomTabs = () => {
           title: 'Proyek'
         }}
       />
+      {/* <Tab.Screen
+        name='Pdf'
+        component={YourPdfScreen}
+        options={{
+          tabBarIcon: ({ focused, color, size }) => <Icon name='home' size={size} color={color} />,
+          headerShown: false,
+          title: 'Pdf'
+        }}
+      /> */}
       {/* <Tab.Screen
         name='Photo'
         component={PhotoScreen}

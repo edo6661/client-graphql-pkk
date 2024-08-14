@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, Image, ScrollView, TextInput, Button } from 'react-native';
+import { StyleSheet, Text, View, Image, ScrollView, TextInput, Button, ActivityIndicator } from 'react-native';
 import { useMutation, useQuery } from '@apollo/client';
 import { getLaporan } from '../../api/query/laporan.query';
 import { Laporan, MutationUpdateLaporanArgs } from '../../__generated__/graphql';
@@ -9,6 +9,7 @@ import { updateLaporan } from '../../api/mutation/laporan.mutation';
 import Toast from 'react-native-toast-message';
 import { WebView } from 'react-native-webview'; // Import WebView
 import { baseStyles } from '../../styles';
+import { COLORS } from '../../constants/colors';
 
 const DetailsLaporanProyekScreen = ({ route }: DetailsLaporanProyekScreenProps) => {
   const { user } = useAuthContext();
@@ -100,7 +101,24 @@ const DetailsLaporanProyekScreen = ({ route }: DetailsLaporanProyekScreenProps) 
           paddingVertical: 20,
         }
       ]}>
-        {laporan ? (
+        {
+          loading && (
+            <ActivityIndicator
+              size='large'
+              color={COLORS.primaryBlue}
+              style={{
+                position: 'absolute',
+                top: 0,
+                bottom: 0,
+                left: 0,
+                right: 0,
+                zIndex: 1,
+              }}
+            />
+          )
+        }
+
+        {laporan && (
           <View>
             <Image
               source={{
@@ -133,8 +151,6 @@ const DetailsLaporanProyekScreen = ({ route }: DetailsLaporanProyekScreenProps) 
               </View>
             )}
           </View>
-        ) : (
-          <Text>No data available</Text>
         )}
       </View>
     </View>

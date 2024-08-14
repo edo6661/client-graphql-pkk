@@ -9,6 +9,8 @@ import { MahasiswaProyekNavigatorProps } from '../../types/navigator.type';
 import { parseDate } from '../../utils/date';
 import { baseStyles } from '../../styles';
 import { COLORS } from '../../constants/colors';
+import LaporanAsPdf from '../YourPdfScreen';
+
 
 const YourProyekScreen = (
   { navigation }: MahasiswaProyekNavigatorProps
@@ -138,7 +140,10 @@ const YourProyekScreen = (
 
       <Text style={styles.infoValue}>Nama: {item?.name}</Text>
       <Text style={styles.infoValue}>Nilai: {item?.nilai || 'N/A'}</Text>
-      {/* <Text style={styles.infoValue}>Feedback: {item?.feedback || 'N/A'}</Text> */}
+
+      {item?.nilai && isMahasiswa && (
+        <LaporanAsPdf />
+      )}
 
       <Text style={[styles.infoLabel, { marginVertical: 10 }]}>Anggota Kelompok: {item?.mahasiswa?.length}</Text>
       <FlatList
@@ -172,6 +177,9 @@ const YourProyekScreen = (
 
   const optionalDataKkn = isMahasiswa ? proyek?.kelompok?.filter((kel) => kel!.id === idKelompokMahasiswa) : proyek?.kelompok;
   const optionalDataKKp = proyek?.mahasiswa
+
+  console.log(JSON.stringify(proyek, null, 2));
+
 
 
 
