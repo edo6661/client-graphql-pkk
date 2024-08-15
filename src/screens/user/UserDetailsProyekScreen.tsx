@@ -219,7 +219,10 @@ const UserDetailsProyekScreen = ({ navigation, route }: DetailsProyekScreenProps
 
 
   const titleDaftarBasedOnStatus = () => {
-    if (proyek.bolehDimulai) {
+    if (!user) {
+      return 'Login terlebih dahulu sebelum mendaftar'
+    }
+    if (proyek.bolehDimulai && !isDosen) {
       return 'Sudah Dimulai'
     }
     if (proyek.telahSelesai) {
@@ -243,26 +246,27 @@ const UserDetailsProyekScreen = ({ navigation, route }: DetailsProyekScreenProps
     if (isProyekKkn && isMahasiswaHaveKelompok && !isMahasiswaKetua) {
       return 'Tunggu Ketua Kelompok untuk mendaftar'
     }
-    if (isProyekKkn && !isMahasiswaHaveKelompok) {
+    if (isProyekKkn && !isMahasiswaHaveKelompok && !isMahasiswaKetua) {
       return 'Daftar'
     }
-    if (isProyekKkn && isMahasiswaKetua) {
+    if (!isProyekKkn && !isMahasiswaHaveProyek) {
       return 'Daftar'
     }
-
-    if (!user) {
-      return 'Login terlebih dahulu sebelum mendaftar'
-    }
-    if (isDosen && isDosenHaveProyek !== proyek.id) {
+    if (isProyekKkn && isMahasiswaHaveKelompok) {
+      return 'Daftar'
+    } if (isDosen && isDosenHaveProyek !== proyek.id) {
       return 'Sudah Terdaftar di Proyek lain'
     }
     if (isMahasiswaKetua && !isMahasiswaHaveKelompok && isProyekKkn) {
       return 'Buatlah Kelompok terlebih dahulu'
     }
-    if (isMahasiswaKetua && !isProyekKkn) {
+    if (isProyekKkn && !isMahasiswaHaveKelompok && isMahasiswaKetua) {
+      return 'Buat Kelompok terlebih dahulu'
+    }
+    if (isMahasiswaKetua && !isProyekKkn && isMahasiswaHaveKelompok) {
       return 'Daftar'
     }
-    if (!isMahasiswaKetua && !isProyekKkn) {
+    if (!isMahasiswaKetua && !isProyekKkn && isMahasiswaHaveKelompok) {
       return 'Daftar'
     }
     if (isMahasiswaHaveProyek === proyek.id) {
@@ -307,6 +311,15 @@ const UserDetailsProyekScreen = ({ navigation, route }: DetailsProyekScreenProps
     }
     if (!isMahasiswaKetua && !isProyekKkn) {
       return
+    }
+    if (isProyekKkn && !isMahasiswaHaveKelompok && isMahasiswaKetua) {
+      return true
+    }
+    if (isMahasiswaKetua && !isProyekKkn && isMahasiswaHaveKelompok) {
+      return true
+    }
+    if (!isProyekKkn && !isMahasiswaHaveProyek) {
+      return true
     }
 
 
@@ -482,13 +495,6 @@ const UserDetailsProyekScreen = ({ navigation, route }: DetailsProyekScreenProps
         </View>
 
 
-        {!user && (
-          <Button
-            title='Login terlebih dahulu sebelum mendaftar'
-            disabled
-          />
-        )}
-
 
         {/* KKN */}
         {(!isDosen && user?.mahasiswa?.proyek?.type === TypeProyek.Kkn && !user?.mahasiswa?.proyekId && user?.mahasiswa?.role === RoleMahasiswa.Anggota) && (
@@ -503,16 +509,8 @@ const UserDetailsProyekScreen = ({ navigation, route }: DetailsProyekScreenProps
           </>
         )}
 
-        {/*  */}
-        {isProyekKkn && !isMahasiswaHaveKelompok && isMahasiswaKetua && (
-          <Button
-            title='Buatlah Kelompok terlebih dahulu'
-            disabled
-          />
-        )}
-
         {/* KKP */}
-        {proyek.type === TypeProyek.Kkp && proyek.mahasiswa?.length! > 0 && (
+        {proyek.type === TypeProyek.Kkp && proyek.mahasiswa?.length! > 0 ? (
           <View style={{
             gap: 8,
             marginBottom: 12
@@ -539,6 +537,12 @@ const UserDetailsProyekScreen = ({ navigation, route }: DetailsProyekScreenProps
               )}
             </View>
           </View>
+        ) : proyek.type === TypeProyek.Kkp && (
+          <Text style={{
+            marginBottom: 12
+          }}>
+            Belum ada yang mendaftar
+          </Text>
         )}
         {/* {!isProyekKkn && (
           <Button
@@ -563,26 +567,28 @@ const UserDetailsProyekScreen = ({ navigation, route }: DetailsProyekScreenProps
             disabled
           />
         )} */}
-        <TouchableOpacity
-          style={
-            [
-              baseStyles.primaryButton,
-              boolDaftarBasedOnStatus() && {
-                backgroundColor: COLORS.grey
-              }
-            ]
-          }
-          onPress={() =>
-            onDaftar()
-          }
-          disabled={
-            boolDaftarBasedOnStatus()
-          }
-        >
-          <Text style={baseStyles.textButton}>
-            {titleDaftarBasedOnStatus()}
-          </Text>
-        </TouchableOpacity>
+        {titleDaftarBasedOnStatus() && (
+          <TouchableOpacity
+            style={
+              [
+                baseStyles.primaryButton,
+                boolDaftarBasedOnStatus() && {
+                  backgroundColor: COLORS.grey
+                }
+              ]
+            }
+            onPress={() =>
+              onDaftar()
+            }
+            disabled={
+              boolDaftarBasedOnStatus()
+            }
+          >
+            <Text style={baseStyles.textButton}>
+              {titleDaftarBasedOnStatus()}
+            </Text>
+          </TouchableOpacity>
+        )}
       </View>
     </ScrollView>
   );

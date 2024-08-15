@@ -144,7 +144,7 @@ const LaporanProyekScreen = (
             ListEmptyComponent={<Text>Belum ada laporan</Text>}
           />
         )}
-        {!allLoading && (isKetua || proyek?.getProyek.type === TypeProyek.Kkp) && (
+        {!allLoading && user?.mahasiswa && (isKetua || proyek?.getProyek.type === TypeProyek.Kkp) && (
 
           <TouchableOpacity style={baseStyles.primaryButton}
             onPress={() => navigation.navigate('CreateLaporanProyek')}
