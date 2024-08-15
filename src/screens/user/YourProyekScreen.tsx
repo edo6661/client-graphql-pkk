@@ -126,6 +126,7 @@ const YourProyekScreen = (
         >
           {mahasiswa(item)}
         </TouchableOpacity>
+
       </>
     )
   );
@@ -161,6 +162,10 @@ const YourProyekScreen = (
     <>
       <Text style={styles.infoValue}>Nama: {item?.fullname}</Text>
       <Text style={styles.infoValue}>Nilai: {item?.nilai ?? 'N/A'}</Text>
+      {item?.nilai && isMahasiswa && (
+        <LaporanAsPdf />
+      )}
+
     </>
   );
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, Image, ScrollView, TextInput, Button, ActivityIndicator, KeyboardAvoidingView } from 'react-native';
+import { StyleSheet, Text, View, Image, ScrollView, TextInput, Button, ActivityIndicator, KeyboardAvoidingView, TouchableOpacity } from 'react-native';
 import { useMutation, useQuery } from '@apollo/client';
 import { getLaporan } from '../../api/query/laporan.query';
 import { Laporan, MutationUpdateLaporanArgs } from '../../__generated__/graphql';
@@ -162,7 +162,10 @@ const DetailsLaporanProyekScreen = ({ route }: DetailsLaporanProyekScreenProps) 
                   onChangeText={(text) => setForm((prev) => ({ ...prev, feedback: text }))}
                   placeholder="Feedback"
                 />
-                <Button title="Submit" onPress={onSubmit} />
+                <TouchableOpacity style={baseStyles.primaryButton}
+                  onPress={onSubmit}>
+                  <Text style={baseStyles.textButton}>Submit</Text>
+                </TouchableOpacity>
               </View>
             )}
           </View>
