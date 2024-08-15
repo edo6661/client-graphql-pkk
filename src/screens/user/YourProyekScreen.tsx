@@ -203,7 +203,6 @@ const YourProyekScreen = (
   const optionalDataKkn = isMahasiswa ? proyek?.kelompok?.filter((kel) => kel!.id === idKelompokMahasiswa) : proyek?.kelompok;
   const optionalDataKKp = proyek?.mahasiswa
 
-  console.log(JSON.stringify(proyek, null, 2));
 
 
 

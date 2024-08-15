@@ -1,6 +1,5 @@
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { BauScreenProps } from '../types/navigator.type'
 import { gql, useMutation, useQuery } from '@apollo/client'
 import { getBau } from '../api/query/baus.query'
 import { useApolloClient } from '@apollo/client'
@@ -9,7 +8,7 @@ import { updateBau } from '../api/mutation/bau.mutation'
 
 
 const BauScreen = (
-  { navigation, route }: BauScreenProps
+  { navigation, route }: any
 ) => {
   const client = useApolloClient()
   const data = client.readFragment<Bau>({

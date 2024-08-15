@@ -46,7 +46,6 @@ const CreateLaporanProyekScreen = (
       cache.modify({
         fields: {
           getLaporanByProyekId(existingLaporans = []) {
-            console.log("existingLaporans", existingLaporans)
             const newLaporan = cache.writeFragment({
               data: data.createLaporan,
               fragment: gql`
@@ -131,7 +130,6 @@ const CreateLaporanProyekScreen = (
       const res = await DocumentPicker.pick({
         type: [DocumentPicker.types.pdf],
       });
-      console.log('Selected file:', res[0]);
       setFile(res[0]);
     } catch (err) {
       if (DocumentPicker.isCancel(err)) {
@@ -150,7 +148,6 @@ const CreateLaporanProyekScreen = (
       if (!uploadedUrl) {
         console.error('Uploaded URL not found');
       } else {
-        console.log('Uploaded URL: ', uploadedUrl);
         setForm(prev => ({
           ...prev,
           file: uploadedUrl
@@ -160,7 +157,6 @@ const CreateLaporanProyekScreen = (
           text1: 'Upload Berhasil',
           text2: 'File Anda telah berhasil diupload',
         });
-        console.log(form)
       }
     } catch (err) {
       console.log(err);
@@ -175,7 +171,6 @@ const CreateLaporanProyekScreen = (
   useEffect(() => {
     if (image) {
       onUploadPhoto();
-      console.log(form)
     }
   }, [image]);
 

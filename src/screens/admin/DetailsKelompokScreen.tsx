@@ -91,7 +91,6 @@ const DetailsKelompokScreen = ({
 
   const onUpdate = async () => {
     try {
-      console.log(form)
       await update({
         variables: {
           id: route.params?.id!,

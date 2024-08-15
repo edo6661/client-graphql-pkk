@@ -502,7 +502,6 @@ const CreateForm = (
   useEffect(() => {
     if (image) {
       onUploadPhoto();
-      console.log(formData)
     }
   }, [image]);
 

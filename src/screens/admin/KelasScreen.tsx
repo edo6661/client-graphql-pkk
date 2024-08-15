@@ -44,7 +44,6 @@ const KelasScreen = ({ navigation }: KelasNavigatorScreenProps<"Kelass">) => {
           }
         }
       })
-      console.log(res)
     } catch (err) {
       console.log(err)
     }

@@ -51,7 +51,6 @@ const ModalClose = <T extends Record<string, any>>(
         animationType='slide'
         transparent={true}
         onRequestClose={() => {
-          console.log('Modal has been closed.')
           setIsVisible(false)
         }}
         visible={isVisible}

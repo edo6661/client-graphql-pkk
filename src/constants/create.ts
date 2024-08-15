@@ -202,7 +202,6 @@ export const adminCreateFnBasedOnFields: AdminCreateFnBasedOnFields<AdminFields>
       keteranganPembayaran: checkedToBoolean(data.keteranganPembayaran),
       keteranganSehat: checkedToBoolean(data.keteranganSehat),
     }
-    console.log("CONVERTED DATA",convertedData)
     createPersyaratan({
       variables: {
         ...convertedData

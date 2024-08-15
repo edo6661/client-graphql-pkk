@@ -15,7 +15,6 @@ const PdfUploadScreen = () => {
       const res = await DocumentPicker.pick({
         type: [DocumentPicker.types.pdf],
       });
-      console.log('Selected file:', res[0]);
       setFile(res[0]);
     } catch (err) {
       if (DocumentPicker.isCancel(err)) {
@@ -34,14 +33,12 @@ const PdfUploadScreen = () => {
       if (!uploadedUrl) {
         console.error('Uploaded URL not found');
       } else {
-        console.log('Uploaded URL: ', uploadedUrl);
         setUrl(uploadedUrl);
         Toast.show({
           type: 'success',
           text1: 'Upload Berhasil',
           text2: 'File Anda telah berhasil diupload',
         });
-        console.log("URL", uploadedUrl);
       }
     } catch (err) {
       console.log(err);

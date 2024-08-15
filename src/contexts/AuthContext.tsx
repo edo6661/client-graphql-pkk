@@ -23,7 +23,6 @@ export const AuthContextProvider = ({ children }: PropsWithChildren<{}>) => {
   const storeUser = async (user: User) => {
     setUser(user);
     await asyncStoreUser(user);
-    console.log("called storeUser")
   };
 
   const logout = async () => {

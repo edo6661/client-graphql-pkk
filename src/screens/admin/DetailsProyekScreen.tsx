@@ -99,9 +99,6 @@ const DetailsProyekScreen = ({
         telahSelesai: checkedToBoolean(form.telahSelesai!),
         verified: checkedToBoolean(form.verified!),
       }
-      console.log("CONVERTED DATA", {
-        convertedData
-      })
       update({
         variables: {
           ...convertedData!,
@@ -128,7 +125,6 @@ const DetailsProyekScreen = ({
 
   const onUploadPhoto = async () => {
     try {
-      console.log("IMAGE", image);
       const uploadedUrl = await uploadImage(image!);
       handleInputChange('photo', uploadedUrl!);
       Toast.show({
@@ -153,9 +149,7 @@ const DetailsProyekScreen = ({
       height: 780,
       cropping: true,
     }).then((image) => {
-      console.log("IMAGE FROM LIBRARY", image);
       const imageUri = Platform.OS === 'ios' ? image.sourceURL : image.path;
-      console.log("IMAGE URI", imageUri);
       setImage(imageUri!);
     }).catch((error) => {
       console.log(error);
@@ -165,7 +159,6 @@ const DetailsProyekScreen = ({
   useEffect(() => {
     if (image) {
       onUploadPhoto();
-      console.log(form)
     }
   }, [image]);
 

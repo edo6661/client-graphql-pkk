@@ -20,7 +20,6 @@ const LaporanAsPdf = () => {
   const proyek = data?.getProyek;
   const [pdfFilePath, setPdfFilePath] = useState<string | null>(null);
 
-  console.log(JSON.stringify(proyek, null, 2));
 
   const createAndSavePDF = async () => {
     if (!proyek) return;
@@ -75,7 +74,6 @@ const LaporanAsPdf = () => {
       };
 
       const file = await RNHTMLtoPDF.convert(options);
-      console.log("FILE: ", file);
       setPdfFilePath(file.filePath!);
 
       if (file.filePath) {

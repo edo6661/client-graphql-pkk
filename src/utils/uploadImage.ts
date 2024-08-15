@@ -15,29 +15,24 @@ export const uploadImage :UploadImage = async (
   setTransferred,
 ) => {
   if(!image) return console.error('Image not found')
-    console.log("IMAGE", image)
   // Mengambil nama file dari path gambar
   // substring: mengambil substring dari string
   // lastIndexOf: mencari posisi terakhir dari karakter '/'
   let filename = image.substring(image.lastIndexOf('/') + 1);
-  console.log("FILENAME", filename)
 
   // Mengambil ekstensi file
   // split: memecah string menjadi array berdasarkan separator '.'
   // pop: mengambil elemen terakhir dari array
   const extension = filename.split('.').pop();
-  console.log("EXTENSION", extension)
 
   // Mengambil nama file tanpa ekstensi
   // split: memecah string menjadi array berdasarkan separator '.'
   // slice: mengambil semua elemen array kecuali elemen terakhir
   // join: menggabungkan elemen array menjadi string dengan separator '.'
   const fileNameWithoutExtension = filename.split('.').slice(0,-1).join('.')
-  console.log("FILENAME WITHOUT EXTENSION", fileNameWithoutExtension)
 
   // Membuat nama file baru dengan menambahkan timestamp
   filename = fileNameWithoutExtension + Date.now() + '.' + extension;
-  console.log("FILENAME + TIMESTAMP", filename)
 
   // Mengatur state uploading menjadi true
   // setUploading!(true);

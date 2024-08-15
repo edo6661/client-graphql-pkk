@@ -43,7 +43,6 @@ const PhotoScreen = () => {
       height: 780,
       cropping: true,
     }).then((image) => {
-      console.log("IMAGE FROM CAMERA", image)
       const imageUri = Platform.OS === 'ios' ? image.sourceURL : image.path
       if (!imageUri) return console.error('Image not found')
       setImage(imageUri)
@@ -56,7 +55,6 @@ const PhotoScreen = () => {
       height: 780,
       cropping: true,
     }).then((image) => {
-      console.log("IMAGE FROM LIBRARY", image)
       const imageUri = Platform.OS === 'ios' ? image.sourceURL : image.path
       if (!imageUri) return console.error('Image not found')
       setImage(imageUri)
